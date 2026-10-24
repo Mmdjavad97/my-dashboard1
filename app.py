@@ -105,6 +105,7 @@ RNG_PERSISTENT_KEYS = (
     "warehouse_forms", "mission_report_cards",
     "mission_report_card_ids", "mission_report_forms",
     "bom_cards", "bom_card_ids", "bom_forms",
+    "financial_projects",
 )
 RNG_DYNAMIC_PREFIXES = ("meeting_data_",)
 
@@ -463,7 +464,7 @@ st.markdown("""
 
 pages = [
     "Dashboard", "To Do List", "Meeting Minutes", "Warehouse",
-    "Mission Report", "Rah Nia Development", "BOM", "Employer Report",
+    "Mission Report", "Rah Nia Development", "BOM", "Employer Report", "RNG Financial",
 ]
 
 
@@ -476,6 +477,11 @@ def rng_logout():
         st.stop()
     rng_clear_private_state()
     st.rerun()
+
+
+def rng_delete_warning(message):
+    with st.container(key="rng_delete_confirmation"):
+        st.warning(message)
 
 
 def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
@@ -492,7 +498,7 @@ def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
             st.session_state[pending_key] = task_index
             rng_rerun()
     if st.session_state.get(pending_key) == task_index:
-        st.warning("Delete this task and all its subtasks? This cannot be undone.")
+        rng_delete_warning("Delete this task and all its subtasks? This cannot be undone.")
         confirm_col, cancel_col = st.columns(2)
         with confirm_col:
             if st.button("Yes, delete", key=f"{prefix}confirm_delete_{task_index}", type="primary", use_container_width=True):
@@ -517,6 +523,9 @@ def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
 # A compact, horizontally scrollable route to every workspace.
 if st.session_state.page != "Dashboard":
     st.markdown("""<style>
+    .st-key-rng_delete_confirmation [data-testid="stAlertContainer"] { background: #fff4d6 !important; border: 1px solid #e4cb8f !important; border-radius: 10px; }
+    .st-key-rng_delete_confirmation [data-testid="stAlertContainer"], .st-key-rng_delete_confirmation [data-testid="stMarkdownContainer"],
+    .st-key-rng_delete_confirmation p, .st-key-rng_delete_confirmation strong { color: #61420b !important; }
     .st-key-rng_section_nav { background: #ffffffdf; border: 1px solid #dce5f0; border-radius: 16px; padding: 10px; margin-bottom: 12px; }
     .st-key-rng_section_nav [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; overflow-x: auto; gap: 6px; padding-bottom: 4px; scrollbar-width: thin; scrollbar-color: #a6bbd8 transparent; }
     .st-key-rng_section_nav [data-testid="stColumn"] { flex: 0 0 auto !important; width: auto !important; min-width: max-content !important; }
@@ -664,7 +673,8 @@ if page == "Dashboard":
     .st-key-rng_navigation_card_5 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%2020V10m7%2010V4m7%2016v-7M2%2020h20M15%204h6v6m-1-5-6%206%22%2F%3E%3C%2Fsvg%3E"); }
     .st-key-rng_navigation_card_6 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m12%203%2010%205-10%205L2%208Zm-10%2010%2010%205%2010-5M2%2018l10%205%2010-5%22%2F%3E%3C%2Fsvg%3E"); }
     .st-key-rng_navigation_card_7 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M8%207V4h8v3M3%2012l9%204%209-4m-9%202v4%22%2F%3E%3C%2Fsvg%3E"); }
-    .st-key-rng_navigation_card_8 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23edc2cb%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%205H5a2%202%200%200%200-2%202v12a2%202%200%200%200%202%202h4M15%205l6%206-6%206m-6-6h12%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_8 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%2021h18M5%2018V10m5%208V10m4%208V10m5%208V10M3%207l9-4%209%204H3Z%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_9 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23edc2cb%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%205H5a2%202%200%200%200-2%202v12a2%202%200%200%200%202%202h4M15%205l6%206-6%206m-6-6h12%22%2F%3E%3C%2Fsvg%3E"); }
     .rng-intro-date svg { width: 13px; height: 13px; color: #a9c9ef; }
     .st-key-rng_glass_notes {
         position: relative; overflow: hidden; background: #f5f9fff0; border: 1px solid #ffffffd9; border-top: 2px solid #ffffff; border-radius: 22px;
@@ -878,8 +888,12 @@ if page == "Dashboard":
         )
         navigation_items = pages + ["Log out"]
         for offset in range(0, len(navigation_items), 3):
+            row_items = navigation_items[offset:offset + 3]
+            row_columns = st.columns(3, gap="medium")
+            if len(row_items) == 1:
+                row_columns = [row_columns[1]]
             for index, (column, destination) in enumerate(
-                zip(st.columns(3, gap="medium"), navigation_items[offset:offset + 3]), start=offset
+                zip(row_columns, row_items), start=offset
             ):
                 with column:
                     with st.container(key=f"rng_navigation_card_{index}"):
@@ -6707,6 +6721,240 @@ elif page == "BOM":
                             st.session_state.editing_bom = None
 
                             rng_rerun()
+
+
+elif page == "RNG Financial":
+    from datetime import datetime
+    from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+    from html import escape
+    from uuid import uuid4
+    from zoneinfo import ZoneInfo
+
+    st.session_state.setdefault("financial_projects", {})
+    st.session_state.setdefault("financial_selected", None)
+    st.session_state.setdefault("financial_creating", False)
+    st.session_state.setdefault("financial_editing", None)
+    st.session_state.setdefault("financial_deleting", None)
+    projects = st.session_state.financial_projects
+    currencies = ["IRR", "IRT", "USD", "EUR", "AED", "GBP"]
+    currency_labels = {"IRR": "IRR · Iranian rial", "IRT": "IRT · Iranian toman", "USD": "USD · US dollar", "EUR": "EUR · Euro", "AED": "AED · UAE dirham", "GBP": "GBP · British pound"}
+
+    def financial_amount(value):
+        amount = Decimal(str(value))
+        if not amount.is_finite() or amount < 0:
+            raise ValueError("Amounts must be finite, non-negative numbers.")
+        return amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def financial_totals(project):
+        income = sum((financial_amount(row["amount"]) for row in project["transactions"] if row["type"] == "Income"), Decimal(0))
+        expense = sum((financial_amount(row["amount"]) for row in project["transactions"] if row["type"] == "Expense"), Decimal(0))
+        return income, expense
+
+    def financial_stats(project):
+        income, expense = financial_totals(project)
+        stats = [("Budget", financial_amount(project["budget"])), ("Income", income), ("Expenses", expense),
+                 ("Cash balance", income - expense), ("Budget remaining", financial_amount(project["budget"]) - expense)]
+        st.markdown('<div class="rng-financial-stats">' + ''.join(
+            f'<div><span>{label}</span><strong>{value:,.2f}</strong><small>{escape(project["currency"])}</small></div>' for label, value in stats
+        ) + '</div>', unsafe_allow_html=True)
+
+    st.markdown('<div id="rng-financial-marker"></div>', unsafe_allow_html=True)
+    st.markdown("""<style>
+    [data-testid="stMain"]:has(#rng-financial-marker) { background: radial-gradient(ellipse at right top, #dce8fa, transparent 50%), #f2f5fa; }
+    .stApp:has(#rng-financial-marker), .stApp:has(#rng-financial-marker) input, .stApp:has(#rng-financial-marker) textarea,
+    .stApp:has(#rng-financial-marker) h1, .stApp:has(#rng-financial-marker) h3, .stApp:has(#rng-financial-marker) [data-testid="stMarkdownContainer"] { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-financial-marker) .block-container { max-width: 1440px; padding-top: 2.5rem; }
+    .rng-financial-hero { background: radial-gradient(ellipse at right top, #365f8b, transparent 65%), #142c4b; border: 1px solid #29496e; border-radius: 24px; padding: 30px 34px; margin: 4px 0 14px; }
+    .rng-financial-hero small { color: #acc8ec; font-size: 11px; letter-spacing: 2px; font-weight: 700; }
+    .rng-financial-hero h1 { color: #f5f9ff !important; font-size: clamp(30px, 3.5vw, 44px) !important; margin: 10px 0; padding: 0; overflow-wrap: anywhere; }
+    .rng-financial-hero p { color: #c5d7ed; margin: 0; font-size: 14px; line-height: 1.7; }
+    .rng-financial-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 8px 0 24px; }
+    .rng-financial-stats > div { background: #fff; border: 1px solid #dce5f1; border-radius: 15px; padding: 18px; min-width: 0; }
+    .rng-financial-stats span, .rng-financial-stats small { display: block; color: #607897; font-size: 11px; }
+    .rng-financial-stats strong { display: block; color: #203f68; font-size: clamp(16px, 1.7vw, 24px); margin: 8px 0; overflow-wrap: anywhere; }
+    [class*="st-key-financial_card_"] { background: #fff; border: 1px solid #dce5f1; border-top: 3px solid #7195c6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 20px #16335408; }
+    .rng-financial-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; color: #355f92; background: #eaf1fb; margin-bottom: 16px; }
+    .rng-financial-icon svg { width: 26px; height: 26px; }
+    .rng-financial-card-title { color: #243b5b; font-size: 20px; font-weight: 700; overflow-wrap: anywhere; margin-bottom: 6px; }
+    .rng-financial-card-client { color: #6a809d; font-size: 12px; min-height: 20px; margin-bottom: 20px; overflow-wrap: anywhere; }
+    .rng-financial-card-balance { border-top: 1px solid #e7edf5; padding: 16px 0; color: #637c9d; font-size: 12px; }
+    .rng-financial-card-balance strong { display: block; color: #284b75; font-size: 21px; margin: 6px 0; overflow-wrap: anywhere; }
+    .rng-financial-empty { text-align: center; color: #607897; border: 1px dashed #c3d2e7; border-radius: 18px; background: #ffffffb8; padding: 44px 20px; }
+    .rng-financial-empty strong { display: block; color: #304d73; font-size: 22px; margin-bottom: 10px; }
+    .stApp:has(#rng-financial-marker) [data-testid="stForm"] { background: #fff; border: 1px solid #d5e2f3; border-radius: 18px; padding: 24px; }
+    .stApp:has(#rng-financial-marker) [data-testid="stWidgetLabel"] p { color: #4a6383; }
+    .stApp:has(#rng-financial-marker) input, .stApp:has(#rng-financial-marker) textarea { background: #f8faff; color: #243b5b; }
+    .stApp:has(#rng-financial-marker) .stButton button { border-radius: 10px; }
+    .stApp:has(#rng-financial-marker) button[kind="primary"] { background: #214b7f; border-color: #214b7f; color: #fff; }
+    .stApp:has(#rng-financial-marker) button[kind="primary"]:hover { background: #173b68; border-color: #173b68; color: #fff; }
+    [class*="st-key-financial_card_"] .stButton button { background: #f2f6fc; color: #355780; border-color: #dce5f1; }
+    [class*="st-key-financial_card_"] [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 6px; }
+    [class*="st-key-financial_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1 1 0 !important; }
+    @media (max-width: 1000px) { .rng-financial-stats { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px) {
+      .rng-financial-hero { padding: 24px 20px; }
+      .rng-financial-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .rng-financial-stats > div { padding: 14px; }
+      .st-key-financial_board [data-testid="stHorizontalBlock"]:has([class*="st-key-financial_card_"]) { flex-wrap: wrap; }
+      .st-key-financial_board [data-testid="stHorizontalBlock"]:has([class*="st-key-financial_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+      .stApp:has(#rng-financial-marker) [data-testid="stForm"] { padding: 16px; }
+    }
+    </style>""", unsafe_allow_html=True)
+
+    selected = st.session_state.financial_selected
+    if selected not in projects:
+        st.session_state.financial_selected = None
+        selected = None
+    if selected is not None:
+        project = projects[selected]
+        if st.button("Back to projects", key="financial_back"):
+            st.session_state.financial_selected = None
+            rng_rerun()
+        st.markdown('<div class="rng-financial-hero"><small>RNG FINANCIAL / PROJECT</small>'
+                    f'<h1>{escape(project["title"])}</h1><p>Every payment and expense, together in one place.</p></div>', unsafe_allow_html=True)
+        if st.session_state.pop("financial_saved", False):
+            st.success("Project financial records saved.")
+        financial_stats(project)
+        with st.form(key=f"financial_detail_{selected}"):
+            st.subheader("Project details")
+            client_col, currency_col, budget_col = st.columns(3)
+            with client_col:
+                client = st.text_input("Client / employer", value=project["client"], key=f"financial_client_{selected}")
+            with currency_col:
+                currency = st.selectbox("Currency", currencies, index=currencies.index(project["currency"]), format_func=currency_labels.get, key=f"financial_currency_{selected}")
+            with budget_col:
+                budget = st.number_input("Project budget", min_value=0.0, value=float(project["budget"]), step=0.01, format="%.2f", key=f"financial_budget_{selected}")
+            st.caption("All amounts use the selected currency. Once transactions are saved, the currency is fixed; use a separate project for another currency.")
+            st.subheader("Income & expenses")
+            st.caption("Add a row for each transaction. Choose Income or Expense and enter a positive amount. Select rows to remove them. Save changes to update totals.")
+            frame = pd.DataFrame(project["transactions"], columns=["date", "type", "category", "amount", "description"])
+            frame["amount"] = pd.to_numeric(frame["amount"]).astype(float)
+            ledger = st.data_editor(frame, key=f"financial_ledger_{selected}", num_rows="dynamic", hide_index=True, width="stretch", height=420,
+                column_config={
+                    "date": st.column_config.TextColumn("Date", width=120, default=datetime.now(ZoneInfo("Asia/Tehran")).strftime("%Y-%m-%d"), help="Enter your preferred calendar date, e.g. YYYY-MM-DD."),
+                    "type": st.column_config.SelectboxColumn("Type", options=["Income", "Expense"], default="Expense", required=True, width=110),
+                    "category": st.column_config.TextColumn("Category", width=160, help="For example: materials, wages, invoice payment."),
+                    "amount": st.column_config.NumberColumn("Amount", min_value=0.0, step=0.01, format="%.2f", width=160, required=True),
+                    "description": st.column_config.TextColumn("Description / reference", width=350),
+                })
+            notes = st.text_area("Project notes", value=project["notes"], key=f"financial_notes_{selected}")
+            submitted = st.form_submit_button("Save financial records", type="primary", use_container_width=True)
+        if submitted:
+            try:
+                clean_rows = []
+                for row_number, row in enumerate(ledger.to_dict("records"), start=1):
+                    def cell(name):
+                        value = row.get(name)
+                        return "" if value is None or pd.isna(value) else str(value).strip()
+                    # Ignore unused new rows, but do not discard partially entered transactions.
+                    if not any(cell(name) for name in ["amount", "category", "description"]):
+                        continue
+                    if not cell("amount") or financial_amount(cell("amount")) <= 0:
+                        raise ValueError(f"Row {row_number}: enter an amount greater than zero.")
+                    if not cell("date") or cell("type") not in ["Income", "Expense"]:
+                        raise ValueError(f"Row {row_number}: enter a date and choose Income or Expense.")
+                    clean_rows.append({"date": cell("date"), "type": cell("type"), "category": cell("category"),
+                                       "amount": str(financial_amount(cell("amount"))), "description": cell("description")})
+                if currency != project["currency"] and project["transactions"]:
+                    raise ValueError("This project already has transactions. Keep its currency, or create a separate project for another currency.")
+                projects[selected] = {**project, "client": client.strip(), "currency": currency,
+                                      "budget": str(financial_amount(budget)), "notes": notes.strip(), "transactions": clean_rows}
+                st.session_state.financial_saved = True
+                rng_rerun()
+            except (ValueError, InvalidOperation) as exc:
+                st.error(str(exc) or "Please check the transaction amounts.")
+    else:
+        st.markdown('<div class="rng-financial-hero"><small>PROJECT FINANCES</small><h1>RNG Financial</h1>'
+                    '<p>Your projects. A clearer picture of every income and expense.</p></div>', unsafe_allow_html=True)
+        st.caption(f"{len(projects)} project{'s' if len(projects) != 1 else ''} · Separate records and currency for each project")
+        if st.button("+ New project", key="financial_add", type="primary"):
+            st.session_state.financial_creating = True
+        if st.session_state.financial_creating:
+            with st.form("financial_create_form", clear_on_submit=False):
+                st.subheader("Create a project")
+                title = st.text_input("Project name", key="financial_new_title")
+                client = st.text_input("Client / employer", key="financial_new_client")
+                currency = st.selectbox("Currency", currencies, format_func=currency_labels.get, key="financial_new_currency")
+                budget = st.number_input("Project budget", min_value=0.0, step=0.01, format="%.2f", key="financial_new_budget")
+                save_col, cancel_col = st.columns(2)
+                with save_col:
+                    create = st.form_submit_button("Create project", type="primary", use_container_width=True)
+                with cancel_col:
+                    cancel = st.form_submit_button("Cancel", use_container_width=True)
+            if cancel:
+                st.session_state.financial_creating = False
+                rng_rerun()
+            if create:
+                if not title.strip():
+                    st.error("Enter a project name.")
+                else:
+                    project_id = uuid4().hex
+                    projects[project_id] = {"title": title.strip(), "client": client.strip(), "currency": currency, "budget": str(financial_amount(budget)), "notes": "", "transactions": []}
+                    st.session_state.financial_creating = False
+                    for key in ["financial_new_title", "financial_new_client", "financial_new_currency", "financial_new_budget"]:
+                        del st.session_state[key]
+                    rng_rerun()
+        if not projects:
+            st.markdown('<div class="rng-financial-empty"><strong>Your first project starts here</strong>Create a project to keep its budget, payments and expenses together.</div>', unsafe_allow_html=True)
+        with st.container(key="financial_board"):
+            project_ids = list(projects)
+            for offset in range(0, len(project_ids), 3):
+                for column, project_id in zip(st.columns(3), project_ids[offset:offset + 3]):
+                    project = projects[project_id]
+                    income, expense = financial_totals(project)
+                    with column, st.container(key=f"financial_card_{project_id}"):
+                        st.markdown('<div class="rng-financial-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 18V10m5 8V10m4 8V10m5 8V10M3 7l9-4 9 4H3Z"/></svg></div>'
+                                    f'<div class="rng-financial-card-title">{escape(project["title"])}</div>'
+                                    f'<div class="rng-financial-card-client">{escape(project["client"] or "Client not set")}</div>'
+                                    f'<div class="rng-financial-card-balance">Cash balance<strong>{income - expense:,.2f} {escape(project["currency"])}</strong>'
+                                    f'{len(project["transactions"])} transactions · Budget {financial_amount(project["budget"]):,.2f}</div>', unsafe_allow_html=True)
+                        if st.session_state.financial_editing == project_id:
+                            with st.form(f"financial_rename_form_{project_id}"):
+                                new_title = st.text_input("Project name", value=project["title"], key=f"financial_rename_title_{project_id}")
+                                save_col, cancel_col = st.columns(2)
+                                with save_col:
+                                    save = st.form_submit_button("Save name", use_container_width=True)
+                                with cancel_col:
+                                    cancel = st.form_submit_button("Cancel", use_container_width=True)
+                            if cancel:
+                                st.session_state.financial_editing = None
+                                rng_rerun()
+                            if save:
+                                if new_title.strip():
+                                    project["title"] = new_title.strip()
+                                    st.session_state.financial_editing = None
+                                    rng_rerun()
+                                else:
+                                    st.error("Enter a project name.")
+                        elif st.session_state.financial_deleting == project_id:
+                            rng_delete_warning("Delete this project and all its financial records? This cannot be undone.")
+                            yes_col, no_col = st.columns(2)
+                            with yes_col:
+                                if st.button("Yes, delete", key=f"financial_confirm_delete_{project_id}", type="primary", use_container_width=True):
+                                    del projects[project_id]
+                                    st.session_state.financial_deleting = None
+                                    rng_rerun()
+                            with no_col:
+                                if st.button("Cancel", key=f"financial_cancel_delete_{project_id}", use_container_width=True):
+                                    st.session_state.financial_deleting = None
+                                    rng_rerun()
+                        else:
+                            open_col, edit_col, delete_col = st.columns(3)
+                            with open_col:
+                                if st.button("Open", key=f"financial_open_{project_id}", use_container_width=True):
+                                    st.session_state.financial_selected = project_id
+                                    rng_rerun()
+                            with edit_col:
+                                if st.button("Edit", key=f"financial_edit_{project_id}", use_container_width=True):
+                                    st.session_state.financial_editing = project_id
+                                    st.session_state.financial_deleting = None
+                                    st.session_state.pop(f"financial_rename_title_{project_id}", None)
+                                    rng_rerun()
+                            with delete_col:
+                                if st.button("Delete", key=f"financial_delete_{project_id}", use_container_width=True):
+                                    st.session_state.financial_deleting = project_id
+                                    st.session_state.financial_editing = None
+                                    rng_rerun()
 
 
 elif page == "Employer Report":

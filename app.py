@@ -591,28 +591,7 @@ if page == "Dashboard":
     .st-key-rng_glass_notes .stButton button:hover { color: #ffffff; background: #2b4a73; border-color: #6a90c0; }
     .st-key-rng_add_note .stButton button { background: #18375f; color: #fff; border-color: #18375f; min-height: 46px; }
     .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #243f63; background: #f8fbff; }
-    .rng-section-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 24px 0 14px; }
-    .rng-section-heading { color: #1c3455; font-size: 21px; font-weight: 700; letter-spacing: -.5px; }
-    .rng-section-index { color: #526d8e; font-size: 12px; }
-    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] {
-        background: #f8fbffd6; border: 1px solid #ffffffe6; border-radius: 15px; padding: 16px 16px 8px;
-        min-height: 180px; box-shadow: 0 5px 20px #16346108; transition: background .2s;
-    }
-    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover { background: #ffffff; border-color: #8ba8d0; }
-    .rng-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .rng-card-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
-    .rng-card-icon svg { width: 22px; height: 22px; }
-    .rng-card-index { color: #627b9a; font-size: 11px; }
-    .rng-card-title { font-size: 15px; font-weight: 700; color: #223b5d; margin-bottom: 5px; }
-    .rng-card-copy { color: #526d8e; font-size: 12px; line-height: 1.6; }
-    .st-key-rng_dashboard_shortcuts .stButton button { background: transparent; border: 0; color: #325d97; width: 100%; min-height: 44px; border-radius: 8px; }
-    .st-key-rng_dashboard_shortcuts .stButton button:hover { color: #163c70; background: #e3edfb; }
-    .st-key-rng_dashboard_shortcuts .stButton button p { font-size: 12px; font-weight: 650; }
     .rng-dashboard-signature { display: flex; justify-content: space-between; gap: 12px; color: #526d8e; font-size: 11px; padding-top: 22px; }
-    @container rng-main (max-width: 1200px) {
-        .st-key-rng_dashboard_shortcuts [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
-        .st-key-rng_dashboard_shortcuts [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
-    }
     @container rng-main (max-width: 900px) {
         .block-container:has(#rng-dashboard-marker) { padding: 2rem 24px 3rem !important; }
         .rng-intro { min-height: 320px; margin-left: 43%; }
@@ -633,8 +612,6 @@ if page == "Dashboard":
         .rng-intro-copy { font-size: 14px; }
         .rng-intro-date { margin-top: 12px; }
         .st-key-rng_glass_notes { padding: 18px; }
-        .rng-section-index { display: none; }
-        .st-key-rng_dashboard_shortcuts [data-testid="stColumn"] { min-width: 100%; }
         .rng-dashboard-signature { flex-wrap: wrap; }
     }
     @media (prefers-reduced-transparency: reduce) {
@@ -790,30 +767,6 @@ if page == "Dashboard":
                     )
 
                     rng_rerun()
-
-    st.markdown('<div class="rng-section-bar"><div><div class="rng-section-heading">A place for everything.</div><div class="rng-section-caption">Less searching. More doing.</div></div><span class="rng-section-index">Your everyday essentials</span></div>', unsafe_allow_html=True)
-    # Original SVG artwork keeps icons crisp without external fonts or requests.
-    shortcut_items = [
-        ("To Do List", "Turn intentions into progress.", "#e5effe", "#4e75ac", '<path d="m5 6 2 2 4-4M13 6h6M5 13l2 2 4-4M13 13h6M5 20h14"/>'),
-        ("Meeting Minutes", "Good conversations, captured.", "#e9eef9", "#637da9", '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 2v4m8-4v4M8 11h8m-8 4h5"/>'),
-        ("Warehouse", "Keep everything in its place.", "#e3f0fa", "#4d7caa", '<path d="m3 7 9-4 9 4v11l-9 4-9-4Zm0 0 9 4 9-4m-9 4v11M7 5l10 4v5"/>'),
-        ("Rah Nia Development", "Build what comes next.", "#eaeafb", "#7278ae", '<path d="M4 20V10m7 10V4m7 16v-7M2 20h20M15 4h6v6m-1-5-6 6"/>'),
-    ]
-    with st.container(key="rng_dashboard_shortcuts"):
-        for index, (column, item) in enumerate(zip(st.columns(4, gap="small"), shortcut_items), 1):
-            destination, description, tint, ink, paths = item
-            with column:
-                with st.container(key=f"rng_destination_{index}"):
-                    st.markdown(
-                        f'<div class="rng-card-top"><div class="rng-card-icon" style="background:{tint};color:{ink}">'
-                        f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
-                        f'</div><span class="rng-card-index">0{index}</span></div>'
-                        f'<div class="rng-card-title">{destination}</div><div class="rng-card-copy">{description}</div>',
-                        unsafe_allow_html=True
-                    )
-                    if st.button(f"Open {destination}", key=f"rng_shortcut_{destination}", use_container_width=True):
-                        st.session_state.page = destination
-                        rng_rerun()
 
     st.markdown(
         '<div class="rng-dashboard-signature"><span>A little clarity goes a long way.</span><span>YOUR SPACE. YOUR PACE.</span></div>',

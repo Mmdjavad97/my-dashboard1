@@ -518,109 +518,164 @@ if page == "Dashboard":
     dashboard_folder = Path(__file__).resolve().parent
     portrait_path = dashboard_folder / "My Pic.png"
 
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    today_label = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%A, %d %B %Y")
     st.markdown('<div id="rng-dashboard-marker"></div>', unsafe_allow_html=True)
     st.markdown("""
     <style>
     section[data-testid="stMain"]:has(#rng-dashboard-marker) {
-        background: radial-gradient(ellipse at top right, #e0efed, transparent 55%), #f4f6fa;
+        background: radial-gradient(ellipse at 100% 0, #e5eadd 0, transparent 42%), #f6f5f0;
     }
+    .stApp:has(#rng-dashboard-marker) [data-testid="stHeader"] { background: #f6f5f0ed; }
     section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container {
-        max-width: 1240px; padding: 2.5rem 2rem 4rem;
+        max-width: 1370px; padding: 2rem 2.5rem 4rem;
     }
-    .st-key-rng_dashboard_hero {
-        background: linear-gradient(120deg, #13283c, #193d50 65%, #20565c);
-        border: 1px solid #2c5363; border-radius: 26px;
-        padding: 36px 36px 0; overflow: hidden;
-        box-shadow: 0 18px 45px #16364a16;
+    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] {
+        background: #182c2a; border-right: 1px solid #ffffff0a;
     }
+    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] h1 { font-size: 20px; letter-spacing: -.5px; }
     .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button {
-        background: transparent; border: 1px solid #ffffff20; text-align: left;
+        background: #ffffff04; border: 1px solid #ffffff13; border-radius: 12px;
+        min-height: 45px; transition: background .2s, border-color .2s;
     }
     .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button:hover {
-        background: #254252; border-color: #4a7c85;
+        background: #36524a; border-color: #b4c89a77;
     }
-    .rng-eyebrow {
-        color: #9fe0d3; font-size: 12px; font-weight: 700;
-        letter-spacing: 2px; text-transform: uppercase; margin: 12px 0 18px;
+    .rng-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; }
+    .rng-brand { color: #26413c; font-size: 12px; font-weight: 750; letter-spacing: 2.5px; }
+    .rng-date { color: #7a8477; font-size: 12px; }
+    .st-key-rng_dashboard_hero {
+        position: relative; isolation: isolate;
+        background: radial-gradient(ellipse at 90% 10%, #425f49, transparent 65%), #19362f;
+        border: 1px solid #335347; border-radius: 28px;
+        padding: 32px 38px 0; overflow: hidden; box-shadow: 0 22px 45px #1d352519;
     }
+    .st-key-rng_dashboard_hero::before {
+        content: ""; position: absolute; width: 560px; height: 560px; border-radius: 50%;
+        right: -170px; top: -310px; border: 1px solid #dbe5be22;
+        box-shadow: 0 0 0 60px #dbe5be06, 0 0 0 120px #dbe5be04; pointer-events: none;
+    }
+    .rng-eyebrow { color: #c4d4b3; font-size: 11px; font-weight: 650; letter-spacing: 2.5px; text-transform: uppercase; margin: 4px 0 22px; }
+    .rng-eyebrow span { display: inline-block; width: 22px; height: 1px; background: #d3dab4; vertical-align: middle; margin-right: 9px; }
     .st-key-rng_dashboard_hero h1.rng-hero-title {
-        color: #fff !important; font-size: clamp(34px, 4vw, 54px) !important; font-weight: 750;
-        line-height: 1.12; letter-spacing: -1.8px; margin: 0 0 18px;
+        color: #fcf8ea !important; font-size: clamp(38px, 4.5vw, 68px) !important;
+        font-weight: 650; line-height: 1.05; letter-spacing: -2.5px; margin: 0 0 22px; padding: 0;
     }
-    .rng-hero-copy { color: #c6d8e1; font-size: 16px; line-height: 1.8; max-width: 400px; }
-    .rng-hero-footer {
-        display: inline-flex; align-items: center; gap: 9px; color: #d4e8e7;
-        border: 1px solid #ffffff25; border-radius: 100px;
-        padding: 8px 14px; font-size: 12px; margin: 20px 0 30px;
+    .rng-hero-title em { color: #d2deac; font-family: Georgia, serif; font-weight: 400; }
+    .rng-hero-copy { color: #c1cec3; font-size: 15px; line-height: 1.8; max-width: 350px; }
+    .rng-hero-footer { display: flex; align-items: center; gap: 20px; color: #e1e7d7; font-size: 11px; margin: 25px 0 30px; letter-spacing: .5px; }
+    .rng-hero-footer span + span { border-left: 1px solid #ffffff30; padding-left: 20px; }
+    .st-key-rng_portrait { position: relative; }
+    .st-key-rng_portrait::before {
+        content: ""; position: absolute; width: 310px; height: 310px; border-radius: 50%;
+        background: linear-gradient(145deg, #d7dfac, #88a783); top: 45px; left: 50%; transform: translateX(-50%);
+        box-shadow: 0 0 0 15px #d6deb00a, 0 0 0 16px #d6deb020;
     }
-    .rng-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #83d6bf; }
-    .st-key-rng_dashboard_hero [data-testid="stImage"] img {
-        display: block; max-height: 355px; object-fit: contain; object-position: center bottom;
+    .st-key-rng_portrait [data-testid="stImage"] { position: relative; z-index: 1; }
+    .st-key-rng_portrait [data-testid="stImage"] img { display: block; max-height: 395px; object-fit: contain; object-position: center bottom; }
+    .rng-section-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 28px 0 16px; }
+    .rng-section-heading { color: #263f37; font-size: 23px; font-weight: 700; letter-spacing: -.7px; }
+    .rng-section-caption { color: #7a857d; font-size: 13px; margin-top: 5px; }
+    .rng-section-index { font-family: Georgia, serif; font-style: italic; color: #8c9786; font-size: 14px; white-space: nowrap; }
+    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] {
+        background: #fffefa; border: 1px solid #e3e5db; border-radius: 18px; padding: 20px 18px 10px;
+        min-height: 200px; box-shadow: 0 5px 20px #253b2404;
+        transition: transform .2s, box-shadow .2s, border-color .2s;
     }
-    .rng-section-heading {
-        color: #19364a; font-size: 21px; font-weight: 700; margin: 24px 0 2px;
-        letter-spacing: -.4px;
+    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover {
+        transform: translateY(-4px); box-shadow: 0 10px 22px #253b2410; border-color: #a9b797;
     }
-    .rng-section-caption { color: #708292; font-size: 14px; margin-bottom: 12px; }
-    .st-key-rng_dashboard_shortcuts .stButton button {
-        background: #fff; color: #244555; border: 1px solid #dde6eb;
-        min-height: 58px; border-radius: 14px; font-weight: 600;
-        box-shadow: 0 3px 12px #16364a05; transition: border-color .2s, background .2s;
-    }
-    .st-key-rng_dashboard_shortcuts .stButton button:hover {
-        border-color: #248a80; background: #f0faf7; color: #146b61;
-    }
-    .st-key-rng_glass_notes {
-        background: #fff; border: 1px solid #e0e7ed; border-radius: 22px;
-        padding: 26px; margin-top: 18px; box-shadow: 0 8px 28px #16364a06;
-    }
+    .rng-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .rng-card-icon { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; }
+    .rng-card-icon svg { width: 22px; height: 22px; }
+    .rng-card-index { color: #8a948a; font-family: Georgia, serif; font-size: 12px; }
+    .rng-card-title { font-size: 16px; font-weight: 700; color: #2b4239; margin-bottom: 5px; }
+    .rng-card-copy { color: #758179; font-size: 12px; line-height: 1.6; }
+    .st-key-rng_dashboard_shortcuts .stButton button { background: transparent; border: 0; color: #3d6551; width: 100%; min-height: 35px; border-radius: 8px; }
+    .st-key-rng_dashboard_shortcuts .stButton button:hover { color: #203f31; background: #edf2e6; }
+    .st-key-rng_dashboard_shortcuts .stButton button p { font-size: 12px; font-weight: 650; }
+    .st-key-rng_glass_notes { background: #fffefa; border: 1px solid #e3e5db; border-radius: 22px; padding: 25px; margin-top: 22px; box-shadow: 0 6px 24px #253b2405; }
     .rng-notes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .rng-notes-heading .section-title { margin: 0; color: #19364a; font-size: 21px; }
-    .rng-note-count { color: #27796e; background: #eaf6f2; border-radius: 100px; padding: 5px 12px; font-size: 12px; }
-    .rng-empty-notes { border: 1px dashed #d9e4e9; border-radius: 14px; padding: 24px; color: #708292; line-height: 1.8; background: #fafcfd; }
-    .st-key-rng_glass_notes .note-box {
-        background: #fffcf0; color: #354453; border: 1px solid #f0e6bd;
-        border-left: 3px solid #dcbf67; border-radius: 12px; padding: 14px 16px;
-        white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px;
+    .rng-notes-heading .section-title { margin: 0; color: #263f37; font-size: 22px; letter-spacing: -.6px; }
+    .rng-note-count { color: #60754c; background: #ecf0e1; border-radius: 100px; padding: 5px 12px; font-size: 11px; }
+    .rng-empty-notes { border: 1px dashed #d7ddcb; border-radius: 14px; padding: 26px; color: #75816c; line-height: 1.9; background: repeating-linear-gradient(#f8f9f2, #f8f9f2 31px, #e8eddf 32px); margin-top: 16px; }
+    .rng-empty-notes strong { display: block; color: #3d5843; font-family: Georgia, serif; font-size: 23px; font-style: italic; font-weight: 400; }
+    .st-key-rng_glass_notes .note-box { background: #fbf6df; color: #48513c; border: 1px solid #eee5be; border-left: 3px solid #c4ad6c; border-radius: 12px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px; }
+    .st-key-rng_glass_notes .stButton button { color: #516543; background: #f3f5ec; border-color: #e1e6d6; }
+    .st-key-rng_glass_notes .stButton button:hover { color: #294733; border-color: #91aa7a; }
+    .st-key-rng_add_note .stButton button { background: #2e513e; color: #fffdf2; border-color: #2e513e; min-height: 46px; }
+    .st-key-rng_add_note .stButton button:hover { background: #203e2e; color: #fffdf2; }
+    .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #354b3a; background: #f6f7ef; }
+    .rng-dashboard-signature { display: flex; justify-content: space-between; gap: 12px; color: #929b8c; font-size: 11px; padding-top: 22px; letter-spacing: .4px; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_dashboard_shortcuts [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
+        .st-key-rng_dashboard_shortcuts [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
+        .st-key-rng_portrait::before { width: 220px; height: 220px; top: 60px; }
     }
-    .st-key-rng_glass_notes .stButton button { color: #385664; background: #f5f8fa; border-color: #e0e7ed; }
-    .st-key-rng_glass_notes .stButton button:hover { color: #146b61; border-color: #248a80; }
-    .st-key-rng_add_note .stButton button { background: #207a70; color: #fff; border-color: #207a70; min-height: 46px; }
-    .st-key-rng_add_note .stButton button:hover { background: #176257; color: #fff; }
-    .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #263e4b; background: #f7fafb; }
     @media (max-width: 700px) {
-        section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container { padding: 1.5rem 1rem 3rem; }
-        .st-key-rng_dashboard_hero { padding: 22px 22px 0; border-radius: 20px; }
-        .st-key-rng_dashboard_hero [data-testid="stImage"] img { max-height: 280px; }
-        .rng-hero-footer { margin: 8px 0 12px; }
+        section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container { padding: 1.2rem 1rem 3rem; }
+        .rng-topline { align-items: flex-start; flex-direction: column; gap: 6px; }
+        .st-key-rng_dashboard_hero { padding: 26px 23px 0; border-radius: 22px; }
+        .st-key-rng_dashboard_hero h1.rng-hero-title { font-size: 43px !important; }
+        .st-key-rng_portrait [data-testid="stImage"] img { max-height: 295px; }
+        .st-key-rng_portrait::before { width: 230px; height: 230px; top: 30px; }
+        .rng-hero-footer { margin: 18px 0 12px; }
         .st-key-rng_glass_notes { padding: 18px; }
+        .rng-section-index { display: none; }
+        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] { min-height: 180px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] { transition: none; }
+        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover { transform: none; }
     }
     </style>
     """, unsafe_allow_html=True)
+    st.markdown(
+        '<div class="rng-topline"><span class="rng-brand">MY DASHBOARD</span>'
+        f'<span class="rng-date">{escape(today_label)}</span></div>', unsafe_allow_html=True
+    )
 
     with st.container(key="rng_dashboard_hero"):
-        intro, portrait = st.columns([1.35, 1], gap="medium", vertical_alignment="center")
+        intro, portrait = st.columns([1.15, 1], gap="medium", vertical_alignment="bottom")
         with intro:
             st.markdown("""
-            <div class="rng-eyebrow">Your personal workspace</div>
-            <h1 class="rng-hero-title">My Dashboard</h1>
-            <div class="rng-hero-copy">A clear space for your plans, projects, and everything you want to move forward.</div>
-            <div class="rng-hero-footer"><span class="rng-status-dot"></span>Make room for your next idea</div>
+            <div class="rng-eyebrow"><span></span>A space that's yours</div>
+            <h1 class="rng-hero-title">Your day,<br><em>by design.</em></h1>
+            <div class="rng-hero-copy">Big plans. Small reminders. Everything that moves you forward, together in one place.</div>
+            <div class="rng-hero-footer"><span>PERSONAL WORKSPACE</span><span>MAKE IT COUNT</span></div>
             """, unsafe_allow_html=True)
         with portrait:
-            if portrait_path.is_file():
-                # Render a real Streamlit image in the layout, independent of sidebar size.
-                st.image(str(portrait_path), width="stretch")
-            else:
-                st.warning("My Pic.png not found beside app.py.")
+            with st.container(key="rng_portrait"):
+                if portrait_path.is_file():
+                    st.image(str(portrait_path), width="stretch")
+                else:
+                    st.warning("My Pic.png not found beside app.py.")
 
-    st.markdown('<div class="rng-section-heading">Your workspace</div><div class="rng-section-caption">Pick up where you left off.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="rng-section-bar"><div><div class="rng-section-heading">A place for everything.</div><div class="rng-section-caption">Less searching. More doing.</div></div><span class="rng-section-index">Your everyday essentials</span></div>', unsafe_allow_html=True)
+    # Original SVG artwork keeps icons crisp without external fonts or requests.
+    shortcut_items = [
+        ("To Do List", "Turn intentions into progress.", "#e9efdd", "#637849", '<path d="m5 6 2 2 4-4M13 6h6M5 13l2 2 4-4M13 13h6M5 20h14"/>'),
+        ("Meeting Minutes", "Good conversations, captured.", "#f5e6db", "#a97855", '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 2v4m8-4v4M8 11h8m-8 4h5"/>'),
+        ("Warehouse", "Keep everything in its place.", "#e2ecea", "#527b78", '<path d="m3 7 9-4 9 4v11l-9 4-9-4Zm0 0 9 4 9-4m-9 4v11M7 5l10 4v5"/>'),
+        ("Rah Nia Development", "Build what comes next.", "#eae5f0", "#86709b", '<path d="M4 20V10m7 10V4m7 16v-7M2 20h20M15 4h6v6m-1-5-6 6"/>'),
+    ]
     with st.container(key="rng_dashboard_shortcuts"):
-        for column, destination in zip(st.columns(3), ["To Do List", "Meeting Minutes", "Rah Nia Development"]):
+        for index, (column, item) in enumerate(zip(st.columns(4, gap="small"), shortcut_items), 1):
+            destination, description, tint, ink, paths = item
             with column:
-                if st.button(destination, key=f"rng_shortcut_{destination}", use_container_width=True):
-                    st.session_state.page = destination
-                    rng_rerun()
+                with st.container(key=f"rng_destination_{index}"):
+                    st.markdown(
+                        f'<div class="rng-card-top"><div class="rng-card-icon" style="background:{tint};color:{ink}">'
+                        f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
+                        f'</div><span class="rng-card-index">0{index}</span></div>'
+                        f'<div class="rng-card-title">{destination}</div><div class="rng-card-copy">{description}</div>',
+                        unsafe_allow_html=True
+                    )
+                    if st.button(f"Open {destination}", key=f"rng_shortcut_{destination}", use_container_width=True):
+                        st.session_state.page = destination
+                        rng_rerun()
 
     # =====================================================
     # GLASSY STICKY NOTES PANEL
@@ -632,12 +687,12 @@ if page == "Dashboard":
         st.markdown(
             '<div class="rng-notes-heading"><div class="section-title">Sticky Notes</div>'
             f'<span class="rng-note-count">{note_count} {"note" if note_count == 1 else "notes"}</span></div>'
-            '<div class="rng-section-caption">Small thoughts. Important reminders.</div>',
+            '<div class="rng-section-caption">The little things worth keeping.</div>',
             unsafe_allow_html=True
         )
         if not note_count:
             st.markdown(
-                '<div class="rng-empty-notes">Your next idea starts here.<br>Add a reminder, a thought, or something to come back to.</div>',
+                '<div class="rng-empty-notes"><strong>Your next idea starts here.</strong>A reminder, a spark, a thought for later. Make yourself a little space.</div>',
                 unsafe_allow_html=True
             )
 
@@ -759,6 +814,11 @@ if page == "Dashboard":
                     )
 
                     rng_rerun()
+
+    st.markdown(
+        '<div class="rng-dashboard-signature"><span>A little clarity goes a long way.</span><span>YOUR SPACE. YOUR PACE.</span></div>',
+        unsafe_allow_html=True
+    )
 
     # =====================================================
     # END DASHBOARD

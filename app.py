@@ -1324,6 +1324,92 @@ elif page == "To Do List":
 
 elif page == "Meeting Minutes":
 
+    from html import escape
+
+    st.markdown('<div id="rng-meeting-marker"></div>', unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    [data-testid="stMain"]:has(#rng-meeting-marker) { background: radial-gradient(ellipse at right top, #dbe7f8, transparent 50%), #f2f5fa; }
+    .stApp:has(#rng-meeting-marker), .stApp:has(#rng-meeting-marker) h1,
+    .stApp:has(#rng-meeting-marker) h2, .stApp:has(#rng-meeting-marker) h3,
+    .stApp:has(#rng-meeting-marker) [data-testid="stMarkdownContainer"],
+    .stApp:has(#rng-meeting-marker) input, .stApp:has(#rng-meeting-marker) textarea,
+    .stApp:has(#rng-meeting-marker) label { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-meeting-marker) .block-container { max-width: 1440px; }
+    .rng-meeting-hero { background: radial-gradient(ellipse at right top, #345d88, transparent 65%), #172f4e; border: 1px solid #315174; border-radius: 24px; padding: 30px 34px; margin: 8px 0 14px; }
+    .rng-meeting-eyebrow { color: #b2cbed; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+    .rng-meeting-hero h1 { color: #f6f9ff !important; font-size: clamp(30px, 3.4vw, 44px) !important; font-weight: 750; letter-spacing: -1.2px; padding: 0; margin: 0 0 12px; overflow-wrap: anywhere; }
+    .rng-meeting-hero p { color: #c5d7ec; font-size: 15px; line-height: 1.8; margin: 0; }
+    .rng-meeting-total { display: inline-block; color: #dce9fb; background: #a9ccff12; border: 1px solid #a9ccff30; border-radius: 100px; padding: 6px 12px; font-size: 11px; margin-top: 18px; }
+    .st-key-rng_meeting_add_action .stButton button, .st-key-rng_meeting_save_action .stButton button { color: #fff; background: #254d7e; border: 1px solid #254d7e; min-height: 46px; border-radius: 11px; }
+    .st-key-rng_meeting_add_action .stButton button:hover, .st-key-rng_meeting_save_action .stButton button:hover { color: #fff; background: #18395f; }
+    .st-key-rng_add_meeting_form { background: #fff; border: 1px solid #d5e1f2; border-radius: 18px; padding: 22px; margin-bottom: 20px; }
+    [class*="st-key-rng_meeting_card_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 18px; padding: 24px; min-height: 270px; box-shadow: 0 8px 25px #15385f07; }
+    .rng-meeting-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 19px; }
+    .rng-meeting-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; color: #567ead; background: #eaf1fc; border-radius: 14px; }
+    .rng-meeting-icon svg { width: 24px; height: 24px; }
+    .rng-meeting-index { color: #8698b0; font-size: 11px; letter-spacing: 1px; }
+    .meeting-card-title { color: #243e60; font-size: 19px; font-weight: 700; line-height: 1.5; margin: 0 0 10px; overflow-wrap: anywhere; }
+    .meeting-card-text { color: #6f839e; font-size: 12px; line-height: 1.8; margin-bottom: 13px; }
+    [class*="st-key-rng_meeting_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1; }
+    .rng-meeting-card-footer { color: #8092aa; font-size: 10px; letter-spacing: .6px; border-top: 1px solid #e8edf5; padding-top: 14px; margin-bottom: 6px; }
+    .st-key-rng_meeting_board .stButton button { color: #48658b; background: #f5f8fd; border: 1px solid #dfe7f3; border-radius: 9px; min-height: 44px; }
+    .st-key-rng_meeting_board .stButton button:hover { background: #eaf1fc; color: #234b7b; border-color: #8faed7; }
+    [class*="st-key-rng_meeting_open_action_"] .stButton button { background: #244d7c; border-color: #244d7c; color: #fff; }
+    [class*="st-key-rng_meeting_open_action_"] .stButton button:hover { background: #17395f; color: #fff; }
+    .delete-warning { color: #8c4050; background: #fff2f4; border: 1px solid #f1d4dc; border-radius: 12px; padding: 15px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+    .rng-meeting-empty { text-align: center; padding: 50px 24px; border: 1px dashed #bdcee5; border-radius: 18px; background: #fff9; color: #70859f; }
+    .rng-meeting-empty strong { display: block; color: #304e75; font-size: 21px; margin-bottom: 10px; }
+    .rng-meeting-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 10px; }
+    .rng-meeting-stat { background: #fff; border: 1px solid #dce5f2; border-radius: 14px; padding: 17px 20px; }
+    .rng-meeting-stat strong { display: block; color: #294a74; font-size: 25px; margin-bottom: 6px; }
+    .rng-meeting-stat span { color: #6a809f; font-size: 12px; }
+    .rng-meeting-section { color: #294569; font-size: 21px; font-weight: 700; margin: 12px 0 8px; }
+    .rng-meeting-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 12px; }
+    .st-key-rng_meeting_agenda [data-testid="stExpander"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
+    .st-key-rng_meeting_agenda [data-testid="stExpander"] summary { color: #2e4e78; min-height: 60px; }
+    .st-key-rng_meeting_agenda [data-testid="stExpander"] summary p { font-weight: 600; overflow-wrap: anywhere; }
+    .st-key-rng_meeting_agenda [data-testid="stExpander"] summary:hover { background: #f2f6fd; }
+    .st-key-rng_meeting_agenda input, .st-key-rng_meeting_agenda textarea { direction: rtl; text-align: start; background: #f9fbff; color: #2f486b; min-height: 44px; }
+    .st-key-rng_meeting_agenda label p { color: #5b7394; font-size: 12px; }
+    .st-key-rng_meeting_exports { background: #e8eff9; border: 1px solid #d9e4f3; padding: 22px; border-radius: 18px; margin-top: 20px; }
+    .st-key-rng_meeting_exports .stDownloadButton button { background: #fff; color: #345781; border: 1px solid #c5d6ed; min-height: 46px; border-radius: 10px; }
+    .stApp:has(#rng-meeting-marker) button:focus-visible { outline: 3px solid #9ab9e8; outline-offset: 2px; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_meeting_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_meeting_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_meeting_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_meeting_card_"]) > [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
+    }
+    @media (max-width: 700px) {
+        .rng-meeting-hero { padding: 26px 22px; border-radius: 20px; }
+        .rng-meeting-stats { gap: 8px; }
+        .rng-meeting-stat { padding: 15px 10px; }
+        .rng-meeting-stat span { font-size: 11px; }
+        .st-key-rng_meeting_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_meeting_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_meeting_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_meeting_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+        [class*="st-key-rng_meeting_card_"] { padding: 20px; }
+        .st-key-rng_meeting_exports { padding: 18px; }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    def meeting_record_counts(name):
+        records = st.session_state.get("meeting_data_" + name, [])
+        populated = [row for row in records if any(str(row[col]).strip() for col in (0, 1, 2, 4))]
+        return len(populated), sum(row[5] == "Done" for row in populated)
+
+    def meeting_card_heading(name, index):
+        count, done = meeting_record_counts(name)
+        description = f"{count} agenda items · {done} completed" if count else "Ready for your next conversation."
+        st.markdown(
+            '<div class="rng-meeting-card-top"><div class="rng-meeting-icon">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5v1"/></svg>'
+            f'</div><span class="rng-meeting-index">MEETING {index + 1:02}</span></div>'
+            f'<div class="meeting-card-title">{escape(str(name))}</div>'
+            f'<div class="meeting-card-text">{description}</div>'
+            '<div class="rng-meeting-card-footer">AGENDA / DECISIONS / FOLLOW-UP</div>',
+            unsafe_allow_html=True
+        )
+
     if "meeting_cards" not in st.session_state:
         st.session_state.meeting_cards = []
 
@@ -1355,12 +1441,9 @@ elif page == "Meeting Minutes":
             rng_rerun()
 
         st.markdown(
-            f'<div class="dashboard-title">{meeting_name}</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="dashboard-subtitle">Meeting records</div>',
+            '<div class="rng-meeting-hero"><div class="rng-meeting-eyebrow">MEETING WORKSPACE</div>'
+            f'<h1>{escape(str(meeting_name))}</h1>'
+            '<p>Keep the discussion, the decision, and the next step together.</p></div>',
             unsafe_allow_html=True
         )
 
@@ -1385,318 +1468,51 @@ elif page == "Meeting Minutes":
                     ["", "", "", "", "", ""]
                 )
 
-        # =====================================================
-        # TABLE CSS
-        # =====================================================
-
-        st.markdown("""
-        <style>
-
-        .meeting-table-container {
-            width: 100%;
-            max-width: 1123px;
-            margin: 20px auto 0 auto;
-            direction: rtl;
-        }
-
-        .meeting-grid-header {
-            background-color: #172333;
-            color: white;
-            border: 1px solid #cfd6df;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: center;
-            direction: rtl;
-            box-sizing: border-box;
-            margin: 0 !important;
-            padding: 4px;
-            overflow-wrap: anywhere;
-        }
-
-        div[data-testid="stTextInput"],
-        div[data-testid="stSelectbox"] {
-            margin: 0 !important;
-            padding: 0 !important;
-            min-width: 0 !important;
-        }
-
-        div[data-testid="stTextInput"] > div,
-        div[data-testid="stSelectbox"] > div {
-            margin: 0 !important;
-            padding: 0 !important;
-            min-width: 0 !important;
-        }
-
-        div[data-testid="stTextInput"] input {
-            border-radius: 0 !important;
-            border: 1px solid #cfd6df !important;
-            min-height: 42px !important;
-            height: 42px !important;
-            font-size: 13px !important;
-            text-align: right !important;
-            direction: rtl !important;
-            box-sizing: border-box !important;
-            margin: 0 !important;
-        }
-
-        div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-            border-radius: 0 !important;
-            border: 1px solid #cfd6df !important;
-            min-height: 42px !important;
-            height: 42px !important;
-            font-size: 12px !important;
-            box-sizing: border-box !important;
-            margin: 0 !important;
-            padding-left: 2px !important;
-            padding-right: 2px !important;
-        }
-
-        div[data-testid="stSelectbox"] [data-baseweb="select"] * {
-            font-size: 12px !important;
-        }
-
-        div[data-testid="stTextInput"] input:focus {
-            border: 2px solid #6b7c93 !important;
-            outline: none !important;
-        }
-
-        div[data-testid="column"] {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            min-width: 0 !important;
-        }
-
-        div[data-testid="stHorizontalBlock"] {
-            gap: 0 !important;
-        }
-
-        .meeting-table-a4 {
-            width: 100%;
-            max-width: 1123px;
-            margin: 20px auto 0 auto;
-            direction: rtl;
-        }
-
-        /* A4 LANDSCAPE TABLE */
-
-        .st-key-meeting_a4_table {
-            width: 297mm !important;
-            min-width: 297mm !important;
-            max-width: none !important;
-            height: 210mm !important;
-            margin: 20px auto 0 auto;
-        }
-
-        .st-key-meeting_a4_table [data-testid="stVerticalBlock"],
-        .st-key-meeting_a4_table [data-testid="stHorizontalBlock"] {
-            gap: 0 !important;
-        }
-
-        .st-key-meeting_a4_table [data-testid="stHorizontalBlock"] {
-            height: 17.5mm !important;
-            min-height: 17.5mm !important;
-        }
-
-        .st-key-meeting_a4_table .meeting-grid-header {
-            height: 17.5mm !important;
-            min-height: 17.5mm !important;
-        }
-
-        .st-key-meeting_a4_table div[data-testid="stTextInput"] input,
-        .st-key-meeting_a4_table div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-            height: 17.5mm !important;
-            min-height: 17.5mm !important;
-        }
-
-        @media (max-width: 768px) {
-
-            .meeting-table-container {
-                width: 100%;
-                overflow-x: auto;
-            }
-
-            .meeting-grid-header {
-                font-size: 11px;
-                min-height: 42px;
-            }
-
-            div[data-testid="stTextInput"] input {
-                font-size: 12px !important;
-                min-height: 40px !important;
-                height: 40px !important;
-            }
-
-            div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-                min-height: 40px !important;
-                height: 40px !important;
-            }
-        }
-
-        @page {
-            size: A4 landscape;
-            margin: 0;
-        }
-
-        @media print {
-            .st-key-meeting_a4_table {
-                margin: 0 !important;
-            }
-        }
-
-        </style>
-        """, unsafe_allow_html=True)
-
-        # =====================================================
-        # TABLE HEADERS
-        # =====================================================
-
-        headers = [
-            "Agenda",
-            "Title",
-            "Person in charge",
-            "Status",
-            "Minute",
-            "Status"
-        ]
-
-        # Keep the baseline column proportions.
-
-        widths = [
-            1.0,
-            2.4,
-            1.0,
-            1.0,
-            1.0,
-            2.4
-        ]
-
-        # =====================================================
-        # A4 TABLE CONTAINER
-        # =====================================================
-
-        with st.container(key="meeting_a4_table"):
-
-            # -------------------------------------------------
-            # HEADER ROW
-            # -------------------------------------------------
-
-            header_columns = st.columns(widths, gap=None)
-
-            for col, header in zip(
-                header_columns,
-                reversed(headers)
-            ):
-
-                with col:
-                    st.markdown(
-                        f'<div class="meeting-grid-header">{header}</div>',
-                        unsafe_allow_html=True
-                    )
-
-            # -------------------------------------------------
-            # 11 EDITABLE DATA ROWS
-            # -------------------------------------------------
-
+        stats_slot = st.empty()
+        st.markdown(
+            '<div class="rng-meeting-section">Agenda &amp; action items</div>'
+            '<div class="rng-meeting-help">Open an item to edit its discussion and follow-up. Save your changes below. All 11 items are included in the A4 PDF.</div>',
+            unsafe_allow_html=True
+        )
+        with st.container(key="rng_meeting_agenda"):
             for row in range(11):
+                values = list(st.session_state[meeting_key][row])
+                label_title = st.session_state.get(f"{meeting_key}_cell_{row}_1", values[1])
+                item_label = f"{row + 1:02} · {label_title or values[0] or 'Agenda item'}"
+                has_content = any(str(values[col]).strip() for col in (0, 1, 2, 4))
+                with st.expander(item_label, expanded=row == 0 or has_content):
+                    agenda_col, title_col = st.columns([1, 2])
+                    with agenda_col:
+                        values[0] = st.text_input("Agenda", value=values[0], key=f"{meeting_key}_cell_{row}_0")
+                    with title_col:
+                        values[1] = st.text_input("Title", value=values[1], key=f"{meeting_key}_cell_{row}_1")
+                    owner_col, discussion_col, action_col = st.columns([2, 1, 1])
+                    with owner_col:
+                        values[2] = st.text_input("Person in charge", value=values[2], key=f"{meeting_key}_cell_{row}_2")
+                    with discussion_col:
+                        options = ["Raised", "not Raised"]
+                        values[3] = st.selectbox("Discussion status", options, index=options.index(values[3]) if values[3] in options else 0, key=f"{meeting_key}_select_{row}_3")
+                    with action_col:
+                        options = ["Done", "not Started", "In Progress", "Stopped"]
+                        values[5] = st.selectbox("Action status", options, index=options.index(values[5]) if values[5] in options else 0, key=f"{meeting_key}_select_{row}_5")
+                    values[4] = st.text_area("Minute / decision", value=values[4], key=f"{meeting_key}_cell_{row}_4", height=110)
+                st.session_state[meeting_key][row] = values
 
-                row_columns = st.columns(widths, gap=None)
-
-                column_order = [5, 4, 3, 2, 1, 0]
-
-                for col, data_col in zip(
-                    row_columns,
-                    column_order
-                ):
-
-                    with col:
-
-                        current_value = st.session_state[
-                            meeting_key
-                        ][row][data_col]
-
-                        # -------------------------------------
-                        # FIRST STATUS DROPDOWN
-                        # -------------------------------------
-
-                        if data_col == 3:
-
-                            options = [
-                                "Raised",
-                                "not Raised"
-                            ]
-
-                            if current_value not in options:
-                                selected_index = 0
-                            else:
-                                selected_index = options.index(
-                                    current_value
-                                )
-
-                            new_value = st.selectbox(
-                                "First Status",
-                                options=options,
-                                index=selected_index,
-                                key=(
-                                    f"{meeting_key}_select_"
-                                    f"{row}_{data_col}"
-                                ),
-                                label_visibility="collapsed"
-                            )
-
-                        # -------------------------------------
-                        # SECOND STATUS DROPDOWN
-                        # -------------------------------------
-
-                        elif data_col == 5:
-
-                            options = [
-                                "Done",
-                                "not Started",
-                                "In Progress",
-                                "Stopped"
-                            ]
-
-                            if current_value not in options:
-                                selected_index = 0
-                            else:
-                                selected_index = options.index(
-                                    current_value
-                                )
-
-                            new_value = st.selectbox(
-                                "Last Status",
-                                options=options,
-                                index=selected_index,
-                                key=(
-                                    f"{meeting_key}_select_"
-                                    f"{row}_{data_col}"
-                                ),
-                                label_visibility="collapsed"
-                            )
-
-                        # -------------------------------------
-                        # EDITABLE TEXT CELLS
-                        # -------------------------------------
-
-                        else:
-
-                            new_value = st.text_input(
-                                "",
-                                value=current_value,
-                                key=(
-                                    f"{meeting_key}_cell_"
-                                    f"{row}_{data_col}"
-                                ),
-                                label_visibility="collapsed"
-                            )
-
-                        st.session_state[
-                            meeting_key
-                        ][row][data_col] = new_value
+        record_total, record_done = meeting_record_counts(meeting_name)
+        stats_slot.markdown(
+            '<div class="rng-meeting-stats">'
+            f'<div class="rng-meeting-stat"><strong>{record_total}</strong><span>Agenda items</span></div>'
+            f'<div class="rng-meeting-stat"><strong>{record_done}</strong><span>Completed</span></div>'
+            f'<div class="rng-meeting-stat"><strong>{record_total - record_done}</strong><span>Remaining</span></div></div>',
+            unsafe_allow_html=True
+        )
+        with st.container(key="rng_meeting_save_action"):
+            if st.button("Save meeting", key="save_meeting_records", use_container_width=True):
+                try:
+                    rng_save()
+                    st.success("Meeting records saved.")
+                except Exception as exc:
+                    st.error("Could not save your meeting. Please retry. " + str(exc))
 
         # =====================================================
         # PDF GENERATION
@@ -2118,39 +1934,40 @@ elif page == "Meeting Minutes":
         # PDF DOWNLOAD BUTTON
         # =====================================================
 
-        st.markdown("---")
+        with st.container(key="rng_meeting_exports"):
+            st.markdown('<div class="rng-meeting-section">Take it with you</div><div class="rng-meeting-help">Download or share your meeting as a single A4 landscape PDF.</div>', unsafe_allow_html=True)
 
-        try:
+            try:
 
-            pdf_bytes = create_meeting_pdf(
-                st.session_state[meeting_key]
-            )
-
-            safe_meeting_name = re.sub(
-                r'[^\w.-]+',
-                "_",
-                meeting_name
-            )
-
-            meeting_pdf_filename = f"Meeting_Minutes_{safe_meeting_name}.pdf"
-            download_col, share_col = st.columns(2)
-            with download_col:
-                st.download_button(
-                    label="Download Meeting Table (A4 PDF)",
-                    data=pdf_bytes,
-                    file_name=meeting_pdf_filename,
-                    mime="application/pdf",
-                    key="download_meeting_pdf",
-                    use_container_width=True
+                pdf_bytes = create_meeting_pdf(
+                    st.session_state[meeting_key]
                 )
-            with share_col:
-                rng_pdf_share_button(pdf_bytes, meeting_pdf_filename)
 
-        except Exception as error:
+                safe_meeting_name = re.sub(
+                    r'[^\w.-]+',
+                    "_",
+                    meeting_name
+                )
 
-            st.error(
-                f"Unable to generate the meeting PDF: {error}"
-            )
+                meeting_pdf_filename = f"Meeting_Minutes_{safe_meeting_name}.pdf"
+                download_col, share_col = st.columns(2)
+                with download_col:
+                    st.download_button(
+                        label="Download Meeting Table (A4 PDF)",
+                        data=pdf_bytes,
+                        file_name=meeting_pdf_filename,
+                        mime="application/pdf",
+                        key="download_meeting_pdf",
+                        use_container_width=True
+                    )
+                with share_col:
+                    rng_pdf_share_button(pdf_bytes, meeting_pdf_filename)
+
+            except Exception as error:
+
+                st.error(
+                    f"Unable to generate the meeting PDF: {error}"
+                )
 
     # =========================================================
     # MEETING MINUTES MAIN PAGE
@@ -2158,138 +1975,73 @@ elif page == "Meeting Minutes":
 
     else:
 
+        meeting_total = len(st.session_state.meeting_cards)
         st.markdown(
-            '<div class="dashboard-title">Meeting Minutes</div>',
+            '<div class="rng-meeting-hero"><div class="rng-meeting-eyebrow">DISCUSS. DECIDE. MOVE FORWARD.</div>'
+            '<h1>Meeting Minutes</h1><p>Good conversations deserve a clear record.</p>'
+            f'<span class="rng-meeting-total">{meeting_total} {"meeting" if meeting_total == 1 else "meetings"} in your library</span></div>',
             unsafe_allow_html=True
         )
-
-        st.markdown(
-            '<div class="dashboard-subtitle">'
-            'Manage and review your meeting records'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        # =====================================================
-        # MEETING CARD CSS
-        # =====================================================
-
-        st.markdown("""
-        <style>
-
-        .meeting-card {
-            background: white;
-            border: 1px solid #e3e7ed;
-            border-radius: 14px;
-            padding: 24px;
-            min-height: 120px;
-            box-shadow: 0 2px 8px rgba(20, 30, 45, 0.05);
-            margin-bottom: 10px;
-        }
-
-        .meeting-card-title {
-            font-size: 18px;
-            font-weight: 650;
-            color: #172333;
-        }
-
-        .meeting-card-text {
-            font-size: 13px;
-            color: #7b8794;
-            margin-top: 6px;
-        }
-
-        .delete-warning {
-            background: #fff4f4;
-            border: 1px solid #f0caca;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 8px;
-            color: #7a1f1f;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .delete-warning * {
-            color: #7a1f1f !important;
-        }
-
-        div[data-testid="stButton"] button {
-            font-size: 13px;
-            padding: 4px 8px;
-            min-height: 36px;
-        }
-
-        @media (max-width: 768px) {
-
-            .meeting-card {
-                min-height: 100px;
-                padding: 18px;
-            }
-
-        }
-
-        </style>
-        """, unsafe_allow_html=True)
 
         # =====================================================
         # ADD MEETING
         # =====================================================
 
         if st.session_state.adding_meeting:
+            with st.container(key="rng_add_meeting_form"):
 
-            st.markdown(
-                '<div class="section-title">Add New Meeting</div>',
-                unsafe_allow_html=True
-            )
+                st.markdown(
+                    '<div class="section-title">Add New Meeting</div>',
+                    unsafe_allow_html=True
+                )
 
-            new_meeting_title = st.text_input(
-                "Meeting title",
-                placeholder="Enter meeting title",
-                key="new_meeting_title"
-            )
+                new_meeting_title = st.text_input(
+                    "Meeting title",
+                    placeholder="Enter meeting title",
+                    key="new_meeting_title"
+                )
 
-            add_col1, add_col2 = st.columns(2)
+                add_col1, add_col2 = st.columns(2)
 
-            with add_col1:
+                with add_col1:
 
-                if st.button(
-                    "Add Meeting",
-                    key="add_meeting_confirm",
-                    use_container_width=True
-                ):
+                    if st.button(
+                        "Add Meeting",
+                        key="add_meeting_confirm",
+                        use_container_width=True
+                    ):
 
-                    if new_meeting_title.strip():
+                        if new_meeting_title.strip():
 
-                        st.session_state.meeting_cards.append(
-                            new_meeting_title.strip()
-                        )
+                            if new_meeting_title.strip() in st.session_state.meeting_cards:
+                                st.error("A meeting with this title already exists.")
+                            else:
+                                st.session_state.meeting_cards.append(new_meeting_title.strip())
+                                st.session_state.adding_meeting = False
+                                rng_rerun()
+
+                with add_col2:
+
+                    if st.button(
+                        "Cancel",
+                        key="add_meeting_cancel",
+                        use_container_width=True
+                    ):
 
                         st.session_state.adding_meeting = False
                         rng_rerun()
 
-            with add_col2:
+        else:
+            with st.container(key="rng_meeting_add_action"):
 
                 if st.button(
-                    "Cancel",
-                    key="add_meeting_cancel",
-                    use_container_width=True
+                    "+ Add Meeting",
+                    key="add_meeting_button",
+                    use_container_width=False
                 ):
 
-                    st.session_state.adding_meeting = False
+                    st.session_state.adding_meeting = True
                     rng_rerun()
-
-        else:
-
-            if st.button(
-                "+ Add Meeting",
-                key="add_meeting_button",
-                use_container_width=False
-            ):
-
-                st.session_state.adding_meeting = True
-                rng_rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -2297,174 +2049,154 @@ elif page == "Meeting Minutes":
         # MEETING CARDS
         # =====================================================
 
-        cols = st.columns(3)
+        if not st.session_state.meeting_cards:
+            st.markdown('<div class="rng-meeting-empty"><strong>Your next conversation starts here.</strong>Add a meeting to capture its agenda, decisions, and next steps.</div>', unsafe_allow_html=True)
+        with st.container(key="rng_meeting_board"):
+            cols = st.columns(3)
 
-        for i, meeting in enumerate(
-            st.session_state.meeting_cards
-        ):
+            for i, meeting in enumerate(
+                st.session_state.meeting_cards
+            ):
 
-            with cols[i % 3]:
+                with cols[i % 3], st.container(key=f"rng_meeting_card_{i}"):
 
-                # -------------------------------------------------
-                # DELETE CONFIRMATION
-                # -------------------------------------------------
+                    meeting_card_heading(meeting, i)
 
-                if st.session_state.deleting_meeting == i:
+                    # -------------------------------------------------
+                    # DELETE CONFIRMATION
+                    # -------------------------------------------------
 
-                    st.markdown(
-                        f"""
-                        <div class="meeting-card">
-                            <div class="meeting-card-title">
-                                {meeting}
-                            </div>
-                            <div class="meeting-card-text">
-                                Meeting records
-                            </div>
-                        </div>
+                    if st.session_state.deleting_meeting == i:
 
-                        <div class="delete-warning">
-                            Are you sure you want to delete "{meeting}"?
-                            This cannot be undone.
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                        st.markdown(
+                            f'<div class="delete-warning">Delete "{escape(str(meeting))}"? This cannot be undone.</div>',
+                            unsafe_allow_html=True
+                        )
 
-                    confirm_col, cancel_col = st.columns(2)
+                        confirm_col, cancel_col = st.columns(2)
 
-                    with confirm_col:
+                        with confirm_col:
 
-                        if st.button(
-                            "Confirm Delete",
-                            key=f"confirm_delete_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Confirm Delete",
+                                key=f"confirm_delete_{i}",
+                                use_container_width=True
+                            ):
 
-                            st.session_state.meeting_cards.pop(i)
+                                st.session_state.meeting_cards.pop(i)
 
-                            st.session_state.deleting_meeting = None
+                                st.session_state.deleting_meeting = None
 
-                            rng_rerun()
+                                rng_rerun()
 
-                    with cancel_col:
+                        with cancel_col:
 
-                        if st.button(
-                            "Cancel",
-                            key=f"cancel_delete_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Cancel",
+                                key=f"cancel_delete_{i}",
+                                use_container_width=True
+                            ):
 
-                            st.session_state.deleting_meeting = None
+                                st.session_state.deleting_meeting = None
 
-                            rng_rerun()
+                                rng_rerun()
 
-                # -------------------------------------------------
-                # EDIT MODE
-                # -------------------------------------------------
+                    # -------------------------------------------------
+                    # EDIT MODE
+                    # -------------------------------------------------
 
-                elif st.session_state.editing_meeting == i:
+                    elif st.session_state.editing_meeting == i:
 
-                    new_title = st.text_input(
-                        "Meeting title",
-                        value=meeting,
-                        key=f"meeting_edit_input_{i}"
-                    )
+                        new_title = st.text_input(
+                            "Meeting title",
+                            value=meeting,
+                            key=f"meeting_edit_input_{i}"
+                        )
 
-                    edit_col1, edit_col2 = st.columns(2)
+                        edit_col1, edit_col2 = st.columns(2)
 
-                    with edit_col1:
+                        with edit_col1:
 
-                        if st.button(
-                            "Save",
-                            key=f"meeting_save_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Save",
+                                key=f"meeting_save_{i}",
+                                use_container_width=True
+                            ):
 
-                            if new_title.strip():
+                                if new_title.strip():
 
-                                st.session_state.meeting_cards[i] = (
-                                    new_title.strip()
-                                )
+                                    renamed = new_title.strip()
+                                    if renamed != meeting and renamed in st.session_state.meeting_cards:
+                                        st.error("A meeting with this title already exists.")
+                                    else:
+                                        old_key = "meeting_data_" + meeting
+                                        if renamed != meeting and old_key in st.session_state:
+                                            st.session_state["meeting_data_" + renamed] = copy.deepcopy(st.session_state[old_key])
+                                        st.session_state.meeting_cards[i] = renamed
+                                        st.session_state.editing_meeting = None
+                                        rng_rerun()
+
+                        with edit_col2:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"meeting_cancel_{i}",
+                                use_container_width=True
+                            ):
 
                                 st.session_state.editing_meeting = None
 
                                 rng_rerun()
 
-                    with edit_col2:
+                    # -------------------------------------------------
+                    # NORMAL MODE
+                    # -------------------------------------------------
 
-                        if st.button(
-                            "Cancel",
-                            key=f"meeting_cancel_{i}",
-                            use_container_width=True
-                        ):
+                    else:
 
-                            st.session_state.editing_meeting = None
+                        button_col1, button_col2, button_col3 = st.columns(3)
+
+                        with button_col1, st.container(key=f"rng_meeting_open_action_{i}"):
+
+                            open_button = st.button(
+                                "Open",
+                                key=f"meeting_open_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col2:
+
+                            edit_button = st.button(
+                                "Edit",
+                                key=f"meeting_edit_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col3:
+
+                            delete_button = st.button(
+                                "Delete",
+                                key=f"meeting_delete_{i}",
+                                use_container_width=True
+                            )
+
+                        if open_button:
+
+                            st.session_state.selected_meeting = meeting
 
                             rng_rerun()
 
-                # -------------------------------------------------
-                # NORMAL MODE
-                # -------------------------------------------------
+                        if edit_button:
 
-                else:
+                            st.session_state.editing_meeting = i
 
-                    st.markdown(
-                        f"""
-                        <div class="meeting-card">
-                            <div class="meeting-card-title">
-                                {meeting}
-                            </div>
-                            <div class="meeting-card-text">
-                                Meeting records
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                            rng_rerun()
 
-                    button_col1, button_col2, button_col3 = st.columns(3)
+                        if delete_button:
 
-                    with button_col1:
+                            st.session_state.deleting_meeting = i
 
-                        open_button = st.button(
-                            "Open",
-                            key=f"meeting_open_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col2:
-
-                        edit_button = st.button(
-                            "Edit",
-                            key=f"meeting_edit_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col3:
-
-                        delete_button = st.button(
-                            "Delete",
-                            key=f"meeting_delete_{i}",
-                            use_container_width=True
-                        )
-
-                    if open_button:
-
-                        st.session_state.selected_meeting = meeting
-
-                        rng_rerun()
-
-                    if edit_button:
-
-                        st.session_state.editing_meeting = i
-
-                        rng_rerun()
-
-                    if delete_button:
-
-                        st.session_state.deleting_meeting = i
-
-                        rng_rerun()
+                            rng_rerun()
 
 
 

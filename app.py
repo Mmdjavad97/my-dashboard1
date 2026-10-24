@@ -2117,13 +2117,12 @@ elif page == "Meeting Minutes":
         if not st.session_state.meeting_cards:
             st.markdown('<div class="rng-meeting-empty"><strong>Your next conversation starts here.</strong>Add a meeting to capture its agenda, decisions, and next steps.</div>', unsafe_allow_html=True)
         with st.container(key="rng_meeting_board"):
-            cols = st.columns(3)
-
-            for i, meeting in enumerate(
-                st.session_state.meeting_cards
-            ):
-
-                with cols[i % 3], st.container(key=f"rng_meeting_card_{i}"):
+            # Lists are appended on creation; retain original indices for all actions.
+            for position, i in enumerate(reversed(range(len(st.session_state.meeting_cards)))):
+                meeting = st.session_state.meeting_cards[i]
+                if position % 3 == 0:
+                    cols = st.columns(3)
+                with cols[position % 3], st.container(key=f"rng_meeting_card_{i}"):
 
                     meeting_card_heading(meeting, i)
 
@@ -3363,13 +3362,12 @@ elif page == "Warehouse":
         if not st.session_state.warehouse_cards:
             st.markdown('<div class="rng-warehouse-empty"><strong>Everything starts with a clear request.</strong>Add a warehouse to organize purchase requests and their approvals.</div>', unsafe_allow_html=True)
         with st.container(key="rng_warehouse_board"):
-            cols = st.columns(3)
-
-            for i, warehouse in enumerate(
-                st.session_state.warehouse_cards
-            ):
-
-                with cols[i % 3], st.container(key=f"rng_warehouse_card_{i}"):
+            # Lists are appended on creation; retain original indices for all actions.
+            for position, i in enumerate(reversed(range(len(st.session_state.warehouse_cards)))):
+                warehouse = st.session_state.warehouse_cards[i]
+                if position % 3 == 0:
+                    cols = st.columns(3)
+                with cols[position % 3], st.container(key=f"rng_warehouse_card_{i}"):
 
                     warehouse_card_heading(warehouse, i)
 
@@ -4725,13 +4723,12 @@ elif page == "Mission Report":
         if not st.session_state.mission_report_cards:
             st.markdown('<div class="rng-mission-empty"><strong>A new assignment. A clear record.</strong>Add a mission report to document the journey and its outcome.</div>', unsafe_allow_html=True)
         with st.container(key="rng_mission_board"):
-            cols = st.columns(3)
-
-            for i, mission in enumerate(
-                st.session_state.mission_report_cards
-            ):
-
-                with cols[i % 3], st.container(key=f"rng_mission_card_{i}"):
+            # Lists are appended on creation; retain original indices for all actions.
+            for position, i in enumerate(reversed(range(len(st.session_state.mission_report_cards)))):
+                mission = st.session_state.mission_report_cards[i]
+                if position % 3 == 0:
+                    cols = st.columns(3)
+                with cols[position % 3], st.container(key=f"rng_mission_card_{i}"):
 
                     mission_card_heading(mission, i)
 
@@ -6562,13 +6559,12 @@ elif page == "BOM":
         if not st.session_state.bom_cards:
             st.markdown('<div class="rng-bom-empty"><strong>A clear list makes a strong start.</strong>Add a Bill of Materials to organize your next build.</div>', unsafe_allow_html=True)
         with st.container(key="rng_bom_board"):
-            cols = st.columns(3)
-
-            for i, bom in enumerate(
-                st.session_state.bom_cards
-            ):
-
-                with cols[i % 3], st.container(key=f"rng_bom_card_{i}"):
+            # Lists are appended on creation; retain original indices for all actions.
+            for position, i in enumerate(reversed(range(len(st.session_state.bom_cards)))):
+                bom = st.session_state.bom_cards[i]
+                if position % 3 == 0:
+                    cols = st.columns(3)
+                with cols[position % 3], st.container(key=f"rng_bom_card_{i}"):
 
                     bom_card_heading(bom, i)
 
@@ -6746,19 +6742,6 @@ elif page == "RNG Projects":
             raise ValueError("Amounts must be finite, non-negative numbers.")
         return amount.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
-    def financial_totals(project):
-        income = sum((financial_amount(row["amount"]) for row in project["transactions"] if row["type"] == "Income"), Decimal(0))
-        expense = sum((financial_amount(row["amount"]) for row in project["transactions"] if row["type"] == "Expense"), Decimal(0))
-        return income, expense
-
-    def financial_stats(project):
-        income, expense = financial_totals(project)
-        stats = [("Budget", financial_amount(project["budget"])), ("Income", income), ("Expenses", expense),
-                 ("Cash balance", income - expense), ("Budget remaining", financial_amount(project["budget"]) - expense)]
-        st.markdown('<div class="rng-financial-stats">' + ''.join(
-            f'<div><span>{label}</span><strong>{value:,.0f}</strong><small>IRR · Rial</small></div>' for label, value in stats
-        ) + '</div>', unsafe_allow_html=True)
-
     st.markdown('<div id="rng-financial-marker"></div>', unsafe_allow_html=True)
     st.markdown("""<style>
     [data-testid="stMain"]:has(#rng-financial-marker) { background: radial-gradient(ellipse at right top, #dce8fa, transparent 50%), #f2f5fa; }
@@ -6891,49 +6874,8 @@ elif page == "RNG Projects":
                     project["currency"] = "IRR"
                     rng_rerun()
         elif section == "Financial":
-            if st.session_state.pop("financial_saved", False):
-                st.success("Project financial records saved.")
-            financial_stats(project)
-            with st.form(key=f"financial_detail_{selected}"):
-                st.subheader("Project budget")
-                budget = st.number_input("Budget (IRR · Rial)", min_value=0, value=int(financial_amount(project["budget"])), step=1, format="%d", key=f"financial_budget_{selected}")
-                st.caption("All amounts are in Iranian Rial (IRR), with no decimal places.")
-                st.subheader("Income & expenses")
-                st.caption("Add a row for each transaction. Choose Income or Expense and enter a positive amount. Select rows to remove them. Save changes to update totals.")
-                frame = pd.DataFrame(project["transactions"], columns=["date", "type", "category", "amount", "description"])
-                frame["amount"] = pd.Series([int(financial_amount(value)) for value in frame["amount"]], dtype="int64")
-                ledger = st.data_editor(frame, key=f"financial_ledger_{selected}", num_rows="dynamic", hide_index=True, width="stretch", height=420,
-                    column_config={
-                        "date": st.column_config.TextColumn("Date", width=120, default=datetime.now(ZoneInfo("Asia/Tehran")).strftime("%Y-%m-%d"), help="Enter your preferred calendar date, e.g. YYYY-MM-DD."),
-                        "type": st.column_config.SelectboxColumn("Type", options=["Income", "Expense"], default="Expense", required=True, width=110),
-                        "category": st.column_config.TextColumn("Category", width=160, help="For example: materials, wages, invoice payment."),
-                        "amount": st.column_config.NumberColumn("Amount (IRR)", min_value=0, step=1, format="localized", width=160, required=True),
-                        "description": st.column_config.TextColumn("Description / reference", width=350),
-                    })
-                notes = st.text_area("Financial notes", value=project["notes"], key=f"financial_notes_{selected}")
-                submitted = st.form_submit_button("Save financial records", type="primary", use_container_width=True)
-            if submitted:
-                try:
-                    clean_rows = []
-                    for row_number, row in enumerate(ledger.to_dict("records"), start=1):
-                        def cell(name):
-                            value = row.get(name)
-                            return "" if value is None or pd.isna(value) else str(value).strip()
-                        # Ignore unused new rows, but do not discard partially entered transactions.
-                        if not any(cell(name) for name in ["amount", "category", "description"]):
-                            continue
-                        if not cell("amount") or financial_amount(cell("amount")) <= 0:
-                            raise ValueError(f"Row {row_number}: enter an amount greater than zero.")
-                        if not cell("date") or cell("type") not in ["Income", "Expense"]:
-                            raise ValueError(f"Row {row_number}: enter a date and choose Income or Expense.")
-                        clean_rows.append({"date": cell("date"), "type": cell("type"), "category": cell("category"),
-                                           "amount": str(financial_amount(cell("amount"))), "description": cell("description")})
-                    projects[selected] = {**project, "currency": "IRR",
-                                          "budget": str(financial_amount(budget)), "notes": notes.strip(), "transactions": clean_rows}
-                    st.session_state.financial_saved = True
-                    rng_rerun()
-                except (ValueError, InvalidOperation) as exc:
-                    st.error(str(exc) or "Please check the transaction amounts.")
+            from project_financial import render_financial
+            render_financial(projects, selected, rng_save, rng_pdf_runs)
 
         elif section == "Meeting Minutes":
             project_records(selected, project, "meetings", "Meeting minutes", ["date", "title", "minutes", "actions", "owner"], {

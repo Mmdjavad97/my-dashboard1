@@ -4827,6 +4827,7 @@ elif page == "Mission Report":
 
 elif page == "Rah Nia Development":
     from datetime import datetime
+    from html import escape
 
     # =========================================================
     # TASK DATA
@@ -4848,220 +4849,174 @@ elif page == "Rah Nia Development":
     # CSS
     # =========================================================
 
+    st.markdown('<div id="rng-development-marker"></div>', unsafe_allow_html=True)
     st.markdown("""
     <style>
-
-    .todo-card {
-        background-color: #ffffff;
-        border: 1px solid #d7dde5;
-        border-radius: 14px;
-        margin-bottom: 18px;
-        padding: 0;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(20, 30, 45, 0.06);
+    [data-testid="stMain"]:has(#rng-development-marker) { background: radial-gradient(ellipse at 100% 0%, #dbe8fb, transparent 50%), #f2f5fa; }
+    .stApp:has(#rng-development-marker), .stApp:has(#rng-development-marker) h1,
+    .stApp:has(#rng-development-marker) h2, .stApp:has(#rng-development-marker) h3,
+    .stApp:has(#rng-development-marker) [data-testid="stMarkdownContainer"],
+    .stApp:has(#rng-development-marker) input, .stApp:has(#rng-development-marker) textarea,
+    .stApp:has(#rng-development-marker) label { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-development-marker) .block-container { max-width: 1440px; padding-top: 2.5rem; }
+    .rng-development-heading { background: radial-gradient(ellipse at right top, #305b89, transparent 65%), #142c4b; border: 1px solid #29496e; border-radius: 24px; padding: 32px 34px; margin: 4px 0 8px; position: relative; overflow: hidden; }
+    .rng-development-eyebrow { color: #acc8ec; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+    .rng-development-heading h1 { color: #f5f9ff !important; font-size: clamp(32px, 3.5vw, 44px) !important; font-weight: 750; letter-spacing: -1.3px; margin: 0 0 12px; padding: 0; }
+    .rng-development-heading p { color: #c5d7ed; font-size: 15px; margin: 0; line-height: 1.7; }
+    .rng-development-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 8px 0 4px; }
+    .rng-development-stat { background: #ffffff; border: 1px solid #dce5f1; border-radius: 16px; padding: 19px 22px; }
+    .rng-development-stat strong { display: block; color: #203d64; font-size: 27px; line-height: 1.2; font-weight: 700; margin-bottom: 6px; }
+    .rng-development-stat span { color: #607897; font-size: 12px; }
+    .rng-development-stat:last-child { background: #eaf1fc; border-color: #d4e1f4; }
+    .st-key-rng_development_create_action { margin: 8px 0 12px; }
+    .st-key-rng_development_create_action .stButton button { background: #214b7f; color: white; border: 1px solid #214b7f; min-height: 48px; border-radius: 12px; }
+    .st-key-rng_development_create_action .stButton button:hover { color: #fff; background: #173b68; }
+    .rng-development-section { display: flex; align-items: center; justify-content: space-between; color: #253f62; font-size: 19px; font-weight: 700; margin: 12px 0 4px; }
+    .rng-development-section span { font-size: 12px; font-weight: 400; color: #69809d; }
+    .st-key-rng_development_create_form { background: #fff; border: 1px solid #d5e2f3; border-radius: 18px; padding: 24px; margin-bottom: 16px; box-shadow: 0 8px 30px #173b6810; }
+    .st-key-rng_development_create_form h3 { font-size: 21px; color: #203d64; }
+    [class*="st-key-rng_development_card_"] { background: #fff; border: 1px solid #dde5f0; border-top: 3px solid #7195c6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 20px #16335406; min-height: 340px; }
+    [class*="st-key-rng_development_card_"]:has(.rng-task-done) { background: #f5f8ff; border-top-color: #a1b6d8; }
+    .rng-task-status { display: inline-block; color: #3f6190; background: #edf3fc; border: 1px solid #dce7f7; border-radius: 100px; padding: 5px 10px; font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; margin-bottom: 12px; }
+    .rng-task-done { background: #e4edf9; color: #4d6484; }
+    .todo-title { color: #243b5b !important; font-size: 19px; font-weight: 700; line-height: 1.5; margin: 0 0 12px; overflow-wrap: anywhere; }
+    .todo-section-title { color: #7a8da8; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 14px 0 4px; }
+    .todo-divider { height: 1px; background: #e8edf5; margin: 8px 0; }
+    .todo-date, .todo-completed { color: #7588a3; font-size: 11px; line-height: 1.7; }
+    .todo-completed { color: #496d9c; }
+    .rng-subtask-progress { height: 4px; background: #edf2f9; border-radius: 10px; overflow: hidden; margin: 9px 0 6px; }
+    .rng-subtask-progress span { display: block; height: 100%; background: #769bcf; border-radius: inherit; }
+    .rng-subtask-count { color: #768ba6; font-size: 11px; }
+    .st-key-rng_development_board [data-testid="stCheckbox"] { padding: 0; margin: 2px 0; }
+    .st-key-rng_development_board [data-testid="stCheckbox"] label { min-height: 36px; }
+    .st-key-rng_development_board [data-testid="stCheckbox"] label:has(input:checked) > div:not([data-testid]) { background-color: #527db4; border-color: #527db4; }
+    .st-key-rng_development_board [data-testid="stCheckbox"] label p { color: #435a76; font-size: 13px; overflow-wrap: anywhere; }
+    .st-key-rng_development_board .stButton button, .st-key-rng_development_create_form .stButton button { color: #355780; background: #f3f6fc; border: 1px solid #dde6f4; border-radius: 9px; min-height: 44px; }
+    .st-key-rng_development_board .stButton button:hover, .st-key-rng_development_create_form .stButton button:hover { border-color: #8aabd8; color: #224773; background: #eaf1fc; }
+    .stApp:has(#rng-development-marker) button:focus-visible { outline: 3px solid #8aaff0; outline-offset: 2px; }
+    .rng-development-empty { text-align: center; background: #ffffffb8; border: 1px dashed #c3d2e7; border-radius: 20px; padding: 52px 20px; margin-top: 10px; }
+    .rng-development-empty svg { width: 48px; height: 48px; color: #87a5cd; margin-bottom: 18px; }
+    .rng-development-empty strong { display: block; color: #304d73; font-size: 21px; margin-bottom: 10px; }
+    .rng-development-empty p { color: #7185a0; font-size: 14px; line-height: 1.8; margin: 0; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_development_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_development_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_development_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_development_card_"]) > [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
     }
-
-    .todo-card-done {
-        background-color: #edf8ef;
-        border: 1px solid #a8d5b0;
-        border-radius: 14px;
-        margin-bottom: 18px;
-        padding: 0;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(20, 30, 45, 0.05);
+    @media (max-width: 700px) {
+        .rng-development-heading { padding: 26px 22px; border-radius: 20px; }
+        .rng-development-summary { gap: 8px; }
+        .rng-development-stat { padding: 15px 10px; }
+        .rng-development-stat strong { font-size: 24px; }
+        .rng-development-stat span { font-size: 11px; }
+        .rng-development-section span { display: none; }
+        .st-key-rng_development_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_development_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_development_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_development_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+        [class*="st-key-rng_development_card_"] { padding: 20px; }
+        .st-key-rng_development_create_form { padding: 18px; }
     }
-
-    .todo-title {
-        color: #172333 !important;
-        font-size: 18px !important;
-        font-weight: 700 !important;
-        padding: 16px;
-        margin: 0;
-    }
-
-    .todo-section-title {
-        color: #172333 !important;
-        font-size: 13px !important;
-        font-weight: 700 !important;
-        padding: 12px 16px 5px 16px;
-        margin: 0;
-    }
-
-    .todo-date {
-        color: #596579 !important;
-        font-size: 12px !important;
-        padding: 5px 16px;
-        margin: 0;
-    }
-
-    .todo-completed {
-        color: #218739 !important;
-        font-size: 12px !important;
-        font-weight: 600 !important;
-        padding: 5px 16px 14px 16px;
-        margin: 0;
-    }
-
-    .todo-divider {
-        height: 1px;
-        background-color: #dfe4ea;
-        margin: 0;
-        padding: 0;
-    }
-
-    div[data-testid="stCheckbox"] label p {
-        color: #263241 !important;
-        font-size: 14px !important;
-    }
-
-    div[data-testid="stCheckbox"] label {
-        color: #263241 !important;
-    }
-
-    div[data-testid="stCheckbox"] {
-        padding-left: 16px;
-        padding-right: 16px;
-        margin-top: 2px;
-        margin-bottom: 2px;
-    }
-
-    @media (max-width: 768px) {
-
-        .todo-title {
-            font-size: 17px !important;
-            padding: 14px;
-        }
-
-        .todo-section-title {
-            padding-left: 14px;
-        }
-
-        .todo-date,
-        .todo-completed {
-            padding-left: 14px;
-            padding-right: 14px;
-        }
-
-        div[data-testid="stCheckbox"] {
-            padding-left: 14px;
-            padding-right: 14px;
-        }
-    }
-
     </style>
     """, unsafe_allow_html=True)
 
-    # =========================================================
-    # PAGE TITLE
-    # =========================================================
-
+    task_total = len(st.session_state.development_tasks)
+    done_total = sum(bool(task["done"]) for task in st.session_state.development_tasks)
     st.markdown(
-        '<div class="dashboard-title">Rah Nia Development</div>',
+        '<div class="rng-development-heading"><div class="rng-development-eyebrow">BUILDING WHAT COMES NEXT</div>'
+        '<h1>Rah Nia Development</h1><p>Move Rah Nia forward. One task at a time.</p></div>'
+        '<div class="rng-development-summary">'
+        f'<div class="rng-development-stat"><strong>{task_total}</strong><span>Total tasks</span></div>'
+        f'<div class="rng-development-stat"><strong>{task_total - done_total}</strong><span>In progress</span></div>'
+        f'<div class="rng-development-stat"><strong>{done_total}</strong><span>Completed</span></div></div>',
         unsafe_allow_html=True
     )
-
-    st.markdown(
-        '<div class="dashboard-subtitle">'
-        'Manage Rah Nia development tasks and track progress.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    # =========================================================
-    # CREATE TASK BUTTON
-    # =========================================================
-
-    if st.button(
-        "Create Task",
-        key="development_create_task_button",
-        use_container_width=True
-    ):
-        st.session_state.development_creating_task = True
-        st.session_state.development_new_subtask_count = 1
-        rng_rerun()
+    with st.container(key="rng_development_create_action"):
+        if st.button("Create Task", key="development_create_task_button", use_container_width=True):
+            st.session_state.development_creating_task = True
+            st.session_state.development_new_subtask_count = 1
+            rng_rerun()
 
     # =========================================================
     # CREATE TASK FORM
     # =========================================================
 
     if st.session_state.development_creating_task:
+        with st.container(key="rng_development_create_form"):
 
-        st.markdown("### Create New Task")
+            st.markdown("### Create New Task")
 
-        new_title = st.text_input(
-            "Task Title",
-            placeholder="Enter task title...",
-            key="development_new_task_title"
-        )
-
-        st.markdown("Sub Tasks")
-
-        subtask_values = []
-
-        for i in range(st.session_state.development_new_subtask_count):
-
-            value = st.text_input(
-                f"Sub Task {i + 1}",
-                placeholder="Enter sub task...",
-                key=f"development_create_subtask_{i}"
+            new_title = st.text_input(
+                "Task Title",
+                placeholder="Enter task title...",
+                key="development_new_task_title"
             )
 
-            subtask_values.append(value)
+            st.markdown("Sub Tasks")
 
-        add_col, create_col, cancel_col = st.columns(3)
+            subtask_values = []
 
-        with add_col:
-            if st.button(
-                "Add Sub Task",
-                key="development_add_subtask_button",
-                use_container_width=True
-            ):
-                st.session_state.development_new_subtask_count += 1
-                rng_rerun()
+            for i in range(st.session_state.development_new_subtask_count):
 
-        with create_col:
-            if st.button(
-                "Save Task",
-                key="development_save_new_task",
-                use_container_width=True
-            ):
+                value = st.text_input(
+                    f"Sub Task {i + 1}",
+                    placeholder="Enter sub task...",
+                    key=f"development_create_subtask_{i}"
+                )
 
-                if new_title.strip():
+                subtask_values.append(value)
 
-                    subtasks = []
+            add_col, create_col, cancel_col = st.columns(3)
 
-                    for value in subtask_values:
-
-                        if value.strip():
-                            subtasks.append({
-                                "text": value.strip(),
-                                "done": False
-                            })
-
-                    st.session_state.development_tasks.append({
-                        "title": new_title.strip(),
-                        "subtasks": subtasks,
-                        "created": datetime.now().strftime("%Y-%m-%d"),
-                        "completed": None,
-                        "done": False,
-                    })
-
-                    st.session_state.development_creating_task = False
-                    st.session_state.development_new_subtask_count = 1
-
+            with add_col:
+                if st.button(
+                    "Add Sub Task",
+                    key="development_add_subtask_button",
+                    use_container_width=True
+                ):
+                    st.session_state.development_new_subtask_count += 1
                     rng_rerun()
 
-        with cancel_col:
-            if st.button(
-                "Cancel",
-                key="development_cancel_new_task",
-                use_container_width=True
-            ):
-                st.session_state.development_creating_task = False
-                st.session_state.development_new_subtask_count = 1
-                rng_rerun()
+            with create_col:
+                if st.button(
+                    "Save Task",
+                    key="development_save_new_task",
+                    use_container_width=True
+                ):
 
-        st.divider()
+                    if new_title.strip():
+
+                        subtasks = []
+
+                        for value in subtask_values:
+
+                            if value.strip():
+                                subtasks.append({
+                                    "text": value.strip(),
+                                    "done": False
+                                })
+
+                        st.session_state.development_tasks.append({
+                            "title": new_title.strip(),
+                            "subtasks": subtasks,
+                            "created": datetime.now().strftime("%Y-%m-%d"),
+                            "completed": None,
+                            "done": False,
+                        })
+
+                        st.session_state.development_creating_task = False
+                        st.session_state.development_new_subtask_count = 1
+
+                        rng_rerun()
+
+            with cancel_col:
+                if st.button(
+                    "Cancel",
+                    key="development_cancel_new_task",
+                    use_container_width=True
+                ):
+                    st.session_state.development_creating_task = False
+                    st.session_state.development_new_subtask_count = 1
+                    rng_rerun()
+
+            st.divider()
 
     # =========================================================
     # SORT TASKS
@@ -5079,288 +5034,264 @@ elif page == "Rah Nia Development":
 
     sorted_tasks = unfinished + completed
 
+    def development_persist_change():
+        try:
+            rng_save()
+        except Exception as exc:
+            st.error("The change could not be saved. Please retry. Details: " + str(exc))
+            st.stop()
+
+    def development_toggle_main(task_index):
+        task = st.session_state.development_tasks[task_index]
+        task["done"] = bool(st.session_state[f"development_main_checkbox_{task_index}"])
+        task["completed"] = datetime.now().strftime("%Y-%m-%d") if task["done"] else None
+        development_persist_change()
+
+    def development_toggle_subtask(task_index, sub_index):
+        task = st.session_state.development_tasks[task_index]
+        task["subtasks"][sub_index]["done"] = bool(st.session_state[f"development_sub_checkbox_{task_index}_{sub_index}"])
+        task["done"] = bool(task["subtasks"]) and all(item["done"] for item in task["subtasks"])
+        task["completed"] = datetime.now().strftime("%Y-%m-%d") if task["done"] else None
+        # Callbacks run before rendering, so the main checkbox shares the new state.
+        st.session_state[f"development_main_checkbox_{task_index}"] = task["done"]
+        development_persist_change()
+
     # =========================================================
     # TASK CARDS
     # =========================================================
 
-    for row_start in range(0, len(sorted_tasks), 3):
+    st.markdown(
+        '<div class="rng-development-section">Your tasks<span>Unfinished first · Progress always visible</span></div>',
+        unsafe_allow_html=True
+    )
+    if not sorted_tasks:
+        st.markdown(
+            '<div class="rng-development-empty"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="10" y="9" width="28" height="33" rx="5"/><rect x="18" y="5" width="12" height="8" rx="3" fill="#f2f5fa"/><path d="m17 26 5 5 10-12"/></svg>'
+            '<strong>A clear list. A fresh start.</strong><p>Create your first task and break it into small, achievable steps.</p></div>',
+            unsafe_allow_html=True
+        )
 
-        row_tasks = sorted_tasks[row_start:row_start + 3]
+    with st.container(key="rng_development_board"):
+        for row_start in range(0, len(sorted_tasks), 3):
 
-        columns = st.columns(3)
+            row_tasks = sorted_tasks[row_start:row_start + 3]
 
-        for column_number, task in enumerate(row_tasks):
+            columns = st.columns(3)
 
-            with columns[column_number]:
+            for column_number, task in enumerate(row_tasks):
 
                 task_index = st.session_state.development_tasks.index(task)
+                with columns[column_number], st.container(key=f"rng_development_card_{task_index}"):
 
-                # =================================================
-                # EDIT MODE
-                # =================================================
+                    # =================================================
+                    # EDIT MODE
+                    # =================================================
 
-                if st.session_state.development_editing_task == task_index:
+                    if st.session_state.development_editing_task == task_index:
 
+                        st.markdown(
+                            '<div class="todo-title">Edit Task</div>',
+                            unsafe_allow_html=True
+                        )
+
+                        st.markdown(
+                            '<div class="todo-divider"></div>',
+                            unsafe_allow_html=True
+                        )
+
+                        edited_title = st.text_input(
+                            "Task Title",
+                            value=task["title"],
+                            key=f"development_edit_title_{task_index}"
+                        )
+
+                        st.markdown("Sub Tasks")
+
+                        edited_subtasks = []
+
+                        for sub_index, subtask in enumerate(task["subtasks"]):
+
+                            edited_text = st.text_input(
+                                f"Sub Task {sub_index + 1}",
+                                value=subtask["text"],
+                                key=f"development_edit_subtask_{task_index}_{sub_index}"
+                            )
+
+                            edited_subtasks.append({
+                                "text": edited_text,
+                                "done": subtask["done"]
+                            })
+
+                        new_edit_subtask = st.text_input(
+                            "Add another sub task",
+                            placeholder="Optional",
+                            key=f"development_edit_new_subtask_{task_index}"
+                        )
+
+                        save_col, cancel_col = st.columns(2)
+
+                        with save_col:
+
+                            if st.button(
+                                "Save Changes",
+                                key=f"development_save_edit_{task_index}",
+                                use_container_width=True
+                            ):
+
+                                if edited_title.strip():
+                                    task["title"] = edited_title.strip()
+
+                                task["subtasks"] = [
+                                    subtask
+                                    for subtask in edited_subtasks
+                                    if subtask["text"].strip()
+                                ]
+
+                                if new_edit_subtask.strip():
+                                    task["subtasks"].append({
+                                        "text": new_edit_subtask.strip(),
+                                        "done": False
+                                    })
+
+                                if (
+                                    len(task["subtasks"]) > 0
+                                    and all(
+                                        subtask["done"]
+                                        for subtask in task["subtasks"]
+                                    )
+                                ):
+
+                                    task["done"] = True
+
+                                    if not task["completed"]:
+                                        task["completed"] = (
+                                            datetime.now().strftime("%Y-%m-%d")
+                                        )
+
+                                else:
+
+                                    task["done"] = False
+                                    task["completed"] = None
+
+                                st.session_state.development_editing_task = None
+                                rng_rerun()
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"development_cancel_edit_{task_index}",
+                                use_container_width=True
+                            ):
+                                st.session_state.development_editing_task = None
+                                rng_rerun()
+
+                        continue
+
+                    # =================================================
+                    # CARD TITLE
+                    # =================================================
+
+                    finished_steps = sum(bool(item["done"]) for item in task["subtasks"])
+                    step_total = len(task["subtasks"])
+                    status = "Completed" if task["done"] else ("In progress" if finished_steps else "To do")
+                    done_class = " rng-task-done" if task["done"] else ""
                     st.markdown(
-                        '<div class="todo-card">',
+                        f'<div class="rng-task-status{done_class}">{status}</div>'
+                        f'<div class="todo-title">{escape(str(task["title"]))}</div>',
                         unsafe_allow_html=True
                     )
+                    if step_total:
+                        st.markdown(
+                            f'<div class="rng-subtask-progress"><span style="width:{100 * finished_steps / step_total:.1f}%"></span></div>'
+                            f'<div class="rng-subtask-count">{finished_steps} of {step_total} subtasks complete</div>',
+                            unsafe_allow_html=True
+                        )
 
-                    st.markdown(
-                        '<div class="todo-title">Edit Task</div>',
-                        unsafe_allow_html=True
+                    # =================================================
+                    # MAIN TASK CHECKBOX
+                    # =================================================
+
+                    st.session_state[f"development_main_checkbox_{task_index}"] = task["done"]
+                    st.checkbox(
+                        "Task completed", key=f"development_main_checkbox_{task_index}",
+                        on_change=development_toggle_main, args=(task_index,)
                     )
+
+                    # =================================================
+                    # SUBTASKS
+                    # =================================================
 
                     st.markdown(
                         '<div class="todo-divider"></div>',
                         unsafe_allow_html=True
                     )
 
-                    edited_title = st.text_input(
-                        "Task Title",
-                        value=task["title"],
-                        key=f"development_edit_title_{task_index}"
+                    st.markdown(
+                        '<div class="todo-section-title">Sub Tasks</div>',
+                        unsafe_allow_html=True
                     )
-
-                    st.markdown("Sub Tasks")
-
-                    edited_subtasks = []
 
                     for sub_index, subtask in enumerate(task["subtasks"]):
 
-                        edited_text = st.text_input(
-                            f"Sub Task {sub_index + 1}",
-                            value=subtask["text"],
-                            key=f"development_edit_subtask_{task_index}_{sub_index}"
+                        st.session_state[f"development_sub_checkbox_{task_index}_{sub_index}"] = subtask["done"]
+                        st.checkbox(
+                            subtask["text"], key=f"development_sub_checkbox_{task_index}_{sub_index}",
+                            on_change=development_toggle_subtask, args=(task_index, sub_index)
                         )
 
-                        edited_subtasks.append({
-                            "text": edited_text,
-                            "done": subtask["done"]
-                        })
-
-                    new_edit_subtask = st.text_input(
-                        "Add another sub task",
-                        placeholder="Optional",
-                        key=f"development_edit_new_subtask_{task_index}"
-                    )
-
-                    save_col, cancel_col = st.columns(2)
-
-                    with save_col:
-
-                        if st.button(
-                            "Save Changes",
-                            key=f"development_save_edit_{task_index}",
-                            use_container_width=True
-                        ):
-
-                            if edited_title.strip():
-                                task["title"] = edited_title.strip()
-
-                            task["subtasks"] = [
-                                subtask
-                                for subtask in edited_subtasks
-                                if subtask["text"].strip()
-                            ]
-
-                            if new_edit_subtask.strip():
-                                task["subtasks"].append({
-                                    "text": new_edit_subtask.strip(),
-                                    "done": False
-                                })
-
-                            if (
-                                len(task["subtasks"]) > 0
-                                and all(
-                                    subtask["done"]
-                                    for subtask in task["subtasks"]
-                                )
-                            ):
-
-                                task["done"] = True
-
-                                if not task["completed"]:
-                                    task["completed"] = (
-                                        datetime.now().strftime("%Y-%m-%d")
-                                    )
-
-                            else:
-
-                                task["done"] = False
-                                task["completed"] = None
-
-                            st.session_state.development_editing_task = None
-                            rng_rerun()
-
-                    with cancel_col:
-
-                        if st.button(
-                            "Cancel",
-                            key=f"development_cancel_edit_{task_index}",
-                            use_container_width=True
-                        ):
-                            st.session_state.development_editing_task = None
-                            rng_rerun()
+                    # =================================================
+                    # DATES
+                    # =================================================
 
                     st.markdown(
-                        "</div>",
+                        '<div class="todo-divider"></div>',
                         unsafe_allow_html=True
                     )
-
-                    continue
-
-                # =================================================
-                # CARD TITLE
-                # =================================================
-
-                if task["done"]:
-                    card_class = "todo-card-done"
-                else:
-                    card_class = "todo-card"
-
-                st.markdown(
-                    f"""
-                    <div class="{card_class}">
-                        <div class="todo-title">
-                            {task["title"]}
-                        </div>
-                        <div class="todo-divider"></div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-                # =================================================
-                # MAIN TASK CHECKBOX
-                # =================================================
-
-                main_done = st.checkbox(
-                    "Task completed",
-                    value=task["done"],
-                    key=f"development_main_checkbox_{task_index}"
-                )
-
-                if main_done != task["done"]:
-
-                    task["done"] = main_done
-
-                    if main_done:
-                        task["completed"] = datetime.now().strftime(
-                            "%Y-%m-%d"
-                        )
-                    else:
-                        task["completed"] = None
-
-                    rng_rerun()
-
-                # =================================================
-                # SUBTASKS
-                # =================================================
-
-                st.markdown(
-                    '<div class="todo-divider"></div>',
-                    unsafe_allow_html=True
-                )
-
-                st.markdown(
-                    '<div class="todo-section-title">Sub Tasks</div>',
-                    unsafe_allow_html=True
-                )
-
-                for sub_index, subtask in enumerate(task["subtasks"]):
-
-                    sub_done = st.checkbox(
-                        subtask["text"],
-                        value=subtask["done"],
-                        key=f"development_sub_checkbox_{task_index}_{sub_index}"
-                    )
-
-                    if sub_done != subtask["done"]:
-
-                        subtask["done"] = sub_done
-
-                        if (
-                            len(task["subtasks"]) > 0
-                            and all(
-                                item["done"]
-                                for item in task["subtasks"]
-                            )
-                        ):
-
-                            task["done"] = True
-                            task["completed"] = (
-                                datetime.now().strftime("%Y-%m-%d")
-                            )
-
-                        else:
-
-                            task["done"] = False
-                            task["completed"] = None
-
-                        rng_rerun()
-
-                # =================================================
-                # DATES
-                # =================================================
-
-                st.markdown(
-                    '<div class="todo-divider"></div>',
-                    unsafe_allow_html=True
-                )
-
-                st.markdown(
-                    f"""
-                    <div class="todo-date">
-                        Created: {task["created"]}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-                if task["completed"]:
 
                     st.markdown(
                         f"""
-                        <div class="todo-completed">
-                            Completed: {task["completed"]}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-                else:
-
-                    st.markdown(
-                        """
                         <div class="todo-date">
-                            Completed: -
+                            Created: {task["created"]}
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
-                # =================================================
-                # CLOSE CARD
-                # =================================================
+                    if task["completed"]:
 
-                st.markdown(
-                    "</div>",
-                    unsafe_allow_html=True
-                )
+                        st.markdown(
+                            f"""
+                            <div class="todo-completed">
+                                Completed: {task["completed"]}
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
-                # =================================================
-                # EDIT BUTTON
-                # =================================================
+                    else:
 
-                if st.button(
-                    "Edit",
-                    key=f"development_edit_button_{task_index}",
-                    use_container_width=True
-                ):
+                        st.markdown(
+                            """
+                            <div class="todo-date">
+                                Completed: -
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
-                    st.session_state.development_editing_task = task_index
-                    rng_rerun()
+                    # =================================================
+                    # EDIT BUTTON
+                    # =================================================
 
+                    if st.button(
+                        "Edit",
+                        key=f"development_edit_button_{task_index}",
+                        use_container_width=True
+                    ):
+
+                        st.session_state.development_editing_task = task_index
+                        rng_rerun()
 
 
 

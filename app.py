@@ -5547,6 +5547,18 @@ elif page == "BOM":
         except (ValueError, TypeError):
             return "Invalid"
 
+    def update_bom_table(bom_id, table_index, editor_key):
+        target = st.session_state.bom_forms[bom_id]
+        tables = [target["items"]] + target["extra_tables"]
+        allowed_fields = {"description", "size", "actual", "over", "unit", "notes"}
+        changes = st.session_state.get(editor_key, {}).get("edited_rows", {})
+        for row, values in changes.items():
+            row_index = int(row)
+            if 0 <= row_index < len(tables[table_index]):
+                for field, value in values.items():
+                    if field in allowed_fields:
+                        tables[table_index][row_index][field] = "" if value is None else str(value)
+
     # =========================================================
     # BOM CSS
     # =========================================================
@@ -5591,11 +5603,7 @@ elif page == "BOM":
     .rng-bom-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
     .bom-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
     .st-key-rng_bom_meta, .st-key-rng_bom_approval { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
-    [class*="st-key-rng_bom_item_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; padding: 18px; margin-bottom: 10px; }
-    .rng-bom-item-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-    .rng-bom-quantity { color: #355b8a; background: #eaf1fc; border: 1px solid #d5e3f6; border-radius: 100px; padding: 5px 10px; font-size: 11px; }
-    .rng-bom-quantity-invalid { color: #9d4052; background: #fff0f3; border-color: #f1d4dd; }
-    .rng-bom-item-label { color: #6c87aa; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+    .st-key-bom_detail [data-testid="stDataFrame"] { border: 1px solid #d5e1f1; border-radius: 12px; overflow: hidden; background: #fff; max-width: 100%; }
     .st-key-bom_detail input, .st-key-bom_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
     .st-key-bom_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
     .st-key-bom_detail label p { color: #587193; font-size: 12px; }
@@ -5608,8 +5616,6 @@ elif page == "BOM":
     }
     @media (max-width: 700px) {
         .rng-bom-hero { padding: 26px 22px; border-radius: 20px; }
-        [class*="st-key-rng_bom_item_"] [data-testid="stHorizontalBlock"] { flex-direction: column-reverse; flex-wrap: nowrap; }
-        [class*="st-key-rng_bom_item_"] [data-testid="stColumn"] { width: 100% !important; min-width: 100%; flex: auto; }
         .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) { flex-wrap: wrap; }
         .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
         [class*="st-key-rng_bom_card_"] { padding: 20px; }
@@ -6212,29 +6218,33 @@ elif page == "BOM":
                 for table_index, table_items in enumerate(all_tables):
                     st.markdown(
                         f'<div class="rng-bom-table-title">Materials · Table {table_index + 1:02}</div>'
-                        '<div class="rng-bom-help">All rows are visible. Quantity is calculated from Actual + Over.</div>',
+                        '<div class="rng-bom-help">Edit cells directly. Quantity updates from Actual + Over. Scroll sideways on smaller screens.</div>',
                         unsafe_allow_html=True
                     )
                     with st.container(key=f"bom_form_table_{table_index}"):
-                        for row_index in range(15):
-                            item = table_items[row_index]
-                            with st.container(key=f"rng_bom_item_{table_index}_{row_index}"):
-                                heading_slot = st.empty()
-                                visual_fields = ["notes", "unit", "over", "actual", "size", "description"]
-                                for column, field in zip(st.columns([3, 1, 1, 1, 1, 3]), visual_fields):
-                                    with column:
-                                        widget_key = f"bom_{bom_id}_table_{table_index}_row_{row_index}_{field}"
-                                        if field in ("description", "notes"):
-                                            item[field] = st.text_area(field_labels[field], value=item[field], key=widget_key, height=90)
-                                        else:
-                                            item[field] = st.text_input(field_labels[field], value=item[field], key=widget_key)
-                                quantity = calculate_bom_quantity(item)
-                                invalid_class = " rng-bom-quantity-invalid" if quantity == "Invalid" else ""
-                                heading_slot.markdown(
-                                    f'<div class="rng-bom-item-heading"><span class="rng-bom-item-label">ITEM {row_index + 1:02}</span>'
-                                    f'<span class="rng-bom-quantity{invalid_class}">Quantity: {escape(str(quantity)) or "—"}</span></div>',
-                                    unsafe_allow_html=True
-                                )
+                        records = [
+                            {"row": row_index + 1, **item, "quantity": calculate_bom_quantity(item)}
+                            for row_index, item in enumerate(table_items[:15])
+                        ]
+                        table_frame = pd.DataFrame(records)
+                        editor_key = f"bom_{bom_id}_editor_{table_index}"
+                        column_config = {
+                            "row": st.column_config.NumberColumn(field_labels["row"], width=60, disabled=True, format="%d"),
+                            "description": st.column_config.TextColumn(field_labels["description"], width=300),
+                            "size": st.column_config.TextColumn(field_labels["size"], width=90),
+                            "actual": st.column_config.TextColumn(field_labels["actual"], width=100, help="Persian and Arabic digits are supported."),
+                            "over": st.column_config.TextColumn(field_labels["over"], width=90),
+                            "quantity": st.column_config.TextColumn(field_labels["quantity"], width=100, disabled=True, help="Actual + Over, calculated automatically."),
+                            "unit": st.column_config.TextColumn(field_labels["unit"], width=80),
+                            "notes": st.column_config.TextColumn(field_labels["notes"], width=240),
+                        }
+                        st.data_editor(
+                            table_frame, key=editor_key, hide_index=True,
+                            column_order=["row", "description", "size", "actual", "over", "quantity", "unit", "notes"],
+                            column_config=column_config, num_rows="fixed", width="stretch",
+                            height=600, row_height=36,
+                            on_change=update_bom_table, args=(bom_id, table_index, editor_key)
+                        )
 
                 # =================================================
                 # ADD ANOTHER TABLE BUTTON

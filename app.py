@@ -583,26 +583,23 @@ if page == "Dashboard":
     .rng-intro-date { display: inline-flex; align-items: center; gap: 8px; color: #d4e2f4; background: #a5c7f20c; border: 1px solid #bdd6fa26; border-radius: 100px; padding: 8px 12px; font-size: 11px; margin-top: 18px; letter-spacing: .4px; }
     .rng-date-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
     .rng-solar-date { color: #d2e1f4; font-size: 13px; font-family: Tahoma, Arial, sans-serif; font-style: normal; padding: 0 12px; }
-    .st-key-rng_main_navigation { margin-top: 24px; padding: 23px; border: 1px solid #bcd4f22b; border-radius: 20px; background: #0d2036aa; box-shadow: 0 12px 35px #030e2318; }
-    .rng-navigation-title { color: #edf4ff; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-    .rng-navigation-caption { color: #aec6e2; font-size: 13px; margin-bottom: 17px; }
-    .st-key-rng_main_navigation .stButton button { color: #e6f0ff; background: #a8cfff0c; border: 1px solid #aac8ef30; min-height: 185px; border-radius: 18px; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 24px 16px; transition: background .2s, border-color .2s; }
-    .st-key-rng_main_navigation .stButton button:hover { color: #fff; background: #3c638d; border-color: #8eb4e4; }
+    .st-key-rng_main_navigation { width: 100% !important; max-width: 840px; margin: 32px auto 0; padding: 0; }
+    .rng-navigation-title { color: #d8e5f6; font-size: 16px; font-weight: 600; text-align: center; margin-bottom: 12px; }
+    .st-key-rng_main_navigation .stButton button { color: #e6f0ff; background: #a8cfff07; border: 1px solid #aac8ef24; min-height: 132px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 18px 12px; transition: background .2s, border-color .2s; }
+    .st-key-rng_main_navigation .stButton button:hover { color: #fff; background: #a8cfff14; border-color: #8eb4e477; }
     .st-key-rng_main_navigation .stButton button:focus-visible { outline: 3px solid #a6c8ff; outline-offset: 2px; }
-    .st-key-rng_main_navigation .stButton button:disabled { color: #cdddf3; opacity: 1; background: #284867; border-color: #537297; }
+    .st-key-rng_main_navigation .stButton button:disabled { color: #cdddf3; opacity: 1; background: #a8cfff12; border-color: #aac8ef42; }
     .st-key-rng_main_navigation .stButton button::before {
-        content: ""; display: block; flex-shrink: 0; width: 62px; height: 62px;
-        background-image: var(--rng-navigation-icon); background-color: #9bc3ff12;
-        background-position: center; background-repeat: no-repeat; background-size: 30px;
-        border: 1px solid #a9ceff26; border-radius: 18px;
+        content: ""; display: block; flex-shrink: 0; width: 32px; height: 32px;
+        background-image: var(--rng-navigation-icon); background-color: transparent;
+        background-position: center; background-repeat: no-repeat; background-size: 28px;
+        border: 0; border-radius: 0;
     }
-    .st-key-rng_main_navigation .stButton button p { font-size: 16px; font-weight: 600; }
-    .st-key-rng_main_navigation .stButton button:hover { box-shadow: 0 10px 24px #0002; }
-    .st-key-rng_navigation_card_8 button::before { background-color: #e0aeb911; border-color: #e0aeb926; }
+    .st-key-rng_main_navigation .stButton button p { font-size: 14px; font-weight: 500; }
     @media (max-width: 700px) {
         .st-key-rng_main_navigation [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
         .st-key-rng_main_navigation [data-testid="stColumn"] { min-width: 100%; }
-        .st-key-rng_main_navigation .stButton button { min-height: 158px; gap: 14px; }
+        .st-key-rng_main_navigation .stButton button { min-height: 120px; gap: 10px; }
     }
     .st-key-rng_navigation_card_0 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%223%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2214%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3C%2Fsvg%3E"); }
     .st-key-rng_navigation_card_1 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m3%206%202%202%204-4m3%202h9M3%2013l2%202%204-4m3%202h9M3%2020h18%22%2F%3E%3C%2Fsvg%3E"); }
@@ -658,7 +655,7 @@ if page == "Dashboard":
         .rng-notes-title { gap: 8px; }
         .rng-notes-heading .section-title { font-size: 20px; }
         .st-key-rng_glass_notes { padding: 18px; }
-        .st-key-rng_main_navigation { padding: 18px; }
+        .st-key-rng_main_navigation { max-width: 320px; padding: 0; }
         .rng-dashboard-signature { flex-wrap: wrap; }
     }
     @media (prefers-reduced-transparency: reduce) {
@@ -821,8 +818,7 @@ if page == "Dashboard":
 
     with st.container(key="rng_main_navigation"):
         st.markdown(
-            '<div class="rng-navigation-title">Your workspace</div>'
-            '<div class="rng-navigation-caption">Choose where you want to go.</div>',
+            '<div class="rng-navigation-title">Your workspace</div>',
             unsafe_allow_html=True
         )
         navigation_items = pages + ["Log out"]

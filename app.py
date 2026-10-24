@@ -6,7 +6,7 @@ import json
 import streamlit as st
 from supabase import create_client
 
-st.set_page_config(page_title="My Dashboard", page_icon="D", layout="wide")
+st.set_page_config(page_title="My Dashboard", page_icon="D", layout="wide", initial_sidebar_state="collapsed")
 
 # =========================================================
 # PERSIAN FONT: B NAZANIN (LOCAL DEPLOYMENT ASSET)
@@ -364,12 +364,8 @@ st.markdown("""
     max-width: 1400px;
 }
 
-section[data-testid="stSidebar"] {
-    background-color: #172333;
-}
-
-section[data-testid="stSidebar"] * {
-    color: white;
+[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] {
+    display: none;
 }
 
 .dashboard-title {
@@ -462,15 +458,16 @@ section[data-testid="stSidebar"] * {
 
 
 # =========================================================
-# SIDEBAR
+# PAGE NAVIGATION
 # =========================================================
 
-st.sidebar.title("MY DASHBOARD")
-st.sidebar.caption("Personal Workspace")
-st.sidebar.divider()
+pages = [
+    "Dashboard", "To Do List", "Meeting Minutes", "Warehouse",
+    "Mission Report", "Rah Nia Development", "BOM", "Employer Report",
+]
 
-# Logout is in the existing sidebar; no page layouts or business features change.
-if st.sidebar.button("Log out", key="rng_logout_button", use_container_width=True):
+
+def rng_logout():
     try:
         rng_save()
         rng_client.auth.sign_out()
@@ -480,25 +477,17 @@ if st.sidebar.button("Log out", key="rng_logout_button", use_container_width=Tru
     rng_clear_private_state()
     st.rerun()
 
-pages = [
-    "Dashboard",
-    "To Do List",
-    "Meeting Minutes",
-    "Warehouse",
-    "Mission Report",
-    "Rah Nia Development",
-    "BOM",
-    "Employer Report"
-]
 
-for p in pages:
-
-    if st.sidebar.button(
-        p,
-        use_container_width=True
-    ):
-        st.session_state.page = p
-        rng_rerun()
+# Feature pages retain a direct route home without a sidebar.
+if st.session_state.page != "Dashboard":
+    home, space, logout = st.columns([1.3, 3, 1])
+    with home:
+        if st.button("Back to Dashboard", key="rng_back_to_dashboard", use_container_width=True):
+            st.session_state.page = "Dashboard"
+            rng_rerun()
+    with logout:
+        if st.button("Log out", key="rng_logout_button", use_container_width=True):
+            rng_logout()
 
 page = st.session_state.page
 
@@ -526,7 +515,21 @@ if page == "Dashboard":
     from datetime import datetime
     from zoneinfo import ZoneInfo
 
-    today_label = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%A, %d %B %Y")
+    import jdatetime
+
+    # Both calendars use the same instant and Tehran's local day.
+    today = datetime.now(ZoneInfo("Asia/Tehran"))
+    today_label = today.strftime("%A, %d %B %Y")
+    solar_date = jdatetime.date.fromgregorian(date=today.date())
+    solar_months = (
+        "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
+        "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
+    )
+    solar_weekdays = ("دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه", "یکشنبه")
+    solar_label = (
+        f"{solar_weekdays[today.weekday()]}، {solar_date.day} "
+        f"{solar_months[solar_date.month - 1]} {solar_date.year}"
+    ).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
     st.markdown('<div id="rng-dashboard-marker"></div>', unsafe_allow_html=True)
     scene_css = """
     <style>
@@ -565,15 +568,6 @@ if page == "Dashboard":
         position: relative; z-index: 2; max-width: none;
         padding: 2.8rem clamp(24px, 3vw, 60px) 3rem 40%;
     }
-    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #101e33, #0a172a); border-right: 1px solid #b6d0f91a;
-    }
-    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] h1 { font-size: 20px; letter-spacing: -.5px; }
-    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button {
-        background: #ffffff05; border: 1px solid #b4cff419; border-radius: 10px;
-        min-height: 45px; transition: background .2s, border-color .2s;
-    }
-    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button:hover { background: #263e5c; border-color: #80a3d0; }
     .stApp:has(#rng-dashboard-marker), .stApp:has(#rng-dashboard-marker) h1,
     .stApp:has(#rng-dashboard-marker) h2, .stApp:has(#rng-dashboard-marker) h3,
     .stApp:has(#rng-dashboard-marker) [data-testid="stMarkdownContainer"],
@@ -587,6 +581,17 @@ if page == "Dashboard":
     .rng-intro h1.rng-hero-title { color: #f4f8ff !important; font-size: clamp(34px, 3.5vw, 52px) !important; line-height: 1.12; letter-spacing: -1.5px; font-weight: 750; margin: 0 0 14px; padding: 0; }
     .rng-intro-copy { color: #bed0e6; font-size: 15px; line-height: 1.7; }
     .rng-intro-date { display: inline-flex; align-items: center; gap: 8px; color: #d4e2f4; background: #a5c7f20c; border: 1px solid #bdd6fa26; border-radius: 100px; padding: 8px 12px; font-size: 11px; margin-top: 18px; letter-spacing: .4px; }
+    .rng-date-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+    .rng-solar-date { color: #d2e1f4; font-size: 13px; font-family: Tahoma, Arial, sans-serif; font-style: normal; padding: 0 12px; }
+    .st-key-rng_main_navigation { margin-top: 24px; padding: 23px; border: 1px solid #bcd4f22b; border-radius: 20px; background: #0d2036aa; box-shadow: 0 12px 35px #030e2318; }
+    .rng-navigation-title { color: #edf4ff; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .rng-navigation-caption { color: #aec6e2; font-size: 13px; margin-bottom: 17px; }
+    .st-key-rng_main_navigation .stButton button { color: #e6f0ff; background: #a8cfff0c; border: 1px solid #aac8ef30; min-height: 52px; border-radius: 12px; transition: background .2s, border-color .2s; }
+    .st-key-rng_main_navigation .stButton button:hover { color: #fff; background: #3c638d; border-color: #8eb4e4; }
+    .st-key-rng_main_navigation .stButton button:focus-visible { outline: 3px solid #a6c8ff; outline-offset: 2px; }
+    .st-key-rng_main_navigation .stButton button:disabled { color: #cdddf3; opacity: 1; background: #284867; border-color: #537297; }
+    .st-key-rng_main_logout { border-top: 1px solid #bcd4f21c; margin-top: 10px; padding-top: 12px; }
+    .st-key-rng_main_logout .stButton button { background: transparent; min-height: 44px; }
     .rng-intro-date svg { width: 13px; height: 13px; color: #a9c9ef; }
     .st-key-rng_glass_notes {
         position: relative; overflow: hidden; background: #f5f9fff0; border: 1px solid #ffffffd9; border-top: 2px solid #ffffff; border-radius: 22px;
@@ -619,18 +624,19 @@ if page == "Dashboard":
     }
     @media (max-width: 700px) {
         [data-testid="stMain"]:has(#rng-dashboard-marker)::before {
-            width: 100%; height: 640px; background-size: auto 360px; background-position: -15px bottom;
+            width: 100%; height: 680px; background-size: auto 360px; background-position: -15px bottom;
             -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 48%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
             mask-image: linear-gradient(90deg, #000 0%, #000 48%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
         }
         .block-container:has(#rng-dashboard-marker) { padding: 1.3rem 1rem 3rem !important; }
-        .rng-intro { min-height: 570px; margin-left: 0; }
+        .rng-intro { min-height: 610px; margin-left: 0; }
         .rng-intro h1.rng-hero-title { font-size: 36px !important; }
         .rng-intro-copy { font-size: 14px; }
         .rng-intro-date { margin-top: 12px; }
         .rng-notes-title { gap: 8px; }
         .rng-notes-heading .section-title { font-size: 20px; }
         .st-key-rng_glass_notes { padding: 18px; }
+        .st-key-rng_main_navigation { padding: 18px; }
         .rng-dashboard-signature { flex-wrap: wrap; }
     }
     @media (prefers-reduced-transparency: reduce) {
@@ -643,8 +649,9 @@ if page == "Dashboard":
         '<div class="rng-intro"><div class="rng-eyebrow">PERSONAL WORKSPACE</div>'
         '<h1 class="rng-hero-title">My Dashboard</h1>'
         '<div class="rng-intro-copy">A clear space for your plans, projects, and ideas.</div>'
-        '<div class="rng-intro-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/></svg>'
-        f'{escape(today_label)}</div></div>',
+        '<div class="rng-date-stack"><div class="rng-intro-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/></svg>'
+        f'{escape(today_label)}</div>'
+        f'<div class="rng-solar-date" lang="fa" dir="rtl">{escape(solar_label)} · هجری شمسی</div></div></div>',
         unsafe_allow_html=True
     )
     if not portrait_url:
@@ -790,6 +797,25 @@ if page == "Dashboard":
 
                     rng_rerun()
 
+    with st.container(key="rng_main_navigation"):
+        st.markdown(
+            '<div class="rng-navigation-title">Your workspace</div>'
+            '<div class="rng-navigation-caption">Choose where you want to go.</div>',
+            unsafe_allow_html=True
+        )
+        for offset in range(0, len(pages), 2):
+            for column, destination in zip(st.columns(2, gap="small"), pages[offset:offset + 2]):
+                with column:
+                    if st.button(
+                        destination, key=f"rng_main_nav_{destination}",
+                        disabled=destination == page, use_container_width=True
+                    ):
+                        st.session_state.page = destination
+                        rng_rerun()
+        with st.container(key="rng_main_logout"):
+            if st.button("Log out", key="rng_logout_button", use_container_width=True):
+                rng_logout()
+
     st.markdown(
         '<div class="rng-dashboard-signature"><span>A little clarity goes a long way.</span><span>YOUR SPACE. YOUR PACE.</span></div>',
         unsafe_allow_html=True
@@ -797,12 +823,10 @@ if page == "Dashboard":
 
     # =====================================================
     # END DASHBOARD
-    # WORKSPACE REMOVED
-    # OTHER TABS UNCHANGED
     # =====================================================
 
 # =========================================================
-# SIDEBAR PAGES
+# WORKSPACE PAGES
 # =========================================================
 
 elif page == "To Do List":

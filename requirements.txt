@@ -6,3 +6,4 @@ arabic-reshaper
 python-bidi
 Pillow
 supabase
+jdatetime==5.2.0

@@ -512,515 +512,115 @@ page = st.session_state.page
 
 if page == "Dashboard":
 
-    import base64
-    import mimetypes
     from pathlib import Path
     from html import escape
 
-    # =====================================================
-    # LOAD DASHBOARD IMAGES
-    # =====================================================
-
     dashboard_folder = Path(__file__).resolve().parent
-
-    def dashboard_image_url(filename):
-
-        image_path = dashboard_folder / filename
-
-        if not image_path.is_file():
-            return ""
-
-        mime = (
-            mimetypes.guess_type(str(image_path))[0]
-            or "image/png"
-        )
-
-        encoded = base64.b64encode(
-            image_path.read_bytes()
-        ).decode("ascii")
-
-        return f"data:{mime};base64,{encoded}"
-
-    portrait_url = dashboard_image_url("My Pic.png")
-    background_url = dashboard_image_url(
-        "dashboard_background.png"
-    )
-
-    # =====================================================
-    # DASHBOARD MARKER
-    # =====================================================
-
-    st.markdown(
-        '<div id="rng-dashboard-marker"></div>',
-        unsafe_allow_html=True
-    )
-
-    # =====================================================
-    # DASHBOARD-ONLY CSS
-    # =====================================================
-
-    background_css = (
-        f'url("{background_url}")'
-        if background_url else "none"
-    )
-
-    portrait_css = (
-        f'url("{portrait_url}")'
-        if portrait_url else "none"
-    )
-
-    st.markdown(
-        f"""
-        <style>
-
-        /* ================================================
-           MAIN DASHBOARD BACKGROUND
-           ================================================ */
-
-        section[data-testid="stMain"]:has(
-            #rng-dashboard-marker
-        ) {{
-            position: relative !important;
-            isolation: isolate;
-
-            background-color: #8094b1 !important;
-            background-image:
-                {background_css},
-                linear-gradient(
-                    125deg,
-                    #263c5b 0%,
-                    #718aa9 45%,
-                    #e4ecf7 100%
-                ) !important;
-
-            background-size: cover !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
-
-            min-height: 100vh;
-        }}
-
-        /* ================================================
-           PORTRAIT - LEFT SIDE
-           ================================================ */
-
-        section[data-testid="stMain"]:has(
-            #rng-dashboard-marker
-        )::before {{
-
-            content: "";
-
-            position: fixed;
-            z-index: 0;
-
-            pointer-events: none;
-
-            left: 258px;
-            bottom: 0;
-
-            width: min(45vw, 690px);
-            height: 91vh;
-
-            background-image: {portrait_css};
-            background-repeat: no-repeat;
-            background-position: left bottom;
-            background-size: contain;
-
-            -webkit-mask-image:
-                linear-gradient(
-                    to right,
-                    black 0%,
-                    black 69%,
-                    transparent 100%
-                );
-
-            mask-image:
-                linear-gradient(
-                    to right,
-                    black 0%,
-                    black 69%,
-                    transparent 100%
-                );
-        }}
-
-        /* ================================================
-           CONTENT POSITION
-           ================================================ */
-
-        section[data-testid="stMain"]:has(
-            #rng-dashboard-marker
-        )
-        .block-container {{
-
-            position: relative;
-            z-index: 1;
-
-            max-width: 100% !important;
-
-            padding-left: clamp(
-                340px,
-                38%,
-                560px
-            ) !important;
-
-            padding-right: 32px !important;
-            padding-top: 68px !important;
-
-            padding-bottom: 55px !important;
-        }}
-
-        /* ================================================
-           TITLE
-           ================================================ */
-
-        section[data-testid="stMain"]:has(
-            #rng-dashboard-marker
-        )
-        .dashboard-title {{
-
-            font-size: clamp(
-                36px,
-                3.3vw,
-                58px
-            ) !important;
-
-            font-weight: 800 !important;
-            letter-spacing: -1.5px;
-
-            color: #092554 !important;
-
-            margin-bottom: 8px !important;
-
-            line-height: 1.2 !important;
-        }}
-
-        section[data-testid="stMain"]:has(
-            #rng-dashboard-marker
-        )
-        .dashboard-subtitle {{
-
-            color: #506783 !important;
-
-            font-size: 17px !important;
-
-            margin-top: 15px !important;
-            margin-bottom: 38px !important;
-        }}
-
-        .rng-title-accent {{
-
-            width: 245px;
-            height: 3px;
-
-            background: linear-gradient(
-                90deg,
-                #006dce,
-                #56a5f5 55%,
-                transparent
-            );
-
-            border-radius: 10px;
-            margin-top: 8px;
-        }}
-
-        /* ================================================
-           GLASSY STICKY NOTES CONTAINER
-           ================================================ */
-
-        .st-key-rng_glass_notes {{
-
-            background: rgba(
-                234, 243, 255, 0.30
-            ) !important;
-
-            border: 1px solid rgba(
-                255, 255, 255, 0.52
-            ) !important;
-
-            border-radius: 20px !important;
-
-            padding: 23px !important;
-
-            -webkit-backdrop-filter:
-                blur(19px) saturate(135%);
-
-            backdrop-filter:
-                blur(19px) saturate(135%);
-
-            box-shadow:
-                0 18px 48px rgba(
-                    12, 32, 68, 0.15
-                ),
-                inset 0 1px 0 rgba(
-                    255, 255, 255, 0.48
-                );
-
-            margin-top: 14px;
-        }}
-
-        /* ================================================
-           STICKY NOTES HEADING
-           ================================================ */
-
-        .st-key-rng_glass_notes
-        .section-title {{
-
-            font-size: 22px !important;
-            font-weight: 750 !important;
-
-            color: #10243e !important;
-
-            margin-bottom: 16px !important;
-        }}
-
-        /* ================================================
-           INDIVIDUAL STICKY NOTES
-           ================================================ */
-
-        .st-key-rng_glass_notes
-        .note-box {{
-
-            background: rgba(
-                255, 251, 234, 0.96
-            ) !important;
-
-            color: #263548 !important;
-
-            border: 1px solid #f0dea7 !important;
-            border-radius: 11px !important;
-
-            min-height: 51px;
-
-            padding: 14px 16px !important;
-
-            display: flex;
-            align-items: center;
-
-            box-shadow:
-                0 3px 10px rgba(
-                    30, 40, 60, 0.045
-                );
-
-            font-size: 14px;
-            overflow-wrap: anywhere;
-        }}
-
-        /* ================================================
-           STICKY NOTE BUTTONS
-           ================================================ */
-
-        .st-key-rng_glass_notes
-        .stButton button {{
-
-            background: linear-gradient(
-                145deg,
-                #183b6d,
-                #0b2447
-            ) !important;
-
-            color: #ffffff !important;
-
-            border: 1px solid rgba(
-                77, 147, 229, 0.40
-            ) !important;
-
-            border-radius: 9px !important;
-
-            min-height: 46px !important;
-
-            font-size: 13px !important;
-            font-weight: 650 !important;
-
-            box-shadow:
-                0 2px 5px rgba(
-                    15, 30, 60, 0.08
-                );
-
-            transition:
-                background 0.2s ease,
-                box-shadow 0.2s ease;
-        }}
-
-        .st-key-rng_glass_notes
-        .stButton button:hover {{
-
-            background: #22538f !important;
-
-            color: white !important;
-
-            border-color: #75b3fb !important;
-
-            box-shadow:
-                0 4px 12px rgba(
-                    12, 51, 110, 0.22
-                );
-        }}
-
-        /* ================================================
-           NOTE INPUTS
-           ================================================ */
-
-        .st-key-rng_glass_notes
-        div[data-testid="stTextInput"] input {{
-
-            background: rgba(
-                248, 251, 255, 0.94
-            ) !important;
-
-            color: #192d48 !important;
-
-            border: 1px solid rgba(
-                255, 255, 255, 0.80
-            ) !important;
-
-            border-radius: 10px !important;
-
-            min-height: 49px !important;
-
-            padding-left: 16px !important;
-        }}
-
-        .st-key-rng_glass_notes
-        div[data-testid="stTextInput"] input::placeholder {{
-
-            color: #8494ad !important;
-        }}
-
-        .st-key-rng_glass_notes
-        div[data-testid="stTextArea"] textarea {{
-
-            background: rgba(
-                248, 251, 255, 0.96
-            ) !important;
-
-            color: #192d48 !important;
-
-            border-radius: 10px !important;
-        }}
-
-        /* ================================================
-           ADD NOTE BUTTON
-           ================================================ */
-
-        .st-key-rng_add_note
-        .stButton button {{
-
-            width: 100% !important;
-
-            background: linear-gradient(
-                100deg,
-                #071b37,
-                #132f57
-            ) !important;
-
-            min-height: 51px !important;
-
-            font-size: 14px !important;
-            font-weight: 700 !important;
-
-            border-radius: 10px !important;
-        }}
-
-        /* ================================================
-           RESPONSIVE LAYOUT
-           ================================================ */
-
-        @media (max-width: 1150px) {{
-
-            section[data-testid="stMain"]:has(
-                #rng-dashboard-marker
-            )
-            .block-container {{
-
-                padding-left: 32% !important;
-                padding-right: 20px !important;
-            }}
-
-            section[data-testid="stMain"]:has(
-                #rng-dashboard-marker
-            )::before {{
-
-                width: 43vw;
-                height: 80vh;
-            }}
-
-            .st-key-rng_glass_notes {{
-                padding: 16px !important;
-            }}
-        }}
-
-        @media (max-width: 700px) {{
-
-            section[data-testid="stMain"]:has(
-                #rng-dashboard-marker
-            )
-            .block-container {{
-
-                padding-left: 16px !important;
-                padding-right: 16px !important;
-                padding-top: 32px !important;
-            }}
-
-            section[data-testid="stMain"]:has(
-                #rng-dashboard-marker
-            )::before {{
-
-                left: 0;
-                width: 100vw;
-                height: 75vh;
-
-                opacity: 0.17;
-            }}
-
-            .st-key-rng_glass_notes {{
-
-                padding: 12px !important;
-            }}
-
-            section[data-testid="stMain"]:has(
-                #rng-dashboard-marker
-            )
-            .dashboard-title {{
-
-                font-size: 34px !important;
-            }}
-        }}
-
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # =====================================================
-    # DASHBOARD TITLE
-    # =====================================================
-
-    st.markdown(
-        '<div class="dashboard-title">My Dashboard</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="rng-title-accent"></div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="dashboard-subtitle">'
-        'Your personal workspace'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    if not portrait_url:
-        st.warning(
-            "My Pic.png not found beside app.py."
-        )
-
-    if not background_url:
-        st.warning(
-            "dashboard_background.png not found beside app.py."
-        )
+    portrait_path = dashboard_folder / "My Pic.png"
+
+    st.markdown('<div id="rng-dashboard-marker"></div>', unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    section[data-testid="stMain"]:has(#rng-dashboard-marker) {
+        background: radial-gradient(ellipse at top right, #e0efed, transparent 55%), #f4f6fa;
+    }
+    section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container {
+        max-width: 1240px; padding: 2.5rem 2rem 4rem;
+    }
+    .st-key-rng_dashboard_hero {
+        background: linear-gradient(120deg, #13283c, #193d50 65%, #20565c);
+        border: 1px solid #2c5363; border-radius: 26px;
+        padding: 36px 36px 0; overflow: hidden;
+        box-shadow: 0 18px 45px #16364a16;
+    }
+    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button {
+        background: transparent; border: 1px solid #ffffff20; text-align: left;
+    }
+    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button:hover {
+        background: #254252; border-color: #4a7c85;
+    }
+    .rng-eyebrow {
+        color: #9fe0d3; font-size: 12px; font-weight: 700;
+        letter-spacing: 2px; text-transform: uppercase; margin: 12px 0 18px;
+    }
+    .st-key-rng_dashboard_hero h1.rng-hero-title {
+        color: #fff !important; font-size: clamp(34px, 4vw, 54px) !important; font-weight: 750;
+        line-height: 1.12; letter-spacing: -1.8px; margin: 0 0 18px;
+    }
+    .rng-hero-copy { color: #c6d8e1; font-size: 16px; line-height: 1.8; max-width: 400px; }
+    .rng-hero-footer {
+        display: inline-flex; align-items: center; gap: 9px; color: #d4e8e7;
+        border: 1px solid #ffffff25; border-radius: 100px;
+        padding: 8px 14px; font-size: 12px; margin: 20px 0 30px;
+    }
+    .rng-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #83d6bf; }
+    .st-key-rng_dashboard_hero [data-testid="stImage"] img {
+        display: block; max-height: 355px; object-fit: contain; object-position: center bottom;
+    }
+    .rng-section-heading {
+        color: #19364a; font-size: 21px; font-weight: 700; margin: 24px 0 2px;
+        letter-spacing: -.4px;
+    }
+    .rng-section-caption { color: #708292; font-size: 14px; margin-bottom: 12px; }
+    .st-key-rng_dashboard_shortcuts .stButton button {
+        background: #fff; color: #244555; border: 1px solid #dde6eb;
+        min-height: 58px; border-radius: 14px; font-weight: 600;
+        box-shadow: 0 3px 12px #16364a05; transition: border-color .2s, background .2s;
+    }
+    .st-key-rng_dashboard_shortcuts .stButton button:hover {
+        border-color: #248a80; background: #f0faf7; color: #146b61;
+    }
+    .st-key-rng_glass_notes {
+        background: #fff; border: 1px solid #e0e7ed; border-radius: 22px;
+        padding: 26px; margin-top: 18px; box-shadow: 0 8px 28px #16364a06;
+    }
+    .rng-notes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .rng-notes-heading .section-title { margin: 0; color: #19364a; font-size: 21px; }
+    .rng-note-count { color: #27796e; background: #eaf6f2; border-radius: 100px; padding: 5px 12px; font-size: 12px; }
+    .rng-empty-notes { border: 1px dashed #d9e4e9; border-radius: 14px; padding: 24px; color: #708292; line-height: 1.8; background: #fafcfd; }
+    .st-key-rng_glass_notes .note-box {
+        background: #fffcf0; color: #354453; border: 1px solid #f0e6bd;
+        border-left: 3px solid #dcbf67; border-radius: 12px; padding: 14px 16px;
+        white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px;
+    }
+    .st-key-rng_glass_notes .stButton button { color: #385664; background: #f5f8fa; border-color: #e0e7ed; }
+    .st-key-rng_glass_notes .stButton button:hover { color: #146b61; border-color: #248a80; }
+    .st-key-rng_add_note .stButton button { background: #207a70; color: #fff; border-color: #207a70; min-height: 46px; }
+    .st-key-rng_add_note .stButton button:hover { background: #176257; color: #fff; }
+    .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #263e4b; background: #f7fafb; }
+    @media (max-width: 700px) {
+        section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container { padding: 1.5rem 1rem 3rem; }
+        .st-key-rng_dashboard_hero { padding: 22px 22px 0; border-radius: 20px; }
+        .st-key-rng_dashboard_hero [data-testid="stImage"] img { max-height: 280px; }
+        .rng-hero-footer { margin: 8px 0 12px; }
+        .st-key-rng_glass_notes { padding: 18px; }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    with st.container(key="rng_dashboard_hero"):
+        intro, portrait = st.columns([1.35, 1], gap="medium", vertical_alignment="center")
+        with intro:
+            st.markdown("""
+            <div class="rng-eyebrow">Your personal workspace</div>
+            <h1 class="rng-hero-title">My Dashboard</h1>
+            <div class="rng-hero-copy">A clear space for your plans, projects, and everything you want to move forward.</div>
+            <div class="rng-hero-footer"><span class="rng-status-dot"></span>Make room for your next idea</div>
+            """, unsafe_allow_html=True)
+        with portrait:
+            if portrait_path.is_file():
+                # Render a real Streamlit image in the layout, independent of sidebar size.
+                st.image(str(portrait_path), width="stretch")
+            else:
+                st.warning("My Pic.png not found beside app.py.")
+
+    st.markdown('<div class="rng-section-heading">Your workspace</div><div class="rng-section-caption">Pick up where you left off.</div>', unsafe_allow_html=True)
+    with st.container(key="rng_dashboard_shortcuts"):
+        for column, destination in zip(st.columns(3), ["To Do List", "Meeting Minutes", "Rah Nia Development"]):
+            with column:
+                if st.button(destination, key=f"rng_shortcut_{destination}", use_container_width=True):
+                    st.session_state.page = destination
+                    rng_rerun()
 
     # =====================================================
     # GLASSY STICKY NOTES PANEL
@@ -1028,12 +628,18 @@ if page == "Dashboard":
 
     with st.container(key="rng_glass_notes"):
 
+        note_count = len(st.session_state.sticky_notes)
         st.markdown(
-            '<div class="section-title">'
-            'Sticky Notes'
-            '</div>',
+            '<div class="rng-notes-heading"><div class="section-title">Sticky Notes</div>'
+            f'<span class="rng-note-count">{note_count} {"note" if note_count == 1 else "notes"}</span></div>'
+            '<div class="rng-section-caption">Small thoughts. Important reminders.</div>',
             unsafe_allow_html=True
         )
+        if not note_count:
+            st.markdown(
+                '<div class="rng-empty-notes">Your next idea starts here.<br>Add a reminder, a thought, or something to come back to.</div>',
+                unsafe_allow_html=True
+            )
 
         # =================================================
         # EXISTING STICKY NOTES

@@ -528,170 +528,130 @@ if page == "Dashboard":
 
     today_label = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%A, %d %B %Y")
     st.markdown('<div id="rng-dashboard-marker"></div>', unsafe_allow_html=True)
-    st.markdown("""
+    scene_css = """
     <style>
-    section[data-testid="stMain"]:has(#rng-dashboard-marker) {
-        background: radial-gradient(ellipse at 100% 0, #dce7f9 0, transparent 42%), #f2f5fa;
+    [data-testid="stMain"]:has(#rng-dashboard-marker) {
+        position: relative; isolation: isolate; container: rng-main / inline-size;
+        background:
+            radial-gradient(ellipse at 90% 8%, #fff9 0, transparent 45%),
+            radial-gradient(ellipse at 10% 20%, #a4b9d0 0, transparent 60%),
+            linear-gradient(120deg, #a6b8ce, #e0e9f6 58%, #f2f6fd);
     }
-    .stApp:has(#rng-dashboard-marker) [data-testid="stHeader"] { background: #f2f5faed; }
-    section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container {
-        max-width: 1370px; padding: 2rem 2.5rem 4rem;
+    [data-testid="stMain"]:has(#rng-dashboard-marker)::before {
+        content: ""; position: absolute; z-index: 0; pointer-events: none;
+        top: 0; left: 0; width: 51%; height: min(100vh, 1080px);
+        mask-composite: intersect;
+        background-image: url("__PORTRAIT_URL__"); background-repeat: no-repeat;
+        background-size: auto min(calc(100% - 100px), 68cqw); background-position: -40px bottom;
+        -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
+        mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
+    }
+    .stApp:has(#rng-dashboard-marker) [data-testid="stHeader"] { background: #102039; }
+    .stApp:has(#rng-dashboard-marker) [data-testid="stHeader"] button,
+    .stApp:has(#rng-dashboard-marker) [data-testid="stHeader"] button span,
+    .stApp:has(#rng-dashboard-marker) [data-testid="stSidebarCollapsedControl"] button { color: #f1f6ff !important; }
+    [data-testid="stMain"]:has(#rng-dashboard-marker) .block-container {
+        position: relative; z-index: 1; max-width: none;
+        padding: 2.8rem clamp(24px, 3vw, 60px) 3rem 40%;
     }
     .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] {
-        background: #101d34; border-right: 1px solid #ffffff0a;
+        background: #142238; border-right: 1px solid #ffffff0a;
     }
     .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] h1 { font-size: 20px; letter-spacing: -.5px; }
     .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button {
-        background: #ffffff04; border: 1px solid #ffffff13; border-radius: 12px;
+        background: #ffffff04; border: 1px solid #ffffff24; border-radius: 10px;
         min-height: 45px; transition: background .2s, border-color .2s;
     }
-    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button:hover {
-        background: #203658; border-color: #7197cd77;
-    }
-    .rng-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; }
-    .rng-brand { color: #1d3559; font-size: 12px; font-weight: 750; letter-spacing: 2.5px; }
-    .rng-date { color: #6a7b93; font-size: 12px; }
-    .stApp:has(#rng-dashboard-marker),
-    .stApp:has(#rng-dashboard-marker) h1,
-    .stApp:has(#rng-dashboard-marker) h2,
-    .stApp:has(#rng-dashboard-marker) h3,
+    .stApp:has(#rng-dashboard-marker) section[data-testid="stSidebar"] .stButton button:hover { background: #263e5c; border-color: #80a3d0; }
+    .stApp:has(#rng-dashboard-marker), .stApp:has(#rng-dashboard-marker) h1,
+    .stApp:has(#rng-dashboard-marker) h2, .stApp:has(#rng-dashboard-marker) h3,
     .stApp:has(#rng-dashboard-marker) [data-testid="stMarkdownContainer"],
-    .stApp:has(#rng-dashboard-marker) input,
-    .stApp:has(#rng-dashboard-marker) textarea,
+    .stApp:has(#rng-dashboard-marker) input, .stApp:has(#rng-dashboard-marker) textarea,
     .stApp:has(#rng-dashboard-marker) label {
         font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important;
     }
-    .rng-hero {
-        position: relative; isolation: isolate; min-height: 480px;
-        background: radial-gradient(ellipse at 90% 10%, #284973, transparent 70%), #102443;
-        border: 1px solid #28466a; border-radius: 26px; overflow: hidden;
-        box-shadow: 0 22px 45px #142f541c;
+    .rng-intro { padding: 10px 0 16px; }
+    .rng-eyebrow { color: #425e81; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+    .rng-intro h1.rng-hero-title { color: #122943 !important; font-size: clamp(32px, 3.2vw, 48px) !important; line-height: 1.12; letter-spacing: -1.5px; font-weight: 750; margin: 0 0 14px; padding: 0; }
+    .rng-intro-copy { color: #526d8e; font-size: 15px; line-height: 1.7; }
+    .rng-intro-date { color: #526d8e; font-size: 11px; margin-top: 18px; letter-spacing: .4px; }
+    .st-key-rng_glass_notes {
+        background: #f7faffc9; border: 1px solid #ffffffdc; border-radius: 20px;
+        padding: 24px; margin-top: 10px; box-shadow: 0 14px 45px #1d3b6410;
+        -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
     }
-    .rng-hero::after {
-        content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-        background: linear-gradient(90deg, #102443 0%, #102443eb 30%, #10244380 55%, transparent 80%);
-    }
-    .rng-hero img.rng-portrait-background {
-        position: absolute; z-index: 0; right: -3%; bottom: -24%;
-        width: 76%; height: 125%; object-fit: contain; object-position: right top;
-        filter: contrast(1.04); pointer-events: none;
-    }
-    .rng-hero-content { position: relative; z-index: 2; max-width: 60%; padding: 50px 42px 40px; }
-    .rng-eyebrow { color: #9fbfe9; font-size: 11px; font-weight: 650; letter-spacing: 2.5px; text-transform: uppercase; margin: 4px 0 22px; }
-    .rng-eyebrow span { display: inline-block; width: 22px; height: 1px; background: #84aff0; vertical-align: middle; margin-right: 9px; }
-    .rng-hero h1.rng-hero-title {
-        color: #f8fbff !important; font-size: clamp(38px, 4.5vw, 68px) !important;
-        font-weight: 650; line-height: 1.05; letter-spacing: -2.5px; margin: 0 0 22px; padding: 0;
-    }
-    .rng-hero-title .rng-title-accent { color: #a8c8ff; font-weight: 700; }
-    .rng-hero-copy { color: #bacbe2; font-size: 15px; line-height: 1.8; max-width: 350px; }
-    .rng-hero-footer { display: flex; align-items: center; gap: 20px; color: #dce7f7; font-size: 11px; margin: 25px 0 30px; letter-spacing: .5px; }
-    .rng-hero-footer span + span { border-left: 1px solid #ffffff30; padding-left: 20px; }
-    .rng-section-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 28px 0 16px; }
-    .rng-section-heading { color: #1c3455; font-size: 23px; font-weight: 700; letter-spacing: -.7px; }
-    .rng-section-caption { color: #6f8098; font-size: 13px; margin-top: 5px; }
-    .rng-section-index { font-family: Arial, Tahoma, sans-serif; font-style: normal; color: #73849c; font-size: 14px; white-space: nowrap; }
-    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] {
-        background: #ffffff; border: 1px solid #dfe6f1; border-radius: 18px; padding: 20px 18px 10px;
-        min-height: 200px; box-shadow: 0 5px 20px #16346104;
-        transition: transform .2s, box-shadow .2s, border-color .2s;
-    }
-    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover {
-        transform: translateY(-4px); box-shadow: 0 10px 22px #16346112; border-color: #8ba8d0;
-    }
-    .rng-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-    .rng-card-icon { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; }
-    .rng-card-icon svg { width: 22px; height: 22px; }
-    .rng-card-index { color: #7b8da4; font-family: Arial, Tahoma, sans-serif; font-size: 12px; }
-    .rng-card-title { font-size: 16px; font-weight: 700; color: #223b5d; margin-bottom: 5px; }
-    .rng-card-copy { color: #708199; font-size: 12px; line-height: 1.6; }
-    .st-key-rng_dashboard_shortcuts .stButton button { background: transparent; border: 0; color: #325d97; width: 100%; min-height: 35px; border-radius: 8px; }
-    .st-key-rng_dashboard_shortcuts .stButton button:hover { color: #163c70; background: #edf3fc; }
-    .st-key-rng_dashboard_shortcuts .stButton button p { font-size: 12px; font-weight: 650; }
-    .st-key-rng_glass_notes { background: #ffffff; border: 1px solid #dfe6f1; border-radius: 22px; padding: 25px; margin-top: 22px; box-shadow: 0 6px 24px #16346105; }
     .rng-notes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .rng-notes-heading .section-title { margin: 0; color: #1c3455; font-size: 22px; letter-spacing: -.6px; }
-    .rng-note-count { color: #3f659a; background: #eaf1fc; border-radius: 100px; padding: 5px 12px; font-size: 11px; }
-    .rng-empty-notes { border: 1px dashed #d5dfef; border-radius: 14px; padding: 26px; color: #6c7f9a; line-height: 1.9; background: repeating-linear-gradient(#f6f9ff, #f6f9ff 31px, #e5edf8 32px); margin-top: 16px; }
-    .rng-empty-notes strong { display: block; color: #2e4c78; font-family: Arial, Tahoma, sans-serif; font-size: 23px; font-style: normal; font-weight: 600; }
-    .st-key-rng_glass_notes .note-box { background: #f3f7ff; color: #304766; border: 1px solid #dce6f6; border-left: 3px solid #719dd8; border-radius: 12px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px; }
-    .st-key-rng_glass_notes .stButton button { color: #425f88; background: #f0f4fc; border-color: #dce5f3; }
-    .st-key-rng_glass_notes .stButton button:hover { color: #234876; border-color: #7a9ecf; }
-    .st-key-rng_add_note .stButton button { background: #234b80; color: #ffffff; border-color: #234b80; min-height: 46px; }
-    .st-key-rng_add_note .stButton button:hover { background: #173960; color: #ffffff; }
-    .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #2c4567; background: #f3f6fc; }
-    .rng-dashboard-signature { display: flex; justify-content: space-between; gap: 12px; color: #7b8ba2; font-size: 11px; padding-top: 22px; letter-spacing: .4px; }
-    @media (max-width: 1100px) and (min-width: 701px) {
+    .rng-note-count { color: #365d8a; background: #dfeaf8; border: 1px solid #ccdcef; border-radius: 100px; padding: 5px 12px; font-size: 11px; white-space: nowrap; }
+    .rng-section-caption { color: #526d8e; font-size: 13px; margin-top: 5px; }
+    .rng-empty-notes { border: 1px dashed #b9cbe2; border-radius: 12px; padding: 22px; color: #526d8e; line-height: 1.9; background: #f7faff9c; margin-top: 16px; }
+    .rng-empty-notes strong { display: block; color: #2d4c74; font-size: 20px; font-weight: 600; }
+    .st-key-rng_glass_notes .note-box { background: #fffbed; color: #30435b; border: 1px solid #e9dfb5; border-left: 3px solid #cbb579; border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px; }
+    .st-key-rng_glass_notes .stButton button { color: #ffffff; background: #1a304e; border-color: #29466a; min-height: 44px; }
+    .st-key-rng_glass_notes .stButton button:hover { color: #ffffff; background: #2b4a73; border-color: #6a90c0; }
+    .st-key-rng_add_note .stButton button { background: #18375f; color: #fff; border-color: #18375f; min-height: 46px; }
+    .st-key-rng_glass_notes input, .st-key-rng_glass_notes textarea { color: #243f63; background: #f8fbff; }
+    .rng-section-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 24px 0 14px; }
+    .rng-section-heading { color: #1c3455; font-size: 21px; font-weight: 700; letter-spacing: -.5px; }
+    .rng-section-index { color: #526d8e; font-size: 12px; }
+    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] {
+        background: #f8fbffd6; border: 1px solid #ffffffe6; border-radius: 15px; padding: 16px 16px 8px;
+        min-height: 180px; box-shadow: 0 5px 20px #16346108; transition: background .2s;
+    }
+    .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover { background: #ffffff; border-color: #8ba8d0; }
+    .rng-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .rng-card-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+    .rng-card-icon svg { width: 22px; height: 22px; }
+    .rng-card-index { color: #627b9a; font-size: 11px; }
+    .rng-card-title { font-size: 15px; font-weight: 700; color: #223b5d; margin-bottom: 5px; }
+    .rng-card-copy { color: #526d8e; font-size: 12px; line-height: 1.6; }
+    .st-key-rng_dashboard_shortcuts .stButton button { background: transparent; border: 0; color: #325d97; width: 100%; min-height: 44px; border-radius: 8px; }
+    .st-key-rng_dashboard_shortcuts .stButton button:hover { color: #163c70; background: #e3edfb; }
+    .st-key-rng_dashboard_shortcuts .stButton button p { font-size: 12px; font-weight: 650; }
+    .rng-dashboard-signature { display: flex; justify-content: space-between; gap: 12px; color: #526d8e; font-size: 11px; padding-top: 22px; }
+    @container rng-main (max-width: 1200px) {
         .st-key-rng_dashboard_shortcuts [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
         .st-key-rng_dashboard_shortcuts [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
-        .rng-hero { min-height: 445px; }
-        .rng-hero-content { max-width: 70%; padding: 40px 28px 30px; }
-        .rng-hero img.rng-portrait-background { width: 95%; right: -20%; bottom: -20%; height: 115%; }
-        .rng-hero h1.rng-hero-title { font-size: 46px !important; }
+    }
+    @container rng-main (max-width: 900px) {
+        .block-container:has(#rng-dashboard-marker) { padding: 2rem 24px 3rem !important; }
+        .rng-intro { min-height: 320px; margin-left: 43%; }
+        .rng-intro h1.rng-hero-title { font-size: 34px !important; }
+    }
+    @media (max-width: 1200px) and (min-width: 701px) {
+        [data-testid="stMain"]:has(#rng-dashboard-marker)::before { width: 62%; height: 430px; background-size: auto 340px; background-position: -20px bottom; }
     }
     @media (max-width: 700px) {
-        section[data-testid="stMain"]:has(#rng-dashboard-marker) .block-container { padding: 1.2rem 1rem 3rem; }
-        .rng-topline { align-items: flex-start; flex-direction: column; gap: 6px; }
-        .rng-hero { min-height: 610px; border-radius: 22px; }
-        .rng-hero-content { max-width: 100%; padding: 28px 24px 24px; }
-        .rng-hero h1.rng-hero-title { font-size: clamp(36px, 10vw, 43px) !important; letter-spacing: -1.5px; }
-        .rng-hero-copy { max-width: 100%; font-size: 14px; }
-        .rng-hero img.rng-portrait-background { width: 110%; height: 440px; right: -20%; bottom: -50px; object-position: right bottom; }
-        .rng-hero::after { background: linear-gradient(180deg, #102443 0%, #102443ed 30%, #10244370 53%, #10244310 75%); }
-        .rng-hero-footer { margin: 18px 0 0; gap: 12px; font-size: 10px; flex-wrap: wrap; }
-        .rng-hero-footer span + span { padding-left: 12px; }
+        [data-testid="stMain"]:has(#rng-dashboard-marker)::before {
+            width: 100%; height: 610px; background-size: auto 360px; background-position: -15px bottom;
+            -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 48%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
+            mask-image: linear-gradient(90deg, #000 0%, #000 48%, transparent 100%), linear-gradient(180deg, #000 90%, transparent 100%);
+        }
+        .block-container:has(#rng-dashboard-marker) { padding: 1.3rem 1rem 3rem !important; }
+        .rng-intro { min-height: 540px; margin-left: 0; }
+        .rng-intro h1.rng-hero-title { font-size: 36px !important; }
+        .rng-intro-copy { font-size: 14px; }
+        .rng-intro-date { margin-top: 12px; }
         .st-key-rng_glass_notes { padding: 18px; }
         .rng-section-index { display: none; }
-        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] { min-height: 180px; }
+        .st-key-rng_dashboard_shortcuts [data-testid="stColumn"] { min-width: 100%; }
+        .rng-dashboard-signature { flex-wrap: wrap; }
     }
-    @media (prefers-reduced-motion: reduce) {
-        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"] { transition: none; }
-        .st-key-rng_dashboard_shortcuts [class*="st-key-rng_destination_"]:hover { transform: none; }
+    @media (prefers-reduced-transparency: reduce) {
+        .st-key-rng_glass_notes { background: #f5f9ff; backdrop-filter: none; }
     }
     </style>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(scene_css.replace("__PORTRAIT_URL__", portrait_url), unsafe_allow_html=True)
     st.markdown(
-        '<div class="rng-topline"><span class="rng-brand">MY DASHBOARD</span>'
-        f'<span class="rng-date">{escape(today_label)}</span></div>', unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<section class="rng-hero" aria-label="Your personal workspace">'
-        + (f'<img class="rng-portrait-background" src="{portrait_url}" alt="Your portrait" />' if portrait_url else '')
-        + '<div class="rng-hero-content">'
-        '<div class="rng-eyebrow"><span></span>A space that\'s yours</div>'
-        '<h1 class="rng-hero-title">Your day,<br><span class="rng-title-accent">by design.</span></h1>'
-        '<div class="rng-hero-copy">Big plans. Small reminders. Everything that moves you forward, together in one place.</div>'
-        '<div class="rng-hero-footer"><span>PERSONAL WORKSPACE</span><span>MAKE IT COUNT</span></div>'
-        '</div></section>',
+        '<div class="rng-intro"><div class="rng-eyebrow">PERSONAL WORKSPACE</div>'
+        '<h1 class="rng-hero-title">My Dashboard</h1>'
+        '<div class="rng-intro-copy">A clear space for your plans, projects, and ideas.</div>'
+        f'<div class="rng-intro-date">{escape(today_label)}</div></div>',
         unsafe_allow_html=True
     )
     if not portrait_url:
         st.warning("My Pic.png not found beside app.py.")
-
-    st.markdown('<div class="rng-section-bar"><div><div class="rng-section-heading">A place for everything.</div><div class="rng-section-caption">Less searching. More doing.</div></div><span class="rng-section-index">Your everyday essentials</span></div>', unsafe_allow_html=True)
-    # Original SVG artwork keeps icons crisp without external fonts or requests.
-    shortcut_items = [
-        ("To Do List", "Turn intentions into progress.", "#e5effe", "#4e75ac", '<path d="m5 6 2 2 4-4M13 6h6M5 13l2 2 4-4M13 13h6M5 20h14"/>'),
-        ("Meeting Minutes", "Good conversations, captured.", "#e9eef9", "#637da9", '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 2v4m8-4v4M8 11h8m-8 4h5"/>'),
-        ("Warehouse", "Keep everything in its place.", "#e3f0fa", "#4d7caa", '<path d="m3 7 9-4 9 4v11l-9 4-9-4Zm0 0 9 4 9-4m-9 4v11M7 5l10 4v5"/>'),
-        ("Rah Nia Development", "Build what comes next.", "#eaeafb", "#7278ae", '<path d="M4 20V10m7 10V4m7 16v-7M2 20h20M15 4h6v6m-1-5-6 6"/>'),
-    ]
-    with st.container(key="rng_dashboard_shortcuts"):
-        for index, (column, item) in enumerate(zip(st.columns(4, gap="small"), shortcut_items), 1):
-            destination, description, tint, ink, paths = item
-            with column:
-                with st.container(key=f"rng_destination_{index}"):
-                    st.markdown(
-                        f'<div class="rng-card-top"><div class="rng-card-icon" style="background:{tint};color:{ink}">'
-                        f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
-                        f'</div><span class="rng-card-index">0{index}</span></div>'
-                        f'<div class="rng-card-title">{destination}</div><div class="rng-card-copy">{description}</div>',
-                        unsafe_allow_html=True
-                    )
-                    if st.button(f"Open {destination}", key=f"rng_shortcut_{destination}", use_container_width=True):
-                        st.session_state.page = destination
-                        rng_rerun()
 
     # =====================================================
     # GLASSY STICKY NOTES PANEL
@@ -830,6 +790,30 @@ if page == "Dashboard":
                     )
 
                     rng_rerun()
+
+    st.markdown('<div class="rng-section-bar"><div><div class="rng-section-heading">A place for everything.</div><div class="rng-section-caption">Less searching. More doing.</div></div><span class="rng-section-index">Your everyday essentials</span></div>', unsafe_allow_html=True)
+    # Original SVG artwork keeps icons crisp without external fonts or requests.
+    shortcut_items = [
+        ("To Do List", "Turn intentions into progress.", "#e5effe", "#4e75ac", '<path d="m5 6 2 2 4-4M13 6h6M5 13l2 2 4-4M13 13h6M5 20h14"/>'),
+        ("Meeting Minutes", "Good conversations, captured.", "#e9eef9", "#637da9", '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 2v4m8-4v4M8 11h8m-8 4h5"/>'),
+        ("Warehouse", "Keep everything in its place.", "#e3f0fa", "#4d7caa", '<path d="m3 7 9-4 9 4v11l-9 4-9-4Zm0 0 9 4 9-4m-9 4v11M7 5l10 4v5"/>'),
+        ("Rah Nia Development", "Build what comes next.", "#eaeafb", "#7278ae", '<path d="M4 20V10m7 10V4m7 16v-7M2 20h20M15 4h6v6m-1-5-6 6"/>'),
+    ]
+    with st.container(key="rng_dashboard_shortcuts"):
+        for index, (column, item) in enumerate(zip(st.columns(4, gap="small"), shortcut_items), 1):
+            destination, description, tint, ink, paths = item
+            with column:
+                with st.container(key=f"rng_destination_{index}"):
+                    st.markdown(
+                        f'<div class="rng-card-top"><div class="rng-card-icon" style="background:{tint};color:{ink}">'
+                        f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
+                        f'</div><span class="rng-card-index">0{index}</span></div>'
+                        f'<div class="rng-card-title">{destination}</div><div class="rng-card-copy">{description}</div>',
+                        unsafe_allow_html=True
+                    )
+                    if st.button(f"Open {destination}", key=f"rng_shortcut_{destination}", use_container_width=True):
+                        st.session_state.page = destination
+                        rng_rerun()
 
     st.markdown(
         '<div class="rng-dashboard-signature"><span>A little clarity goes a long way.</span><span>YOUR SPACE. YOUR PACE.</span></div>',

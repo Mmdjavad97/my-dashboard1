@@ -566,7 +566,7 @@ if page == "Dashboard":
     .stApp:has(#rng-dashboard-marker) [data-testid="stSidebarCollapsedControl"] button { color: #f1f6ff !important; }
     [data-testid="stMain"]:has(#rng-dashboard-marker) .block-container {
         position: relative; z-index: 2; max-width: none;
-        padding: 2.8rem clamp(24px, 3vw, 60px) 3rem 40%;
+        padding: 2.8rem clamp(24px, 3vw, 60px) 3rem;
     }
     .stApp:has(#rng-dashboard-marker), .stApp:has(#rng-dashboard-marker) h1,
     .stApp:has(#rng-dashboard-marker) h2, .stApp:has(#rng-dashboard-marker) h3,
@@ -575,7 +575,7 @@ if page == "Dashboard":
     .stApp:has(#rng-dashboard-marker) label {
         font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important;
     }
-    .rng-intro { padding: 10px 0 22px; }
+    .rng-intro { padding: 10px 0 22px; margin-left: 40%; }
     .rng-eyebrow { display: flex; align-items: center; gap: 10px; color: #a9c8ed; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
     .rng-eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #a8cfff; box-shadow: 0 0 14px #90c3ff88; }
     .rng-intro h1.rng-hero-title { color: #f4f8ff !important; font-size: clamp(34px, 3.5vw, 52px) !important; line-height: 1.12; letter-spacing: -1.5px; font-weight: 750; margin: 0 0 14px; padding: 0; }
@@ -586,16 +586,37 @@ if page == "Dashboard":
     .st-key-rng_main_navigation { margin-top: 24px; padding: 23px; border: 1px solid #bcd4f22b; border-radius: 20px; background: #0d2036aa; box-shadow: 0 12px 35px #030e2318; }
     .rng-navigation-title { color: #edf4ff; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
     .rng-navigation-caption { color: #aec6e2; font-size: 13px; margin-bottom: 17px; }
-    .st-key-rng_main_navigation .stButton button { color: #e6f0ff; background: #a8cfff0c; border: 1px solid #aac8ef30; min-height: 52px; border-radius: 12px; transition: background .2s, border-color .2s; }
+    .st-key-rng_main_navigation .stButton button { color: #e6f0ff; background: #a8cfff0c; border: 1px solid #aac8ef30; min-height: 185px; border-radius: 18px; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 24px 16px; transition: background .2s, border-color .2s; }
     .st-key-rng_main_navigation .stButton button:hover { color: #fff; background: #3c638d; border-color: #8eb4e4; }
     .st-key-rng_main_navigation .stButton button:focus-visible { outline: 3px solid #a6c8ff; outline-offset: 2px; }
     .st-key-rng_main_navigation .stButton button:disabled { color: #cdddf3; opacity: 1; background: #284867; border-color: #537297; }
-    .st-key-rng_main_logout { border-top: 1px solid #bcd4f21c; margin-top: 10px; padding-top: 12px; }
-    .st-key-rng_main_logout .stButton button { background: transparent; min-height: 44px; }
+    .st-key-rng_main_navigation .stButton button::before {
+        content: ""; display: block; flex-shrink: 0; width: 62px; height: 62px;
+        background-image: var(--rng-navigation-icon); background-color: #9bc3ff12;
+        background-position: center; background-repeat: no-repeat; background-size: 30px;
+        border: 1px solid #a9ceff26; border-radius: 18px;
+    }
+    .st-key-rng_main_navigation .stButton button p { font-size: 16px; font-weight: 600; }
+    .st-key-rng_main_navigation .stButton button:hover { box-shadow: 0 10px 24px #0002; }
+    .st-key-rng_navigation_card_8 button::before { background-color: #e0aeb911; border-color: #e0aeb926; }
+    @media (max-width: 700px) {
+        .st-key-rng_main_navigation [data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
+        .st-key-rng_main_navigation [data-testid="stColumn"] { min-width: 100%; }
+        .st-key-rng_main_navigation .stButton button { min-height: 158px; gap: 14px; }
+    }
+    .st-key-rng_navigation_card_0 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%223%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2214%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_1 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m3%206%202%202%204-4m3%202h9M3%2013l2%202%204-4m3%202h9M3%2020h18%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_2 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%229%22%20cy%3D%228%22%20r%3D%223%22%2F%3E%3Cpath%20d%3D%22M3%2021v-3a6%206%200%200%201%2012%200v3M16%205a3%203%200%200%201%200%206m2%204a5%205%200%200%201%203%205v1%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_3 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m3%207%209-4%209%204v11l-9%204-9-4Zm0%200%209%204%209-4m-9%204v11M7%205l10%204v5%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_4 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M14%203H5a2%202%200%200%200-2%202v14a2%202%200%200%200%202%202h14a2%202%200%200%200%202-2V8Zm0%200v5h7M7%2013h10m-10%204h6%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_5 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%2020V10m7%2010V4m7%2016v-7M2%2020h20M15%204h6v6m-1-5-6%206%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_6 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m12%203%2010%205-10%205L2%208Zm-10%2010%2010%205%2010-5M2%2018l10%205%2010-5%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_7 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bdd8ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M8%207V4h8v3M3%2012l9%204%209-4m-9%202v4%22%2F%3E%3C%2Fsvg%3E"); }
+    .st-key-rng_navigation_card_8 { --rng-navigation-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23edc2cb%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%205H5a2%202%200%200%200-2%202v12a2%202%200%200%200%202%202h4M15%205l6%206-6%206m-6-6h12%22%2F%3E%3C%2Fsvg%3E"); }
     .rng-intro-date svg { width: 13px; height: 13px; color: #a9c9ef; }
     .st-key-rng_glass_notes {
         position: relative; overflow: hidden; background: #f5f9fff0; border: 1px solid #ffffffd9; border-top: 2px solid #ffffff; border-radius: 22px;
-        padding: 28px; margin-top: 10px; box-shadow: 0 24px 70px #030e2338, inset 0 1px 0 #ffffff;
+        width: 60% !important; margin-left: 40%; padding: 28px; margin-top: 10px; box-shadow: 0 24px 70px #030e2338, inset 0 1px 0 #ffffff;
         -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
     }
     .rng-notes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -617,6 +638,7 @@ if page == "Dashboard":
     @container rng-main (max-width: 900px) {
         .block-container:has(#rng-dashboard-marker) { padding: 2rem 24px 3rem !important; }
         .rng-intro { min-height: 340px; margin-left: 43%; }
+        .st-key-rng_glass_notes { width: 100% !important; margin-left: 0; }
         .rng-intro h1.rng-hero-title { font-size: 34px !important; }
     }
     @media (max-width: 1200px) and (min-width: 701px) {
@@ -803,18 +825,23 @@ if page == "Dashboard":
             '<div class="rng-navigation-caption">Choose where you want to go.</div>',
             unsafe_allow_html=True
         )
-        for offset in range(0, len(pages), 2):
-            for column, destination in zip(st.columns(2, gap="small"), pages[offset:offset + 2]):
+        navigation_items = pages + ["Log out"]
+        for offset in range(0, len(navigation_items), 3):
+            for index, (column, destination) in enumerate(
+                zip(st.columns(3, gap="medium"), navigation_items[offset:offset + 3]), start=offset
+            ):
                 with column:
-                    if st.button(
-                        destination, key=f"rng_main_nav_{destination}",
-                        disabled=destination == page, use_container_width=True
-                    ):
-                        st.session_state.page = destination
-                        rng_rerun()
-        with st.container(key="rng_main_logout"):
-            if st.button("Log out", key="rng_logout_button", use_container_width=True):
-                rng_logout()
+                    with st.container(key=f"rng_navigation_card_{index}"):
+                        button_key = "rng_logout_button" if destination == "Log out" else f"rng_main_nav_{destination}"
+                        if st.button(
+                            destination, key=button_key, disabled=destination == page,
+                            use_container_width=True
+                        ):
+                            if destination == "Log out":
+                                rng_logout()
+                            else:
+                                st.session_state.page = destination
+                                rng_rerun()
 
     st.markdown(
         '<div class="rng-dashboard-signature"><span>A little clarity goes a long way.</span><span>YOUR SPACE. YOUR PACE.</span></div>',

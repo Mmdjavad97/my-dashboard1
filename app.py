@@ -3672,117 +3672,82 @@ elif page == "Mission Report":
     # CSS
     # =========================================================
 
+    st.markdown('<div id="rng-mission-marker"></div>', unsafe_allow_html=True)
     st.markdown("""
     <style>
-
-    .mission-report-card {
-        background: white;
-        border: 1px solid #e3e7ed;
-        border-radius: 14px;
-        padding: 24px;
-        min-height: 120px;
-        box-shadow: 0 2px 8px rgba(20, 30, 45, 0.05);
-        margin-bottom: 10px;
+    [data-testid="stMain"]:has(#rng-mission-marker) { background: radial-gradient(ellipse at right top, #dce8f9, transparent 55%), #f2f5fa; }
+    .stApp:has(#rng-mission-marker), .stApp:has(#rng-mission-marker) h1,
+    .stApp:has(#rng-mission-marker) h2, .stApp:has(#rng-mission-marker) h3,
+    .stApp:has(#rng-mission-marker) [data-testid="stMarkdownContainer"],
+    .stApp:has(#rng-mission-marker) input, .stApp:has(#rng-mission-marker) textarea,
+    .stApp:has(#rng-mission-marker) label { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-mission-marker) .block-container { max-width: 1440px; }
+    .rng-mission-hero { background: radial-gradient(ellipse at right top, #355e89, transparent 65%), #172f4e; border: 1px solid #315174; border-radius: 24px; padding: 30px 34px; margin: 8px 0 14px; }
+    .rng-mission-eyebrow { color: #b1cae9; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+    .rng-mission-hero h1 { color: #f6f9ff !important; font-size: clamp(30px, 3.4vw, 44px) !important; font-weight: 750; letter-spacing: -1.2px; margin: 0 0 12px; padding: 0; overflow-wrap: anywhere; }
+    .rng-mission-hero p { color: #c6d8ed; font-size: 15px; line-height: 1.8; margin: 0; }
+    .rng-mission-total { display: inline-block; color: #dce9fb; background: #a9ccff12; border: 1px solid #a9ccff30; border-radius: 100px; padding: 6px 12px; font-size: 11px; margin-top: 18px; }
+    .st-key-rng_mission_add_action .stButton button, .st-key-rng_mission_save_action .stButton button { color: #fff; background: #254d7e; border: 1px solid #254d7e; min-height: 46px; border-radius: 11px; }
+    .st-key-rng_mission_add_action .stButton button:hover, .st-key-rng_mission_save_action .stButton button:hover { background: #18395f; color: #fff; }
+    .st-key-rng_mission_add_form { background: #fff; border: 1px solid #d7e3f2; padding: 24px; border-radius: 18px; margin-bottom: 20px; }
+    [class*="st-key-rng_mission_card_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 18px; padding: 24px; min-height: 270px; box-shadow: 0 8px 25px #15385f07; }
+    .rng-mission-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 19px; }
+    .rng-mission-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; color: #5279aa; background: #eaf1fc; border-radius: 14px; }
+    .rng-mission-icon svg { width: 25px; height: 25px; }
+    .rng-mission-index { color: #8698b0; font-size: 11px; letter-spacing: 1px; }
+    .mission-report-card-title { color: #243e60; font-size: 19px; font-weight: 700; line-height: 1.5; margin: 0 0 10px; overflow-wrap: anywhere; }
+    .mission-report-card-text { color: #6f839e; font-size: 12px; line-height: 1.8; margin-bottom: 13px; overflow-wrap: anywhere; }
+    .rng-mission-card-footer { color: #8092aa; font-size: 10px; letter-spacing: .6px; border-top: 1px solid #e8edf5; padding-top: 14px; margin-bottom: 6px; }
+    [class*="st-key-rng_mission_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1; }
+    .st-key-rng_mission_board .stButton button { color: #48658b; background: #f5f8fd; border: 1px solid #dfe7f3; border-radius: 9px; min-height: 44px; }
+    .st-key-rng_mission_board .stButton button:hover { background: #eaf1fc; color: #234b7b; border-color: #8faed7; }
+    [class*="st-key-rng_mission_open_"] .stButton button { background: #244d7c; border-color: #244d7c; color: #fff; }
+    [class*="st-key-rng_mission_open_"] .stButton button:hover { background: #17395f; color: #fff; }
+    .mission-report-delete-warning { color: #8c4050; background: #fff2f4; border: 1px solid #f1d4dc; border-radius: 12px; padding: 15px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+    .rng-mission-empty { text-align: center; padding: 50px 24px; border: 1px dashed #bdcee5; border-radius: 18px; background: #fff9; color: #70859f; }
+    .rng-mission-empty strong { display: block; color: #304e75; font-size: 21px; margin-bottom: 10px; }
+    .rng-mission-section { color: #294569; font-size: 21px; font-weight: 700; margin: 4px 0 8px; }
+    .rng-mission-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
+    .rng-mission-step { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-right: 10px; border-radius: 8px; color: #547bad; background: #e8f0fc; font-size: 11px; font-weight: 700; }
+    .rng-mission-card-date { color: #6d85a6; font-size: 11px; margin: 8px 0 14px; }
+    .mission-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
+    [class*="st-key-rng_mission_panel_"] { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
+    .st-key-mission_detail input, .st-key-mission_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
+    .st-key-mission_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
+    .st-key-mission_detail label p { color: #587193; font-size: 12px; }
+    .st-key-rng_mission_export { background: #e8eff9; border: 1px solid #d9e4f3; padding: 22px; border-radius: 18px; margin-top: 20px; }
+    .st-key-rng_mission_export .stDownloadButton button { background: #fff; color: #345781; border: 1px solid #c5d6ed; min-height: 46px; border-radius: 10px; }
+    .stApp:has(#rng-mission-marker) button:focus-visible { outline: 3px solid #9ab9e8; outline-offset: 2px; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_mission_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_mission_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_mission_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_mission_card_"]) > [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
     }
-
-    .mission-report-card-title {
-        font-size: 18px;
-        font-weight: 650;
-        color: #172333;
+    @media (max-width: 700px) {
+        .rng-mission-hero { padding: 26px 22px; border-radius: 20px; }
+        .st-key-rng_mission_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_mission_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_mission_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_mission_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+        [class*="st-key-rng_mission_card_"] { padding: 20px; }
+        [class*="st-key-rng_mission_panel_"], .st-key-rng_mission_export { padding: 18px; }
     }
-
-    .mission-report-card-text {
-        font-size: 13px;
-        color: #7b8794;
-        margin-top: 6px;
-    }
-
-    .mission-report-delete-warning {
-        background: #fff4f4;
-        border: 1px solid #f0caca;
-        border-radius: 10px;
-        padding: 12px;
-        margin: 8px 0;
-        color: #7a1f1f;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .mission-form-heading {
-        font-size: 25px;
-        font-weight: 700;
-        color: #172333;
-        text-align: center;
-        direction: rtl;
-        margin: 12px 0 25px;
-    }
-
-    .mission-section-heading {
-        background: #edf0f4;
-        border: 1px solid #cfd6df;
-        border-radius: 8px;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: 700;
-        color: #172333;
-        direction: rtl;
-        text-align: right;
-        margin: 18px 0 12px;
-    }
-
-    /* Visible Persian field labels */
-
-    .st-key-mission_detail
-    div[data-testid="stWidgetLabel"] {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        justify-content: flex-end !important;
-        direction: rtl !important;
-    }
-
-    .st-key-mission_detail
-    div[data-testid="stWidgetLabel"] p {
-        color: #172333 !important;
-        font-weight: 650 !important;
-        font-size: 15px !important;
-        direction: rtl !important;
-        text-align: right !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .st-key-mission_detail input,
-    .st-key-mission_detail textarea {
-        direction: rtl !important;
-        text-align: right !important;
-        color: #172333 !important;
-        background-color: #ffffff !important;
-        font-size: 15px !important;
-        unicode-bidi: plaintext;
-    }
-
-    .st-key-mission_detail input::placeholder,
-    .st-key-mission_detail textarea::placeholder {
-        color: #788596 !important;
-        opacity: 1 !important;
-    }
-
-    @media (max-width: 768px) {
-
-        .mission-report-card {
-            min-height: 100px;
-            padding: 18px;
-        }
-
-        .mission-form-heading {
-            font-size: 20px;
-        }
-
-    }
-
     </style>
     """, unsafe_allow_html=True)
+
+    def mission_card_heading(name, index):
+        record_id = st.session_state.mission_report_card_ids[index]
+        data = st.session_state.mission_report_forms.get(record_id, {})
+        location = " / ".join(str(data.get(field, "")).strip() for field in ("city", "company") if str(data.get(field, "")).strip())
+        description = location or "Ready for your next assignment."
+        date = str(data.get("report_date", "")).strip()
+        st.markdown(
+            '<div class="rng-mission-card-top"><div class="rng-mission-icon">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>'
+            f'</div><span class="rng-mission-index">REPORT {index + 1:02}</span></div>'
+            f'<div class="mission-report-card-title">{escape(str(name))}</div>'
+            f'<div class="mission-report-card-text">{escape(description)}</div>'
+            + f'<div class="rng-mission-card-date">{escape(date or "Date not set")}</div>'
+            + '<div class="rng-mission-card-footer">ASSIGNMENT / TRAVEL / OUTCOME</div>',
+            unsafe_allow_html=True
+        )
 
     # =========================================================
     # PDF GENERATOR
@@ -4448,7 +4413,9 @@ elif page == "Mission Report":
             rng_rerun()
 
         st.markdown(
-            f'<div class="dashboard-title">{escape(mission_name)}</div>',
+            '<div class="rng-mission-hero"><div class="rng-mission-eyebrow">MISSION REPORT WORKSPACE</div>'
+            f'<h1>{escape(str(mission_name))}</h1>'
+            '<p>A clear record of the journey, the work, and the outcome.</p></div>',
             unsafe_allow_html=True
         )
 
@@ -4463,221 +4430,136 @@ elif page == "Mission Report":
 
             with st.container(key="mission_detail"):
 
-                # =================================================
-                # FORM TITLE
-                # =================================================
-
-                form_title = mission_template["cells"].get(
-                    "C1",
-                    MISSION_HEADINGS["title"]
-                )
-
-                st.markdown(
-                    '<div class="mission-form-heading">'
-                    + escape(form_title)
-                    + '</div>',
-                    unsafe_allow_html=True
-                )
-
-                # =================================================
-                # INPUT HELPERS
-                # =================================================
-
                 def mission_input(field):
-
                     form[field] = st.text_input(
-                        label=FIELD_LABELS[field],
-                        value=form.get(field, ""),
-                        placeholder=FIELD_LABELS[field],
-                        key=f"mission_{mission_id}_{field}",
+                        label=FIELD_LABELS[field], value=form.get(field, ""),
+                        placeholder=FIELD_LABELS[field], key=f"mission_{mission_id}_{field}",
                         label_visibility="visible"
                     )
 
                 def mission_text_area(field, height):
-
                     form[field] = st.text_area(
-                        label=FIELD_LABELS[field],
-                        value=form.get(field, ""),
-                        placeholder=FIELD_LABELS[field],
-                        height=height,
-                        key=f"mission_{mission_id}_{field}",
-                        label_visibility="visible"
+                        label=FIELD_LABELS[field], value=form.get(field, ""),
+                        placeholder=FIELD_LABELS[field], height=height,
+                        key=f"mission_{mission_id}_{field}", label_visibility="visible"
                     )
 
-                def mission_section(title):
-
+                def mission_section(number, title):
                     st.markdown(
-                        '<div class="mission-section-heading">'
-                        + escape(title)
-                        + '</div>',
+                        f'<div class="rng-mission-section"><span class="rng-mission-step">{number:02}</span>{escape(title)}</div>',
                         unsafe_allow_html=True
                     )
 
-                # =================================================
-                # REPORT DATE
-                # =================================================
+                with st.container(key="rng_mission_panel_employee"):
+                    mission_section(1, "Report & employee")
+                    form_title = mission_template["cells"].get("C1", MISSION_HEADINGS["title"])
+                    st.markdown('<div class="mission-form-title">' + escape(form_title) + '</div>', unsafe_allow_html=True)
+                    mission_input("report_date")
+                    position_col, employee_col = st.columns(2)
+                    with position_col:
+                        mission_input("position")
+                    with employee_col:
+                        mission_input("employee")
 
-                mission_input("report_date")
+                with st.container(key="rng_mission_panel_destination"):
+                    mission_section(2, "Destination & companions")
+                    company_col, city_col, dispatcher_col = st.columns(3)
+                    with company_col:
+                        mission_input("company")
+                    with city_col:
+                        mission_input("city")
+                    with dispatcher_col:
+                        mission_input("dispatcher")
+                    mission_input("companions")
 
-                st.divider()
+                with st.container(key="rng_mission_panel_travel"):
+                    mission_section(3, "Schedule & travel")
+                    duration_col, start_col, departure_col = st.columns(3)
+                    with duration_col:
+                        mission_input("duration")
+                    with start_col:
+                        mission_input("start_date")
+                    with departure_col:
+                        mission_input("departure_time")
+                    return_col, end_col = st.columns(2)
+                    with return_col:
+                        mission_input("return_time")
+                    with end_col:
+                        mission_input("end_date")
+                    distance_col, transport_col = st.columns(2)
+                    with distance_col:
+                        mission_input("distance")
+                    with transport_col:
+                        mission_input("transport")
 
-                # =================================================
-                # EMPLOYEE INFORMATION
-                # =================================================
+                with st.container(key="rng_mission_panel_notes"):
+                    mission_section(4, "Mission notes & outcomes")
+                    st.markdown('<div class="rng-mission-help">Capture what you set out to do, what happened, and what comes next.</div>', unsafe_allow_html=True)
+                    mission_input("equipment")
+                    mission_text_area("description", 180)
+                    objective_col, result_col = st.columns(2)
+                    with objective_col:
+                        mission_text_area("objective", 130)
+                    with result_col:
+                        mission_text_area("result", 130)
 
-                cols = st.columns(2)
+                with st.container(key="rng_mission_panel_review"):
+                    mission_section(5, "Review & signatures")
+                    mission_text_area("manager_comment", 140)
+                    employee_col, manager_col = st.columns(2)
+                    with employee_col:
+                        mission_input("employee_signature")
+                    with manager_col:
+                        mission_input("manager_signature")
 
-                with cols[0]:
-                    mission_input("position")
-
-                with cols[1]:
-                    mission_input("employee")
-
-                # =================================================
-                # MISSION DESTINATION
-                # =================================================
-
-                cols = st.columns(3)
-
-                with cols[0]:
-                    mission_input("company")
-
-                with cols[1]:
-                    mission_input("city")
-
-                with cols[2]:
-                    mission_input("dispatcher")
-
-                mission_input("companions")
-
-                # =================================================
-                # MISSION SCHEDULE
-                # =================================================
-
-                mission_section(
-                    MISSION_HEADINGS["schedule"]
-                )
-
-                cols = st.columns(3)
-
-                with cols[0]:
-                    mission_input("duration")
-
-                with cols[1]:
-                    mission_input("start_date")
-
-                with cols[2]:
-                    mission_input("departure_time")
-
-                cols = st.columns(2)
-
-                with cols[0]:
-                    mission_input("return_time")
-
-                with cols[1]:
-                    mission_input("end_date")
-
-                # =================================================
-                # TRANSPORTATION
-                # =================================================
-
-                mission_section(
-                    MISSION_HEADINGS["transport"]
-                )
-
-                cols = st.columns(2)
-
-                with cols[0]:
-                    mission_input("distance")
-
-                with cols[1]:
-                    mission_input("transport")
-
-                # =================================================
-                # MISSION DESCRIPTION
-                # =================================================
-
-                mission_section(
-                    MISSION_HEADINGS["description"]
-                )
-
-                mission_input("equipment")
-
-                mission_text_area(
-                    "description",
-                    220
-                )
-
-                mission_text_area(
-                    "objective",
-                    110
-                )
-
-                mission_text_area(
-                    "result",
-                    110
-                )
-
-                # =================================================
-                # MANAGER REVIEW
-                # =================================================
-
-                mission_section(
-                    MISSION_HEADINGS["manager"]
-                )
-
-                mission_text_area(
-                    "manager_comment",
-                    140
-                )
-
-                cols = st.columns(2)
-
-                with cols[0]:
-                    mission_input("employee_signature")
-
-                with cols[1]:
-                    mission_input("manager_signature")
+                with st.container(key="rng_mission_save_action"):
+                    if st.button("Save report", key=f"mission_save_form_{mission_id}", use_container_width=True):
+                        try:
+                            rng_save()
+                            st.success("Mission report saved.")
+                        except Exception as exc:
+                            st.error("Could not save your report. Please retry. " + str(exc))
 
                 # =================================================
                 # PDF DOWNLOAD
                 # =================================================
 
-                st.divider()
+                with st.container(key="rng_mission_export"):
+                    st.markdown('<div class="rng-mission-section">Ready to send</div><div class="rng-mission-help">Download or share the report in the original A4 portrait format.</div>', unsafe_allow_html=True)
 
-                try:
+                    try:
 
-                    pdf_bytes = create_mission_pdf(
-                        form,
-                        mission_template
-                    )
-
-                    safe_name = re.sub(
-                        r"[^\w.-]+",
-                        "_",
-                        mission_name
-                    )
-
-                    mission_pdf_filename = f"Mission_Report_{safe_name}.pdf"
-                    download_col, share_col = st.columns(2)
-                    with download_col:
-                        st.download_button(
-                            label="Download A4 Portrait PDF",
-                            data=pdf_bytes,
-                            file_name=mission_pdf_filename,
-                            mime="application/pdf",
-                            key=f"mission_pdf_{mission_id}",
-                            use_container_width=True
+                        pdf_bytes = create_mission_pdf(
+                            form,
+                            mission_template
                         )
-                    with share_col:
-                        rng_pdf_share_button(pdf_bytes, mission_pdf_filename)
 
-                except Exception as error:
+                        safe_name = re.sub(
+                            r"[^\w.-]+",
+                            "_",
+                            mission_name
+                        )
 
-                    st.error(
-                        "PDF generation error: "
-                        + str(error)
-                    )
+                        mission_pdf_filename = f"Mission_Report_{safe_name}.pdf"
+                        download_col, share_col = st.columns(2)
+                        with download_col:
+                            st.download_button(
+                                label="Download A4 Portrait PDF",
+                                data=pdf_bytes,
+                                file_name=mission_pdf_filename,
+                                mime="application/pdf",
+                                key=f"mission_pdf_{mission_id}",
+                                use_container_width=True
+                            )
+                        with share_col:
+                            rng_pdf_share_button(pdf_bytes, mission_pdf_filename)
+
+                    except Exception as error:
+
+                        st.error(
+                            "PDF generation error: "
+                            + str(error)
+                        )
 
     # =========================================================
     # MISSION REPORT MAIN PAGE
@@ -4687,15 +4569,11 @@ elif page == "Mission Report":
 
         st.session_state.selected_mission_report = None
 
+        report_total = len(st.session_state.mission_report_cards)
         st.markdown(
-            '<div class="dashboard-title">Mission Report</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="dashboard-subtitle">'
-            'Manage and review your mission reports'
-            '</div>',
+            '<div class="rng-mission-hero"><div class="rng-mission-eyebrow">EVERY ASSIGNMENT HAS A STORY.</div>'
+            '<h1>Mission Report</h1><p>Keep the destination, the details, and the outcome together.</p>'
+            f'<span class="rng-mission-total">{report_total} {"report" if report_total == 1 else "reports"} in your workspace</span></div>',
             unsafe_allow_html=True
         )
 
@@ -4704,69 +4582,71 @@ elif page == "Mission Report":
         # =====================================================
 
         if st.session_state.adding_mission_report:
+            with st.container(key="rng_mission_add_form"):
 
-            st.markdown(
-                '<div class="section-title">'
-                'Add New Mission Report'
-                '</div>',
-                unsafe_allow_html=True
-            )
+                st.markdown(
+                    '<div class="section-title">'
+                    'Add New Mission Report'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
-            new_title = st.text_input(
-                "Mission report title",
-                placeholder="Enter mission report title",
-                key="new_mission_report_title"
-            )
+                new_title = st.text_input(
+                    "Mission report title",
+                    placeholder="Enter mission report title",
+                    key="new_mission_report_title"
+                )
 
-            add_col, cancel_col = st.columns(2)
+                add_col, cancel_col = st.columns(2)
 
-            with add_col:
+                with add_col:
 
-                if st.button(
-                    "Add Mission Report",
-                    key="mission_report_add_confirm",
-                    use_container_width=True
-                ):
+                    if st.button(
+                        "Add Mission Report",
+                        key="mission_report_add_confirm",
+                        use_container_width=True
+                    ):
 
-                    if new_title.strip():
+                        if new_title.strip():
 
-                        st.session_state.mission_report_cards.append(
-                            new_title.strip()
-                        )
+                            st.session_state.mission_report_cards.append(
+                                new_title.strip()
+                            )
 
-                        st.session_state.mission_report_card_ids.append(
-                            uuid4().hex
-                        )
+                            st.session_state.mission_report_card_ids.append(
+                                uuid4().hex
+                            )
+
+                            st.session_state.adding_mission_report = False
+                            rng_rerun()
+
+                        else:
+
+                            st.warning(
+                                "Please enter a mission report title."
+                            )
+
+                with cancel_col:
+
+                    if st.button(
+                        "Cancel",
+                        key="mission_report_add_cancel",
+                        use_container_width=True
+                    ):
 
                         st.session_state.adding_mission_report = False
                         rng_rerun()
 
-                    else:
-
-                        st.warning(
-                            "Please enter a mission report title."
-                        )
-
-            with cancel_col:
+        else:
+            with st.container(key="rng_mission_add_action"):
 
                 if st.button(
-                    "Cancel",
-                    key="mission_report_add_cancel",
-                    use_container_width=True
+                    "+ Add Mission Report",
+                    key="mission_report_add_button"
                 ):
 
-                    st.session_state.adding_mission_report = False
+                    st.session_state.adding_mission_report = True
                     rng_rerun()
-
-        else:
-
-            if st.button(
-                "+ Add Mission Report",
-                key="mission_report_add_button"
-            ):
-
-                st.session_state.adding_mission_report = True
-                rng_rerun()
 
         st.markdown(
             "<br>",
@@ -4777,195 +4657,171 @@ elif page == "Mission Report":
         # MISSION REPORT CARDS
         # =====================================================
 
-        cols = st.columns(3)
+        if not st.session_state.mission_report_cards:
+            st.markdown('<div class="rng-mission-empty"><strong>A new assignment. A clear record.</strong>Add a mission report to document the journey and its outcome.</div>', unsafe_allow_html=True)
+        with st.container(key="rng_mission_board"):
+            cols = st.columns(3)
 
-        for i, mission in enumerate(
-            st.session_state.mission_report_cards
-        ):
+            for i, mission in enumerate(
+                st.session_state.mission_report_cards
+            ):
 
-            with cols[i % 3]:
+                with cols[i % 3], st.container(key=f"rng_mission_card_{i}"):
 
-                safe_title = escape(mission)
+                    mission_card_heading(mission, i)
 
-                # =================================================
-                # DELETE CONFIRMATION
-                # =================================================
+                    safe_title = escape(mission)
 
-                if st.session_state.deleting_mission_report == i:
+                    # =================================================
+                    # DELETE CONFIRMATION
+                    # =================================================
 
-                    st.markdown(
-                        f"""
-                        <div class="mission-report-card">
-                            <div class="mission-report-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="mission-report-card-text">
-                                Mission report records
-                            </div>
-                        </div>
+                    if st.session_state.deleting_mission_report == i:
 
-                        <div class="mission-report-delete-warning">
-                            Are you sure you want to delete
-                            "{safe_title}"?
-                            This cannot be undone.
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                        st.markdown(
+                            f'<div class="mission-report-delete-warning">Delete "{safe_title}"? This cannot be undone.</div>',
+                            unsafe_allow_html=True
+                        )
 
-                    confirm_col, cancel_col = st.columns(2)
+                        confirm_col, cancel_col = st.columns(2)
 
-                    with confirm_col:
+                        with confirm_col:
 
-                        if st.button(
-                            "Confirm Delete",
-                            key=f"mission_report_confirm_delete_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Confirm Delete",
+                                key=f"mission_report_confirm_delete_{i}",
+                                use_container_width=True
+                            ):
 
-                            deleted_id = (
-                                st.session_state.mission_report_card_ids.pop(i)
-                            )
-
-                            st.session_state.mission_report_cards.pop(i)
-
-                            st.session_state.mission_report_forms.pop(
-                                deleted_id,
-                                None
-                            )
-
-                            st.session_state.deleting_mission_report = None
-                            st.session_state.editing_mission_report = None
-
-                            rng_rerun()
-
-                    with cancel_col:
-
-                        if st.button(
-                            "Cancel",
-                            key=f"mission_report_cancel_delete_{i}",
-                            use_container_width=True
-                        ):
-
-                            st.session_state.deleting_mission_report = None
-
-                            rng_rerun()
-
-                # =================================================
-                # EDIT MISSION REPORT TITLE
-                # =================================================
-
-                elif st.session_state.editing_mission_report == i:
-
-                    edited_title = st.text_input(
-                        "Mission report title",
-                        value=mission,
-                        key=f"mission_report_edit_input_{i}"
-                    )
-
-                    save_col, cancel_col = st.columns(2)
-
-                    with save_col:
-
-                        if st.button(
-                            "Save",
-                            key=f"mission_report_save_{i}",
-                            use_container_width=True
-                        ):
-
-                            if edited_title.strip():
-
-                                st.session_state.mission_report_cards[i] = (
-                                    edited_title.strip()
+                                deleted_id = (
+                                    st.session_state.mission_report_card_ids.pop(i)
                                 )
+
+                                st.session_state.mission_report_cards.pop(i)
+
+                                st.session_state.mission_report_forms.pop(
+                                    deleted_id,
+                                    None
+                                )
+
+                                st.session_state.deleting_mission_report = None
+                                st.session_state.editing_mission_report = None
+
+                                rng_rerun()
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"mission_report_cancel_delete_{i}",
+                                use_container_width=True
+                            ):
+
+                                st.session_state.deleting_mission_report = None
+
+                                rng_rerun()
+
+                    # =================================================
+                    # EDIT MISSION REPORT TITLE
+                    # =================================================
+
+                    elif st.session_state.editing_mission_report == i:
+
+                        edited_title = st.text_input(
+                            "Mission report title",
+                            value=mission,
+                            key=f"mission_report_edit_input_{i}"
+                        )
+
+                        save_col, cancel_col = st.columns(2)
+
+                        with save_col:
+
+                            if st.button(
+                                "Save",
+                                key=f"mission_report_save_{i}",
+                                use_container_width=True
+                            ):
+
+                                if edited_title.strip():
+
+                                    st.session_state.mission_report_cards[i] = (
+                                        edited_title.strip()
+                                    )
+
+                                    st.session_state.editing_mission_report = None
+
+                                    rng_rerun()
+
+                                else:
+
+                                    st.warning(
+                                        "Please enter a mission report title."
+                                    )
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"mission_report_cancel_{i}",
+                                use_container_width=True
+                            ):
 
                                 st.session_state.editing_mission_report = None
 
                                 rng_rerun()
 
-                            else:
+                    # =================================================
+                    # NORMAL MISSION REPORT CARD
+                    # =================================================
 
-                                st.warning(
-                                    "Please enter a mission report title."
-                                )
+                    else:
 
-                    with cancel_col:
+                        button_col1, button_col2, button_col3 = st.columns(3)
 
-                        if st.button(
-                            "Cancel",
-                            key=f"mission_report_cancel_{i}",
-                            use_container_width=True
-                        ):
+                        with button_col1, st.container(key=f"rng_mission_open_{i}"):
 
-                            st.session_state.editing_mission_report = None
+                            open_button = st.button(
+                                "Open",
+                                key=f"mission_report_open_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col2:
+
+                            edit_button = st.button(
+                                "Edit",
+                                key=f"mission_report_edit_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col3:
+
+                            delete_button = st.button(
+                                "Delete",
+                                key=f"mission_report_delete_{i}",
+                                use_container_width=True
+                            )
+
+                        if open_button:
+
+                            st.session_state.selected_mission_report = i
 
                             rng_rerun()
 
-                # =================================================
-                # NORMAL MISSION REPORT CARD
-                # =================================================
+                        if edit_button:
 
-                else:
+                            st.session_state.editing_mission_report = i
+                            st.session_state.deleting_mission_report = None
 
-                    st.markdown(
-                        f"""
-                        <div class="mission-report-card">
-                            <div class="mission-report-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="mission-report-card-text">
-                                Mission report records
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                            rng_rerun()
 
-                    button_col1, button_col2, button_col3 = st.columns(3)
+                        if delete_button:
 
-                    with button_col1:
+                            st.session_state.deleting_mission_report = i
+                            st.session_state.editing_mission_report = None
 
-                        open_button = st.button(
-                            "Open",
-                            key=f"mission_report_open_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col2:
-
-                        edit_button = st.button(
-                            "Edit",
-                            key=f"mission_report_edit_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col3:
-
-                        delete_button = st.button(
-                            "Delete",
-                            key=f"mission_report_delete_{i}",
-                            use_container_width=True
-                        )
-
-                    if open_button:
-
-                        st.session_state.selected_mission_report = i
-
-                        rng_rerun()
-
-                    if edit_button:
-
-                        st.session_state.editing_mission_report = i
-                        st.session_state.deleting_mission_report = None
-
-                        rng_rerun()
-
-                    if delete_button:
-
-                        st.session_state.deleting_mission_report = i
-                        st.session_state.editing_mission_report = None
-
-                        rng_rerun()
+                            rng_rerun()
 
 
 

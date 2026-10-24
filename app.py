@@ -478,16 +478,71 @@ def rng_logout():
     st.rerun()
 
 
-# Feature pages retain a direct route home without a sidebar.
-if st.session_state.page != "Dashboard":
-    home, space, logout = st.columns([1.3, 3, 1])
-    with home:
-        if st.button("Back to Dashboard", key="rng_back_to_dashboard", use_container_width=True):
-            st.session_state.page = "Dashboard"
+def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
+    """Shared task actions; deletion requires an explicit second click."""
+    pending_key = f"{tasks_key}_pending_delete"
+    edit_col, delete_col = st.columns(2)
+    with edit_col:
+        if st.button("Edit", key=f"{prefix}edit_button_{task_index}", use_container_width=True):
+            st.session_state[pending_key] = None
+            st.session_state[editing_key] = task_index
             rng_rerun()
-    with logout:
-        if st.button("Log out", key="rng_logout_button", use_container_width=True):
-            rng_logout()
+    with delete_col:
+        if st.button("Delete", key=f"{prefix}delete_button_{task_index}", use_container_width=True):
+            st.session_state[pending_key] = task_index
+            rng_rerun()
+    if st.session_state.get(pending_key) == task_index:
+        st.warning("Delete this task and all its subtasks? This cannot be undone.")
+        confirm_col, cancel_col = st.columns(2)
+        with confirm_col:
+            if st.button("Yes, delete", key=f"{prefix}confirm_delete_{task_index}", type="primary", use_container_width=True):
+                st.session_state[tasks_key].pop(task_index)
+                st.session_state[editing_key] = None
+                st.session_state[pending_key] = None
+                # Task widgets use list positions. Discard editor drafts before
+                # those positions are reused by the remaining tasks.
+                draft_prefixes = tuple(f"{prefix}{name}_" for name in (
+                    "edit_title", "edit_subtask", "edit_new_subtask"
+                ))
+                for key in list(st.session_state):
+                    if key.startswith(draft_prefixes):
+                        del st.session_state[key]
+                rng_rerun()
+        with cancel_col:
+            if st.button("Cancel", key=f"{prefix}cancel_delete_{task_index}", use_container_width=True):
+                st.session_state[pending_key] = None
+                rng_rerun()
+
+
+# A compact, horizontally scrollable route to every workspace.
+if st.session_state.page != "Dashboard":
+    st.markdown("""<style>
+    .st-key-rng_section_nav { background: #ffffffdf; border: 1px solid #dce5f0; border-radius: 16px; padding: 10px; margin-bottom: 12px; }
+    .st-key-rng_section_nav [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; overflow-x: auto; gap: 6px; padding-bottom: 4px; scrollbar-width: thin; scrollbar-color: #a6bbd8 transparent; }
+    .st-key-rng_section_nav [data-testid="stColumn"] { flex: 0 0 auto !important; width: auto !important; min-width: max-content !important; }
+    .st-key-rng_section_nav button { white-space: nowrap; min-height: 42px; padding: 7px 14px; background: transparent; border: 1px solid transparent; border-radius: 10px; color: #536b89; }
+    .st-key-rng_section_nav button p { font-family: Arial, Tahoma, sans-serif !important; font-size: 13px; }
+    .st-key-rng_section_nav button:hover { background: #edf3fb; color: #214b7f; border-color: #d6e2f2; }
+    .st-key-rng_section_nav button[kind="primary"] { background: #203f68; color: #fff; border-color: #203f68; }
+    .st-key-rng_section_nav button:focus-visible { outline: 3px solid #8aaff0; outline-offset: 2px; }
+    [class*="st-key-rng_todo_card_"] [data-testid="stHorizontalBlock"],
+    [class*="st-key-rng_development_card_"] [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; }
+    [class*="st-key-rng_todo_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"],
+    [class*="st-key-rng_development_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1 1 0 !important; }
+    </style>""", unsafe_allow_html=True)
+    with st.container(key="rng_section_nav"):
+        for column, destination in zip(st.columns(len(pages) + 1), pages + ["Log out"]):
+            with column:
+                key = ("rng_back_to_dashboard" if destination == "Dashboard" else
+                       "rng_logout_button" if destination == "Log out" else f"rng_section_nav_{destination}")
+                if st.button(destination, key=key, type="primary" if destination == st.session_state.page else "secondary"):
+                    if destination == "Log out":
+                        rng_logout()
+                    st.session_state.page = destination
+                    # A confirmation applies only while the task card is open.
+                    st.session_state.tasks_pending_delete = None
+                    st.session_state.development_tasks_pending_delete = None
+                    rng_rerun()
 
 page = st.session_state.page
 
@@ -1311,14 +1366,7 @@ elif page == "To Do List":
                     # EDIT BUTTON
                     # =================================================
 
-                    if st.button(
-                        "Edit",
-                        key=f"edit_button_{task_index}",
-                        use_container_width=True
-                    ):
-
-                        st.session_state.editing_task = task_index
-                        rng_rerun()
+                    rng_task_actions("tasks", task_index, "editing_task", "")
 
 
 
@@ -5284,14 +5332,7 @@ elif page == "Rah Nia Development":
                     # EDIT BUTTON
                     # =================================================
 
-                    if st.button(
-                        "Edit",
-                        key=f"development_edit_button_{task_index}",
-                        use_container_width=True
-                    ):
-
-                        st.session_state.development_editing_task = task_index
-                        rng_rerun()
+                    rng_task_actions("development_tasks", task_index, "development_editing_task", "development_")
 
 
 
@@ -5603,7 +5644,13 @@ elif page == "BOM":
     .rng-bom-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
     .bom-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
     .st-key-rng_bom_meta, .st-key-rng_bom_approval { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
-    .st-key-bom_detail [data-testid="stDataFrame"] { border: 1px solid #d5e1f1; border-radius: 12px; overflow: hidden; background: #fff; max-width: 100%; }
+    .st-key-bom_detail [data-testid="stDataFrame"] { border: 1px solid #cbd9eb; border-radius: 0 0 14px 14px; overflow: hidden; background: #fff; max-width: 100%; box-shadow: 0 8px 24px #193a6010; }
+    .rng-bom-grid-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; direction: rtl; background: linear-gradient(110deg, #264d79, #152f50); padding: 17px 20px; border-radius: 14px 14px 0 0; color: #fff; }
+    .rng-bom-grid-heading strong { font: 700 15px Arial, Tahoma, sans-serif; }
+    .rng-bom-grid-heading span { color: #c0d2e9; font: 12px Arial, Tahoma, sans-serif; }
+    [class*="st-key-bom_form_table_"] { gap: 0 !important; }
+    .st-key-bom_detail [data-testid="stDataFrame"] textarea { direction: rtl; text-align: right; font-family: Arial, Tahoma, sans-serif !important; }
+    @media (max-width: 600px) { .rng-bom-grid-heading { padding: 14px 12px; } .rng-bom-grid-heading span { font-size: 11px; } }
     .st-key-bom_detail input, .st-key-bom_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
     .st-key-bom_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
     .st-key-bom_detail label p { color: #587193; font-size: 12px; }
@@ -6218,33 +6265,61 @@ elif page == "BOM":
                 for table_index, table_items in enumerate(all_tables):
                     st.markdown(
                         f'<div class="rng-bom-table-title">Materials · Table {table_index + 1:02}</div>'
-                        '<div class="rng-bom-help">Edit cells directly. Quantity updates from Actual + Over. Scroll sideways on smaller screens.</div>',
+                        '<div class="rng-bom-help">Read from right to left · Double-click a cell to edit · Quantity = Actual + Over</div>',
                         unsafe_allow_html=True
                     )
                     with st.container(key=f"bom_form_table_{table_index}"):
+                        material_count = sum(bool(str(item.get("description", "")).strip()) for item in table_items[:15])
+                        st.markdown(
+                            f'<div class="rng-bom-grid-heading"><strong>جدول اقلام · {table_index + 1:02}</strong>'
+                            f'<span>{material_count} قلم ثبت‌شده · ۱۵ ردیف</span></div>',
+                            unsafe_allow_html=True
+                        )
                         records = [
                             {"row": row_index + 1, **item, "quantity": calculate_bom_quantity(item)}
                             for row_index, item in enumerate(table_items[:15])
                         ]
-                        table_frame = pd.DataFrame(records)
+                        table_frame = pd.DataFrame(records).style.set_properties(
+                            subset=["row"], **{"background-color": "#f1f5fb", "color": "#637c9d"}
+                        ).set_properties(
+                            subset=["quantity"], **{"background-color": "#eaf1fb", "color": "#214b7f", "font-weight": "bold"}
+                        )
                         editor_key = f"bom_{bom_id}_editor_{table_index}"
                         column_config = {
-                            "row": st.column_config.NumberColumn(field_labels["row"], width=60, disabled=True, format="%d"),
-                            "description": st.column_config.TextColumn(field_labels["description"], width=300),
-                            "size": st.column_config.TextColumn(field_labels["size"], width=90),
-                            "actual": st.column_config.TextColumn(field_labels["actual"], width=100, help="Persian and Arabic digits are supported."),
-                            "over": st.column_config.TextColumn(field_labels["over"], width=90),
-                            "quantity": st.column_config.TextColumn(field_labels["quantity"], width=100, disabled=True, help="Actual + Over, calculated automatically."),
-                            "unit": st.column_config.TextColumn(field_labels["unit"], width=80),
-                            "notes": st.column_config.TextColumn(field_labels["notes"], width=240),
+                            "row": st.column_config.NumberColumn(field_labels["row"], width=60, alignment="right", disabled=True, format="%d"),
+                            "description": st.column_config.TextColumn(field_labels["description"], width=300, alignment="right"),
+                            "size": st.column_config.TextColumn(field_labels["size"], width=90, alignment="right"),
+                            "actual": st.column_config.TextColumn(field_labels["actual"], width=100, alignment="right", help="Persian and Arabic digits are supported."),
+                            "over": st.column_config.TextColumn(field_labels["over"], width=90, alignment="right"),
+                            "quantity": st.column_config.TextColumn(field_labels["quantity"], width=100, alignment="right", disabled=True, help="Actual + Over, calculated automatically."),
+                            "unit": st.column_config.TextColumn(field_labels["unit"], width=80, alignment="right"),
+                            "notes": st.column_config.TextColumn(field_labels["notes"], width=240, alignment="right"),
                         }
                         st.data_editor(
                             table_frame, key=editor_key, hide_index=True,
-                            column_order=["row", "description", "size", "actual", "over", "quantity", "unit", "notes"],
+                            column_order=["notes", "unit", "quantity", "over", "actual", "size", "description", "row"],
                             column_config=column_config, num_rows="fixed", width="stretch",
-                            height=600, row_height=36,
+                            height=640, row_height=39,
                             on_change=update_bom_table, args=(bom_id, table_index, editor_key)
                         )
+
+                st.components.v1.html("""
+                <script>
+                const doc = window.parent.document;
+                function startOnRight() {
+                    doc.querySelectorAll('[class*="st-key-bom_form_table_"] .dvn-scroller').forEach(el => {
+                        if (!el.dataset.bomRtlReady && el.clientWidth > 0) {
+                            el.scrollLeft = el.scrollWidth;
+                            el.dataset.bomRtlReady = "true";
+                        }
+                    });
+                }
+                const observer = new MutationObserver(startOnRight);
+                observer.observe(doc.body, {childList: true, subtree: true});
+                startOnRight();
+                window.addEventListener("unload", () => observer.disconnect());
+                </script>
+                """, height=0)
 
                 # =================================================
                 # ADD ANOTHER TABLE BUTTON

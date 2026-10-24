@@ -2380,18 +2380,12 @@ elif page == "Warehouse":
     .warehouse-delete-warning { color: #8c4050; background: #fff2f4; border: 1px solid #f1d4dc; border-radius: 12px; padding: 15px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
     .rng-warehouse-empty { text-align: center; padding: 50px 24px; border: 1px dashed #bdcee5; border-radius: 18px; background: #fff9; color: #70859f; }
     .rng-warehouse-empty strong { display: block; color: #304e75; font-size: 21px; margin-bottom: 10px; }
-    .rng-warehouse-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 10px; }
-    .rng-warehouse-stat { background: #fff; border: 1px solid #dce5f2; border-radius: 14px; padding: 17px 20px; }
-    .rng-warehouse-stat strong { display: block; color: #294a74; font-size: 24px; margin-bottom: 6px; overflow-wrap: anywhere; }
-    .rng-warehouse-stat span { color: #6a809f; font-size: 12px; }
     .rng-warehouse-section { color: #294569; font-size: 21px; font-weight: 700; margin: 4px 0 8px; }
     .rng-warehouse-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
     .warehouse-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
     .st-key-rng_warehouse_meta, .st-key-rng_warehouse_approval { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
-    .st-key-rng_warehouse_items [data-testid="stExpander"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
-    .st-key-rng_warehouse_items [data-testid="stExpander"] summary { color: #2e4e78; min-height: 60px; }
-    .st-key-rng_warehouse_items [data-testid="stExpander"] summary p { font-weight: 600; overflow-wrap: anywhere; }
-    .st-key-rng_warehouse_items [data-testid="stExpander"] summary:hover { background: #f2f6fd; }
+    [class*="st-key-rng_warehouse_item_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; padding: 18px; margin-bottom: 10px; }
+    .rng-warehouse-item-label { color: #6c87aa; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
     .st-key-warehouse_detail input, .st-key-warehouse_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
     .st-key-warehouse_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
     .st-key-warehouse_detail label p { color: #587193; font-size: 12px; }
@@ -2404,10 +2398,8 @@ elif page == "Warehouse":
     }
     @media (max-width: 700px) {
         .rng-warehouse-hero { padding: 26px 22px; border-radius: 20px; }
-        .rng-warehouse-stats { gap: 8px; }
-        .rng-warehouse-stat { padding: 15px 10px; }
-        .rng-warehouse-stat strong { font-size: 21px; }
-        .rng-warehouse-stat span { font-size: 11px; }
+        [class*="st-key-rng_warehouse_item_"] [data-testid="stHorizontalBlock"] { flex-direction: column-reverse; flex-wrap: nowrap; }
+        [class*="st-key-rng_warehouse_item_"] [data-testid="stColumn"] { width: 100% !important; min-width: 100%; flex: auto; }
         .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) { flex-wrap: wrap; }
         .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
         [class*="st-key-rng_warehouse_card_"] { padding: 20px; }
@@ -3105,7 +3097,6 @@ elif page == "Warehouse":
             '<p>From the first item to the final approval. Every detail in its place.</p></div>',
             unsafe_allow_html=True
         )
-        stats_slot = st.empty()
 
         if warehouse_template is None:
 
@@ -3129,27 +3120,23 @@ elif page == "Warehouse":
 
                 st.markdown(
                     '<div class="rng-warehouse-section">Requested items</div>'
-                    '<div class="rng-warehouse-help">Open an item to enter its details. Your PDF keeps the original 10-line request form.</div>',
+                    '<div class="rng-warehouse-help">All item details are visible below. Your PDF keeps the original 10-line request form.</div>',
                     unsafe_allow_html=True
                 )
                 headers = warehouse_template["headers"]
                 with st.container(key="rng_warehouse_items"):
                     for row_index in range(10):
                         values = list(form["items"][row_index])
-                        title_value = st.session_state.get(f"warehouse_{warehouse_id}_cell_{row_index}_1", values[1])
-                        label = f"{row_index + 1:02} · {title_value or values[0] or 'Item details'}"
-                        with st.expander(label, expanded=row_index == 0 or any(str(value).strip() for value in values)):
-                            quantity_col, code_col = st.columns(2)
-                            with code_col:
-                                values[0] = st.text_input(headers[0], value=values[0], key=f"warehouse_{warehouse_id}_cell_{row_index}_0")
-                            with quantity_col:
-                                values[2] = st.text_input(headers[2], value=values[2], key=f"warehouse_{warehouse_id}_cell_{row_index}_2")
-                            values[1] = st.text_area(headers[1], value=values[1], key=f"warehouse_{warehouse_id}_cell_{row_index}_1", height=90)
-                            notes_col, usage_col = st.columns(2)
-                            with usage_col:
-                                values[3] = st.text_area(headers[3], value=values[3], key=f"warehouse_{warehouse_id}_cell_{row_index}_3", height=90)
-                            with notes_col:
-                                values[4] = st.text_area(headers[4], value=values[4], key=f"warehouse_{warehouse_id}_cell_{row_index}_4", height=90)
+                        with st.container(key=f"rng_warehouse_item_{row_index}"):
+                            st.markdown(f'<div class="rng-warehouse-item-label">ITEM {row_index + 1:02}</div>', unsafe_allow_html=True)
+                            visual_order = [4, 3, 2, 1, 0]
+                            for column, data_index in zip(st.columns([2, 2, 1, 3, 1]), visual_order):
+                                with column:
+                                    widget_key = f"warehouse_{warehouse_id}_cell_{row_index}_{data_index}"
+                                    if data_index in (0, 2):
+                                        values[data_index] = st.text_input(headers[data_index], value=values[data_index], key=widget_key)
+                                    else:
+                                        values[data_index] = st.text_area(headers[data_index], value=values[data_index], key=widget_key, height=90)
                         form["items"][row_index] = values
 
                 with st.container(key="rng_warehouse_approval"):
@@ -3162,14 +3149,6 @@ elif page == "Warehouse":
                         form["requester"] = st.text_input(warehouse_template["requester_label"], value=form["requester"], key=f"warehouse_requester_{warehouse_id}")
                         form["requester_signature"] = st.text_input(warehouse_template["signature_label"], value=form["requester_signature"], key=f"warehouse_req_sign_{warehouse_id}")
 
-                item_count = warehouse_item_count(form)
-                stats_slot.markdown(
-                    '<div class="rng-warehouse-stats">'
-                    f'<div class="rng-warehouse-stat"><strong>{item_count}</strong><span>Line items</span></div>'
-                    f'<div class="rng-warehouse-stat"><strong>{10 - item_count}</strong><span>Empty lines</span></div>'
-                    f'<div class="rng-warehouse-stat"><strong>{escape(str(form["number"])) or "—"}</strong><span>Request no.</span></div></div>',
-                    unsafe_allow_html=True
-                )
                 with st.container(key="rng_warehouse_save_action"):
                     if st.button("Save request", key=f"warehouse_save_form_{warehouse_id}", use_container_width=True):
                         try:

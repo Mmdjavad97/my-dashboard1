@@ -5551,151 +5551,88 @@ elif page == "BOM":
     # BOM CSS
     # =========================================================
 
+    st.markdown('<div id="rng-bom-marker"></div>', unsafe_allow_html=True)
     st.markdown("""
     <style>
-
-    .bom-card {
-        background: white;
-        border: 1px solid #e3e7ed;
-        border-radius: 14px;
-        padding: 24px;
-        min-height: 120px;
-        box-shadow: 0 2px 8px rgba(20, 30, 45, 0.05);
-        margin-bottom: 10px;
+    [data-testid="stMain"]:has(#rng-bom-marker) { background: radial-gradient(ellipse at right top, #dce8f9, transparent 55%), #f2f5fa; }
+    .stApp:has(#rng-bom-marker), .stApp:has(#rng-bom-marker) h1,
+    .stApp:has(#rng-bom-marker) h2, .stApp:has(#rng-bom-marker) h3,
+    .stApp:has(#rng-bom-marker) [data-testid="stMarkdownContainer"],
+    .stApp:has(#rng-bom-marker) input, .stApp:has(#rng-bom-marker) textarea,
+    .stApp:has(#rng-bom-marker) label { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-bom-marker) .block-container { max-width: 1440px; }
+    .rng-bom-hero { background: radial-gradient(ellipse at right top, #355e89, transparent 65%), #172f4e; border: 1px solid #315174; border-radius: 24px; padding: 30px 34px; margin: 8px 0 14px; }
+    .rng-bom-eyebrow { color: #b1cae9; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+    .rng-bom-hero h1 { color: #f6f9ff !important; font-size: clamp(30px, 3.4vw, 44px) !important; font-weight: 750; letter-spacing: -1.2px; margin: 0 0 12px; padding: 0; overflow-wrap: anywhere; }
+    .rng-bom-hero p { color: #c6d8ed; font-size: 15px; line-height: 1.8; margin: 0; }
+    .rng-bom-total { display: inline-block; color: #dce9fb; background: #a9ccff12; border: 1px solid #a9ccff30; border-radius: 100px; padding: 6px 12px; font-size: 11px; margin-top: 18px; }
+    .st-key-rng_bom_add_action .stButton button, .st-key-rng_bom_save_action .stButton button { color: #fff; background: #254d7e; border: 1px solid #254d7e; min-height: 46px; border-radius: 11px; }
+    .st-key-rng_bom_add_action .stButton button:hover, .st-key-rng_bom_save_action .stButton button:hover { background: #18395f; color: #fff; }
+    .st-key-rng_bom_add_form { background: #fff; border: 1px solid #d7e3f2; padding: 24px; border-radius: 18px; margin-bottom: 20px; }
+    [class*="st-key-rng_bom_card_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 18px; padding: 24px; min-height: 270px; box-shadow: 0 8px 25px #15385f07; }
+    .rng-bom-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 19px; }
+    .rng-bom-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; color: #5279aa; background: #eaf1fc; border-radius: 14px; }
+    .rng-bom-icon svg { width: 25px; height: 25px; }
+    .rng-bom-index { color: #8698b0; font-size: 11px; letter-spacing: 1px; }
+    .bom-card-title { color: #243e60; font-size: 19px; font-weight: 700; line-height: 1.5; margin: 0 0 10px; overflow-wrap: anywhere; }
+    .bom-card-text { color: #6f839e; font-size: 12px; line-height: 1.8; margin-bottom: 13px; overflow-wrap: anywhere; }
+    .rng-bom-card-footer { color: #8092aa; font-size: 10px; letter-spacing: .6px; border-top: 1px solid #e8edf5; padding-top: 14px; margin-bottom: 6px; }
+    [class*="st-key-rng_bom_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1; }
+    .st-key-rng_bom_board .stButton button { color: #48658b; background: #f5f8fd; border: 1px solid #dfe7f3; border-radius: 9px; min-height: 44px; }
+    .st-key-rng_bom_board .stButton button:hover { background: #eaf1fc; color: #234b7b; border-color: #8faed7; }
+    [class*="st-key-rng_bom_open_"] .stButton button { background: #244d7c; border-color: #244d7c; color: #fff; }
+    [class*="st-key-rng_bom_open_"] .stButton button:hover { background: #17395f; color: #fff; }
+    .bom-delete-warning { color: #8c4050; background: #fff2f4; border: 1px solid #f1d4dc; border-radius: 12px; padding: 15px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+    .rng-bom-empty { text-align: center; padding: 50px 24px; border: 1px dashed #bdcee5; border-radius: 18px; background: #fff9; color: #70859f; }
+    .rng-bom-empty strong { display: block; color: #304e75; font-size: 21px; margin-bottom: 10px; }
+    .rng-bom-table-title { color: #294569; font-size: 21px; font-weight: 700; margin: 22px 0 7px; }
+    .st-key-rng_bom_add_table_action .stButton button { color: #365e90; background: #edf3fc; border: 1px dashed #9bb7dc; border-radius: 12px; min-height: 48px; }
+    .rng-bom-section { color: #294569; font-size: 21px; font-weight: 700; margin: 4px 0 8px; }
+    .rng-bom-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
+    .bom-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
+    .st-key-rng_bom_meta, .st-key-rng_bom_approval { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
+    [class*="st-key-rng_bom_item_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; padding: 18px; margin-bottom: 10px; }
+    .rng-bom-item-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .rng-bom-quantity { color: #355b8a; background: #eaf1fc; border: 1px solid #d5e3f6; border-radius: 100px; padding: 5px 10px; font-size: 11px; }
+    .rng-bom-quantity-invalid { color: #9d4052; background: #fff0f3; border-color: #f1d4dd; }
+    .rng-bom-item-label { color: #6c87aa; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+    .st-key-bom_detail input, .st-key-bom_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
+    .st-key-bom_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
+    .st-key-bom_detail label p { color: #587193; font-size: 12px; }
+    .st-key-rng_bom_export { background: #e8eff9; border: 1px solid #d9e4f3; padding: 22px; border-radius: 18px; margin-top: 20px; }
+    .st-key-rng_bom_export .stDownloadButton button { background: #fff; color: #345781; border: 1px solid #c5d6ed; min-height: 46px; border-radius: 10px; }
+    .stApp:has(#rng-bom-marker) button:focus-visible { outline: 3px solid #9ab9e8; outline-offset: 2px; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) > [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
     }
-
-    .bom-card-title {
-        font-size: 18px;
-        font-weight: 650;
-        color: #172333;
+    @media (max-width: 700px) {
+        .rng-bom-hero { padding: 26px 22px; border-radius: 20px; }
+        [class*="st-key-rng_bom_item_"] [data-testid="stHorizontalBlock"] { flex-direction: column-reverse; flex-wrap: nowrap; }
+        [class*="st-key-rng_bom_item_"] [data-testid="stColumn"] { width: 100% !important; min-width: 100%; flex: auto; }
+        .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_bom_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_bom_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+        [class*="st-key-rng_bom_card_"] { padding: 20px; }
+        .st-key-rng_bom_meta, .st-key-rng_bom_approval, .st-key-rng_bom_export { padding: 18px; }
     }
-
-    .bom-card-text {
-        font-size: 13px;
-        color: #7b8794;
-        margin-top: 6px;
-    }
-
-    .bom-delete-warning {
-        background: #fff4f4;
-        border: 1px solid #f0caca;
-        border-radius: 10px;
-        padding: 12px;
-        margin: 8px 0;
-        color: #7a1f1f;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .bom-form-title {
-        font-size: 25px;
-        font-weight: 700;
-        color: #172333;
-        text-align: center;
-        direction: rtl;
-        margin: 12px 0 24px;
-    }
-
-    .bom-section-title {
-        background: #edf0f4;
-        border: 1px solid #cfd6df;
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 16px;
-        font-weight: 700;
-        color: #172333;
-        direction: rtl;
-        text-align: right;
-        margin: 16px 0;
-    }
-
-    .bom-table-heading {
-        min-height: 58px;
-        background: #edf0f4;
-        color: #172333;
-        border: 1px solid #cfd6df;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        direction: rtl;
-        font-size: 12px;
-        font-weight: 700;
-        box-sizing: border-box;
-    }
-
-    .bom-row-number {
-        height: 42px;
-        background: #f5f7fa;
-        border: 1px solid #cfd6df;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #172333;
-        box-sizing: border-box;
-    }
-
-    .bom-row-quantity {
-        height: 42px;
-        background: #edf8ef;
-        border: 1px solid #cfd6df;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #172333;
-        box-sizing: border-box;
-    }
-
-    .st-key-bom_detail input,
-    .st-key-bom_detail textarea {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext;
-        background: white !important;
-        color: #172333 !important;
-        font-size: 14px !important;
-    }
-
-    .st-key-bom_detail
-    div[data-testid="stWidgetLabel"] p {
-        color: #172333 !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        direction: rtl !important;
-        text-align: right !important;
-    }
-
-    /* Apply table styling to all BOM tables */
-
-    .st-key-bom_detail
-    div[data-testid="stHorizontalBlock"] {
-        column-gap: 0;
-    }
-
-    .bom-table-heading {
-        overflow-wrap: anywhere;
-    }
-
-    @media (max-width: 768px) {
-
-        .bom-card {
-            min-height: 100px;
-            padding: 18px;
-        }
-
-        .bom-table-heading {
-            font-size: 10px;
-        }
-
-    }
-
     </style>
     """, unsafe_allow_html=True)
+
+    def bom_card_heading(name, index):
+        record_id = st.session_state.bom_card_ids[index]
+        data = st.session_state.bom_forms.get(record_id, {})
+        tables = [data.get("items", [])] + data.get("extra_tables", [])
+        count = sum(any(str(value).strip() for value in item.values()) for table in tables for item in table)
+        description = f"{count} material items · {len(tables)} {('table' if len(tables) == 1 else 'tables')}" if count else "Ready for your next material list."
+        st.markdown(
+            '<div class="rng-bom-card-top"><div class="rng-bom-icon">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8Zm-10 10 10 5 10-5M2 18l10 5 10-5"/></svg>'
+            f'</div><span class="rng-bom-index">BOM {index + 1:02}</span></div>'
+            f'<div class="bom-card-title">{escape(str(name))}</div>'
+            f'<div class="bom-card-text">{escape(description)}</div>'
+            '<div class="rng-bom-card-footer">MATERIALS / QUANTITIES / APPROVALS</div>',
+            unsafe_allow_html=True
+        )
 
     # =========================================================
     # PDF GENERATOR - MULTIPLE A4 PORTRAIT PAGES
@@ -6241,7 +6178,9 @@ elif page == "BOM":
             rng_rerun()
 
         st.markdown(
-            f'<div class="dashboard-title">{escape(bom_name)}</div>',
+            '<div class="rng-bom-hero"><div class="rng-bom-eyebrow">BILL OF MATERIALS WORKSPACE</div>'
+            f'<h1>{escape(str(bom_name))}</h1>'
+            '<p>A clear material list, from quantities to approval.</p></div>',
             unsafe_allow_html=True
         )
 
@@ -6258,228 +6197,61 @@ elif page == "BOM":
 
                 labels = bom_template["labels"]
 
-                # =================================================
-                # FORM TITLE
-                # =================================================
-
-                st.markdown(
-                    '<div class="bom-form-title">'
-                    + escape(labels["title"])
-                    + '</div>',
-                    unsafe_allow_html=True
-                )
-
-                # =================================================
-                # DOCUMENT INFORMATION
-                # =================================================
-
-                metadata_labels = labels["metadata"].splitlines()
-
-                info_fields = [
-                    ("date", 0),
-                    ("number", 1),
-                    ("code", 2)
-                ]
-
-                info_cols = st.columns(3)
-
-                for visual_index, (field, label_index) in enumerate(
-                    reversed(info_fields)
-                ):
-
-                    with info_cols[visual_index]:
-
-                        label = (
-                            metadata_labels[label_index]
-                            if label_index < len(metadata_labels)
-                            else field.capitalize()
-                        )
-
-                        form[field] = st.text_input(
-                            label,
-                            value=form[field],
-                            key=f"bom_{bom_id}_{field}"
-                        )
-
-                # =================================================
-                # BOM TABLE CONFIGURATION
-                # =================================================
+                with st.container(key="rng_bom_meta"):
+                    st.markdown('<div class="rng-bom-section">Document details</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="bom-form-title">' + escape(labels["title"]) + '</div>', unsafe_allow_html=True)
+                    metadata_labels = labels["metadata"].splitlines()
+                    for column, (field, label_index) in zip(st.columns(3), [("code", 2), ("number", 1), ("date", 0)]):
+                        with column:
+                            label = metadata_labels[label_index] if label_index < len(metadata_labels) else field.capitalize()
+                            form[field] = st.text_input(label, value=form[field], key=f"bom_{bom_id}_{field}")
 
                 headers = labels["headers"]
-
-                logical_widths = [
-                    5.85546875,
-                    15.5703125 + 19.28515625,
-                    8.5703125,
-                    6.0,
-                    5.85546875,
-                    8.42578125,
-                    6.42578125,
-                    6.42578125 + 5.42578125 + 10.5703125
-                ]
-
-                visual_order = list(reversed(range(8)))
-
-                visual_widths = [
-                    logical_widths[i]
-                    for i in visual_order
-                ]
-
-                field_names = [
-                    "row",
-                    "description",
-                    "size",
-                    "actual",
-                    "over",
-                    "quantity",
-                    "unit",
-                    "notes"
-                ]
-
-                # =================================================
-                # DISPLAY ALL BOM TABLES
-                # =================================================
-
-                all_tables = (
-                    [form["items"]]
-                    + form["extra_tables"]
-                )
-
-                for table_index, table_items in enumerate(
-                    all_tables
-                ):
-
-                    # ---------------------------------------------
-                    # TABLE TITLE
-                    # ---------------------------------------------
-
+                field_labels = dict(zip(["row", "description", "size", "actual", "over", "quantity", "unit", "notes"], headers))
+                all_tables = [form["items"]] + form["extra_tables"]
+                for table_index, table_items in enumerate(all_tables):
                     st.markdown(
-                        '<div class="bom-section-title">'
-                        + escape(labels["title"])
-                        + f" - Table {table_index + 1}"
-                        + '</div>',
+                        f'<div class="rng-bom-table-title">Materials · Table {table_index + 1:02}</div>'
+                        '<div class="rng-bom-help">All rows are visible. Quantity is calculated from Actual + Over.</div>',
                         unsafe_allow_html=True
                     )
-
-                    # ---------------------------------------------
-                    # TABLE HEADER
-                    # ---------------------------------------------
-
-                    with st.container(
-                        key=f"bom_form_table_{table_index}"
-                    ):
-
-                        header_cols = st.columns(
-                            visual_widths,
-                            gap=None
-                        )
-
-                        for visual_index, col in enumerate(
-                            header_cols
-                        ):
-
-                            data_index = visual_order[
-                                visual_index
-                            ]
-
-                            with col:
-
-                                st.markdown(
-                                    '<div class="bom-table-heading">'
-                                    + escape(headers[data_index])
-                                    + '</div>',
+                    with st.container(key=f"bom_form_table_{table_index}"):
+                        for row_index in range(15):
+                            item = table_items[row_index]
+                            with st.container(key=f"rng_bom_item_{table_index}_{row_index}"):
+                                heading_slot = st.empty()
+                                visual_fields = ["notes", "unit", "over", "actual", "size", "description"]
+                                for column, field in zip(st.columns([3, 1, 1, 1, 1, 3]), visual_fields):
+                                    with column:
+                                        widget_key = f"bom_{bom_id}_table_{table_index}_row_{row_index}_{field}"
+                                        if field in ("description", "notes"):
+                                            item[field] = st.text_area(field_labels[field], value=item[field], key=widget_key, height=90)
+                                        else:
+                                            item[field] = st.text_input(field_labels[field], value=item[field], key=widget_key)
+                                quantity = calculate_bom_quantity(item)
+                                invalid_class = " rng-bom-quantity-invalid" if quantity == "Invalid" else ""
+                                heading_slot.markdown(
+                                    f'<div class="rng-bom-item-heading"><span class="rng-bom-item-label">ITEM {row_index + 1:02}</span>'
+                                    f'<span class="rng-bom-quantity{invalid_class}">Quantity: {escape(str(quantity)) or "—"}</span></div>',
                                     unsafe_allow_html=True
                                 )
-
-                        # -----------------------------------------
-                        # FIFTEEN EDITABLE ROWS
-                        # -----------------------------------------
-
-                        for row_index in range(15):
-
-                            item = table_items[row_index]
-
-                            quantity = calculate_bom_quantity(
-                                item
-                            )
-
-                            row_cols = st.columns(
-                                visual_widths,
-                                gap=None
-                            )
-
-                            for visual_index, col in enumerate(
-                                row_cols
-                            ):
-
-                                data_index = visual_order[
-                                    visual_index
-                                ]
-
-                                field = field_names[
-                                    data_index
-                                ]
-
-                                with col:
-
-                                    if field == "row":
-
-                                        st.markdown(
-                                            '<div class="bom-row-number">'
-                                            + str(row_index + 1)
-                                            + '</div>',
-                                            unsafe_allow_html=True
-                                        )
-
-                                    elif field == "quantity":
-
-                                        st.markdown(
-                                            '<div class="bom-row-quantity">'
-                                            + escape(str(quantity))
-                                            + '</div>',
-                                            unsafe_allow_html=True
-                                        )
-
-                                    else:
-
-                                        value = st.text_input(
-                                            (
-                                                f"Table {table_index + 1}, "
-                                                f"Item {row_index + 1}: "
-                                                f"{headers[data_index]}"
-                                            ),
-                                            value=item[field],
-                                            key=(
-                                                f"bom_{bom_id}_"
-                                                f"table_{table_index}_"
-                                                f"row_{row_index}_"
-                                                f"{field}"
-                                            ),
-                                            label_visibility="collapsed"
-                                        )
-
-                                        item[field] = value
-
-                    st.markdown(
-                        "<div style='height:14px'></div>",
-                        unsafe_allow_html=True
-                    )
 
                 # =================================================
                 # ADD ANOTHER TABLE BUTTON
                 # =================================================
 
-                if st.button(
-                    "+ Add Another Table",
-                    key=f"bom_add_table_{bom_id}",
-                    use_container_width=True
-                ):
+                with st.container(key="rng_bom_add_table_action"):
+                    if st.button(
+                        "+ Add Another Table",
+                        key=f"bom_add_table_{bom_id}",
+                        use_container_width=True
+                    ):
 
-                    form["extra_tables"].append(
-                        create_empty_bom_table()
-                    )
+                        form["extra_tables"].append(
+                            create_empty_bom_table()
+                        )
 
-                    rng_rerun()
+                        rng_rerun()
 
                 st.caption(
                     f"Total tables: {1 + len(form['extra_tables'])} "
@@ -6491,25 +6263,21 @@ elif page == "BOM":
                 # PREPARER AND APPROVER
                 # =================================================
 
-                st.divider()
+                with st.container(key="rng_bom_approval"):
+                    st.markdown('<div class="rng-bom-section">Preparation &amp; approval</div><div class="rng-bom-help">Keep the responsible names with the material list.</div>', unsafe_allow_html=True)
+                    approver_col, preparer_col = st.columns(2)
+                    with approver_col:
+                        form["approver"] = st.text_input(labels["approver"], value=form["approver"], key=f"bom_{bom_id}_approver")
+                    with preparer_col:
+                        form["preparer"] = st.text_input(labels["preparer"], value=form["preparer"], key=f"bom_{bom_id}_preparer")
 
-                footer_cols = st.columns(2)
-
-                with footer_cols[0]:
-
-                    form["approver"] = st.text_input(
-                        labels["approver"],
-                        value=form["approver"],
-                        key=f"bom_{bom_id}_approver"
-                    )
-
-                with footer_cols[1]:
-
-                    form["preparer"] = st.text_input(
-                        labels["preparer"],
-                        value=form["preparer"],
-                        key=f"bom_{bom_id}_preparer"
-                    )
+                with st.container(key="rng_bom_save_action"):
+                    if st.button("Save BOM", key=f"bom_save_form_{bom_id}", use_container_width=True):
+                        try:
+                            rng_save()
+                            st.success("Bill of Materials saved.")
+                        except Exception as exc:
+                            st.error("Could not save your BOM. Please retry. " + str(exc))
 
                 # =================================================
                 # VALIDATION FOR ALL TABLES
@@ -6550,48 +6318,50 @@ elif page == "BOM":
                 # MULTI-PAGE PDF DOWNLOAD
                 # =================================================
 
-                try:
+                with st.container(key="rng_bom_export"):
+                    st.markdown('<div class="rng-bom-section">Ready to send</div><div class="rng-bom-help">Download or share all tables together. Each table keeps its original A4 page.</div>', unsafe_allow_html=True)
+                    try:
 
-                    pdf_bytes = create_bom_pdf(
-                        form,
-                        bom_template
-                    )
-
-                    safe_name = re.sub(
-                        r"[^\w.-]+",
-                        "_",
-                        bom_name
-                    )
-
-                    page_count = len(all_tables)
-
-                    bom_pdf_filename = f"BOM_{safe_name}.pdf"
-                    download_col, share_col = st.columns(2)
-                    with download_col:
-                        st.download_button(
-                            label=(
-                                f"Download Complete BOM "
-                                f"({page_count} A4 Pages)"
-                            ),
-                            data=pdf_bytes,
-                            file_name=bom_pdf_filename,
-                            mime="application/pdf",
-                            key=f"bom_pdf_{bom_id}",
-                            use_container_width=True,
-                            disabled=bool(invalid_rows)
-                        )
-                    with share_col:
-                        rng_pdf_share_button(
-                            pdf_bytes, bom_pdf_filename,
-                            disabled=bool(invalid_rows)
+                        pdf_bytes = create_bom_pdf(
+                            form,
+                            bom_template
                         )
 
-                except Exception as error:
+                        safe_name = re.sub(
+                            r"[^\w.-]+",
+                            "_",
+                            bom_name
+                        )
 
-                    st.error(
-                        "BOM PDF generation error: "
-                        + str(error)
-                    )
+                        page_count = len(all_tables)
+
+                        bom_pdf_filename = f"BOM_{safe_name}.pdf"
+                        download_col, share_col = st.columns(2)
+                        with download_col:
+                            st.download_button(
+                                label=(
+                                    f"Download Complete BOM "
+                                    f"({page_count} A4 Pages)"
+                                ),
+                                data=pdf_bytes,
+                                file_name=bom_pdf_filename,
+                                mime="application/pdf",
+                                key=f"bom_pdf_{bom_id}",
+                                use_container_width=True,
+                                disabled=bool(invalid_rows)
+                            )
+                        with share_col:
+                            rng_pdf_share_button(
+                                pdf_bytes, bom_pdf_filename,
+                                disabled=bool(invalid_rows)
+                            )
+
+                    except Exception as error:
+
+                        st.error(
+                            "BOM PDF generation error: "
+                            + str(error)
+                        )
 
     # =========================================================
     # BOM MAIN PAGE
@@ -6601,15 +6371,11 @@ elif page == "BOM":
 
         st.session_state.selected_bom = None
 
+        bom_total = len(st.session_state.bom_cards)
         st.markdown(
-            '<div class="dashboard-title">BOM</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="dashboard-subtitle">'
-            'Manage your Bills of Materials'
-            '</div>',
+            '<div class="rng-bom-hero"><div class="rng-bom-eyebrow">EVERY MATERIAL. EVERY DETAIL.</div>'
+            '<h1>BOM</h1><p>Plan the materials. Keep the quantities clear. Build with confidence.</p>'
+            f'<span class="rng-bom-total">{bom_total} {"BOM" if bom_total == 1 else "BOMs"} in your workspace</span></div>',
             unsafe_allow_html=True
         )
 
@@ -6618,67 +6384,69 @@ elif page == "BOM":
         # =====================================================
 
         if st.session_state.adding_bom:
+            with st.container(key="rng_bom_add_form"):
 
-            st.markdown(
-                '<div class="section-title">Add New BOM</div>',
-                unsafe_allow_html=True
-            )
+                st.markdown(
+                    '<div class="section-title">Add New BOM</div>',
+                    unsafe_allow_html=True
+                )
 
-            new_title = st.text_input(
-                "BOM title",
-                placeholder="Enter BOM title",
-                key="new_bom_title"
-            )
+                new_title = st.text_input(
+                    "BOM title",
+                    placeholder="Enter BOM title",
+                    key="new_bom_title"
+                )
 
-            add_col, cancel_col = st.columns(2)
+                add_col, cancel_col = st.columns(2)
 
-            with add_col:
+                with add_col:
 
-                if st.button(
-                    "Add BOM",
-                    key="bom_add_confirm",
-                    use_container_width=True
-                ):
+                    if st.button(
+                        "Add BOM",
+                        key="bom_add_confirm",
+                        use_container_width=True
+                    ):
 
-                    if new_title.strip():
+                        if new_title.strip():
 
-                        st.session_state.bom_cards.append(
-                            new_title.strip()
-                        )
+                            st.session_state.bom_cards.append(
+                                new_title.strip()
+                            )
 
-                        st.session_state.bom_card_ids.append(
-                            uuid4().hex
-                        )
+                            st.session_state.bom_card_ids.append(
+                                uuid4().hex
+                            )
+
+                            st.session_state.adding_bom = False
+                            rng_rerun()
+
+                        else:
+
+                            st.warning(
+                                "Please enter a BOM title."
+                            )
+
+                with cancel_col:
+
+                    if st.button(
+                        "Cancel",
+                        key="bom_add_cancel",
+                        use_container_width=True
+                    ):
 
                         st.session_state.adding_bom = False
                         rng_rerun()
 
-                    else:
-
-                        st.warning(
-                            "Please enter a BOM title."
-                        )
-
-            with cancel_col:
+        else:
+            with st.container(key="rng_bom_add_action"):
 
                 if st.button(
-                    "Cancel",
-                    key="bom_add_cancel",
-                    use_container_width=True
+                    "+ Add BOM",
+                    key="bom_add_button"
                 ):
 
-                    st.session_state.adding_bom = False
+                    st.session_state.adding_bom = True
                     rng_rerun()
-
-        else:
-
-            if st.button(
-                "+ Add BOM",
-                key="bom_add_button"
-            ):
-
-                st.session_state.adding_bom = True
-                rng_rerun()
 
         st.markdown(
             "<br>",
@@ -6689,195 +6457,171 @@ elif page == "BOM":
         # BOM CARDS
         # =====================================================
 
-        cols = st.columns(3)
+        if not st.session_state.bom_cards:
+            st.markdown('<div class="rng-bom-empty"><strong>A clear list makes a strong start.</strong>Add a Bill of Materials to organize your next build.</div>', unsafe_allow_html=True)
+        with st.container(key="rng_bom_board"):
+            cols = st.columns(3)
 
-        for i, bom in enumerate(
-            st.session_state.bom_cards
-        ):
+            for i, bom in enumerate(
+                st.session_state.bom_cards
+            ):
 
-            with cols[i % 3]:
+                with cols[i % 3], st.container(key=f"rng_bom_card_{i}"):
 
-                safe_title = escape(bom)
+                    bom_card_heading(bom, i)
 
-                # =============================================
-                # DELETE CONFIRMATION
-                # =============================================
+                    safe_title = escape(bom)
 
-                if st.session_state.deleting_bom == i:
+                    # =============================================
+                    # DELETE CONFIRMATION
+                    # =============================================
 
-                    st.markdown(
-                        f"""
-                        <div class="bom-card">
-                            <div class="bom-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="bom-card-text">
-                                Bill of Materials
-                            </div>
-                        </div>
+                    if st.session_state.deleting_bom == i:
 
-                        <div class="bom-delete-warning">
-                            Are you sure you want to delete
-                            "{safe_title}"?
-                            This cannot be undone.
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                        st.markdown(
+                            f'<div class="bom-delete-warning">Delete "{safe_title}"? This cannot be undone.</div>',
+                            unsafe_allow_html=True
+                        )
 
-                    confirm_col, cancel_col = st.columns(2)
+                        confirm_col, cancel_col = st.columns(2)
 
-                    with confirm_col:
+                        with confirm_col:
 
-                        if st.button(
-                            "Confirm Delete",
-                            key=f"bom_confirm_delete_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Confirm Delete",
+                                key=f"bom_confirm_delete_{i}",
+                                use_container_width=True
+                            ):
 
-                            deleted_id = (
-                                st.session_state.bom_card_ids.pop(i)
-                            )
-
-                            st.session_state.bom_cards.pop(i)
-
-                            st.session_state.bom_forms.pop(
-                                deleted_id,
-                                None
-                            )
-
-                            st.session_state.deleting_bom = None
-                            st.session_state.editing_bom = None
-
-                            rng_rerun()
-
-                    with cancel_col:
-
-                        if st.button(
-                            "Cancel",
-                            key=f"bom_cancel_delete_{i}",
-                            use_container_width=True
-                        ):
-
-                            st.session_state.deleting_bom = None
-
-                            rng_rerun()
-
-                # =============================================
-                # EDIT BOM TITLE
-                # =============================================
-
-                elif st.session_state.editing_bom == i:
-
-                    edited_title = st.text_input(
-                        "BOM title",
-                        value=bom,
-                        key=f"bom_edit_input_{i}"
-                    )
-
-                    save_col, cancel_col = st.columns(2)
-
-                    with save_col:
-
-                        if st.button(
-                            "Save",
-                            key=f"bom_save_{i}",
-                            use_container_width=True
-                        ):
-
-                            if edited_title.strip():
-
-                                st.session_state.bom_cards[i] = (
-                                    edited_title.strip()
+                                deleted_id = (
+                                    st.session_state.bom_card_ids.pop(i)
                                 )
+
+                                st.session_state.bom_cards.pop(i)
+
+                                st.session_state.bom_forms.pop(
+                                    deleted_id,
+                                    None
+                                )
+
+                                st.session_state.deleting_bom = None
+                                st.session_state.editing_bom = None
+
+                                rng_rerun()
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"bom_cancel_delete_{i}",
+                                use_container_width=True
+                            ):
+
+                                st.session_state.deleting_bom = None
+
+                                rng_rerun()
+
+                    # =============================================
+                    # EDIT BOM TITLE
+                    # =============================================
+
+                    elif st.session_state.editing_bom == i:
+
+                        edited_title = st.text_input(
+                            "BOM title",
+                            value=bom,
+                            key=f"bom_edit_input_{i}"
+                        )
+
+                        save_col, cancel_col = st.columns(2)
+
+                        with save_col:
+
+                            if st.button(
+                                "Save",
+                                key=f"bom_save_{i}",
+                                use_container_width=True
+                            ):
+
+                                if edited_title.strip():
+
+                                    st.session_state.bom_cards[i] = (
+                                        edited_title.strip()
+                                    )
+
+                                    st.session_state.editing_bom = None
+
+                                    rng_rerun()
+
+                                else:
+
+                                    st.warning(
+                                        "Please enter a BOM title."
+                                    )
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"bom_edit_cancel_{i}",
+                                use_container_width=True
+                            ):
 
                                 st.session_state.editing_bom = None
 
                                 rng_rerun()
 
-                            else:
+                    # =============================================
+                    # NORMAL BOM CARD
+                    # =============================================
 
-                                st.warning(
-                                    "Please enter a BOM title."
-                                )
+                    else:
 
-                    with cancel_col:
+                        button_col1, button_col2, button_col3 = st.columns(3)
 
-                        if st.button(
-                            "Cancel",
-                            key=f"bom_edit_cancel_{i}",
-                            use_container_width=True
-                        ):
+                        with button_col1, st.container(key=f"rng_bom_open_{i}"):
 
-                            st.session_state.editing_bom = None
+                            open_button = st.button(
+                                "Open",
+                                key=f"bom_open_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col2:
+
+                            edit_button = st.button(
+                                "Edit",
+                                key=f"bom_edit_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col3:
+
+                            delete_button = st.button(
+                                "Delete",
+                                key=f"bom_delete_{i}",
+                                use_container_width=True
+                            )
+
+                        if open_button:
+
+                            st.session_state.selected_bom = i
 
                             rng_rerun()
 
-                # =============================================
-                # NORMAL BOM CARD
-                # =============================================
+                        if edit_button:
 
-                else:
+                            st.session_state.editing_bom = i
+                            st.session_state.deleting_bom = None
 
-                    st.markdown(
-                        f"""
-                        <div class="bom-card">
-                            <div class="bom-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="bom-card-text">
-                                Bill of Materials
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                            rng_rerun()
 
-                    button_col1, button_col2, button_col3 = st.columns(3)
+                        if delete_button:
 
-                    with button_col1:
+                            st.session_state.deleting_bom = i
+                            st.session_state.editing_bom = None
 
-                        open_button = st.button(
-                            "Open",
-                            key=f"bom_open_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col2:
-
-                        edit_button = st.button(
-                            "Edit",
-                            key=f"bom_edit_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col3:
-
-                        delete_button = st.button(
-                            "Delete",
-                            key=f"bom_delete_{i}",
-                            use_container_width=True
-                        )
-
-                    if open_button:
-
-                        st.session_state.selected_bom = i
-
-                        rng_rerun()
-
-                    if edit_button:
-
-                        st.session_state.editing_bom = i
-                        st.session_state.deleting_bom = None
-
-                        rng_rerun()
-
-                    if delete_button:
-
-                        st.session_state.deleting_bom = i
-                        st.session_state.editing_bom = None
-
-                        rng_rerun()
+                            rng_rerun()
 
 
 elif page == "Employer Report":

@@ -2346,134 +2346,95 @@ elif page == "Warehouse":
     # WAREHOUSE CSS
     # =========================================================
 
+    st.markdown('<div id="rng-warehouse-marker"></div>', unsafe_allow_html=True)
     st.markdown("""
     <style>
-
-    .warehouse-card {
-        background: white;
-        border: 1px solid #e3e7ed;
-        border-radius: 14px;
-        padding: 24px;
-        min-height: 120px;
-        box-shadow: 0 2px 8px rgba(20, 30, 45, 0.05);
-        margin-bottom: 10px;
+    [data-testid="stMain"]:has(#rng-warehouse-marker) { background: radial-gradient(ellipse at right top, #dce8f9, transparent 55%), #f2f5fa; }
+    .stApp:has(#rng-warehouse-marker), .stApp:has(#rng-warehouse-marker) h1,
+    .stApp:has(#rng-warehouse-marker) h2, .stApp:has(#rng-warehouse-marker) h3,
+    .stApp:has(#rng-warehouse-marker) [data-testid="stMarkdownContainer"],
+    .stApp:has(#rng-warehouse-marker) input, .stApp:has(#rng-warehouse-marker) textarea,
+    .stApp:has(#rng-warehouse-marker) label { font-family: Arial, Tahoma, sans-serif !important; font-style: normal !important; }
+    .stApp:has(#rng-warehouse-marker) .block-container { max-width: 1440px; }
+    .rng-warehouse-hero { background: radial-gradient(ellipse at right top, #355e89, transparent 65%), #172f4e; border: 1px solid #315174; border-radius: 24px; padding: 30px 34px; margin: 8px 0 14px; }
+    .rng-warehouse-eyebrow { color: #b1cae9; font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+    .rng-warehouse-hero h1 { color: #f6f9ff !important; font-size: clamp(30px, 3.4vw, 44px) !important; font-weight: 750; letter-spacing: -1.2px; margin: 0 0 12px; padding: 0; overflow-wrap: anywhere; }
+    .rng-warehouse-hero p { color: #c6d8ed; font-size: 15px; line-height: 1.8; margin: 0; }
+    .rng-warehouse-total { display: inline-block; color: #dce9fb; background: #a9ccff12; border: 1px solid #a9ccff30; border-radius: 100px; padding: 6px 12px; font-size: 11px; margin-top: 18px; }
+    .st-key-rng_warehouse_add_action .stButton button, .st-key-rng_warehouse_save_action .stButton button { color: #fff; background: #254d7e; border: 1px solid #254d7e; min-height: 46px; border-radius: 11px; }
+    .st-key-rng_warehouse_add_action .stButton button:hover, .st-key-rng_warehouse_save_action .stButton button:hover { background: #18395f; color: #fff; }
+    .st-key-rng_warehouse_add_form { background: #fff; border: 1px solid #d7e3f2; padding: 24px; border-radius: 18px; margin-bottom: 20px; }
+    [class*="st-key-rng_warehouse_card_"] { background: #fff; border: 1px solid #dce5f1; border-radius: 18px; padding: 24px; min-height: 270px; box-shadow: 0 8px 25px #15385f07; }
+    .rng-warehouse-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 19px; }
+    .rng-warehouse-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; color: #5279aa; background: #eaf1fc; border-radius: 14px; }
+    .rng-warehouse-icon svg { width: 25px; height: 25px; }
+    .rng-warehouse-index { color: #8698b0; font-size: 11px; letter-spacing: 1px; }
+    .warehouse-card-title { color: #243e60; font-size: 19px; font-weight: 700; line-height: 1.5; margin: 0 0 10px; overflow-wrap: anywhere; }
+    .warehouse-card-text { color: #6f839e; font-size: 12px; line-height: 1.8; margin-bottom: 13px; overflow-wrap: anywhere; }
+    .rng-warehouse-card-footer { color: #8092aa; font-size: 10px; letter-spacing: .6px; border-top: 1px solid #e8edf5; padding-top: 14px; margin-bottom: 6px; }
+    [class*="st-key-rng_warehouse_card_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; flex: 1; }
+    .st-key-rng_warehouse_board .stButton button { color: #48658b; background: #f5f8fd; border: 1px solid #dfe7f3; border-radius: 9px; min-height: 44px; }
+    .st-key-rng_warehouse_board .stButton button:hover { background: #eaf1fc; color: #234b7b; border-color: #8faed7; }
+    [class*="st-key-rng_warehouse_open_"] .stButton button { background: #244d7c; border-color: #244d7c; color: #fff; }
+    [class*="st-key-rng_warehouse_open_"] .stButton button:hover { background: #17395f; color: #fff; }
+    .warehouse-delete-warning { color: #8c4050; background: #fff2f4; border: 1px solid #f1d4dc; border-radius: 12px; padding: 15px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+    .rng-warehouse-empty { text-align: center; padding: 50px 24px; border: 1px dashed #bdcee5; border-radius: 18px; background: #fff9; color: #70859f; }
+    .rng-warehouse-empty strong { display: block; color: #304e75; font-size: 21px; margin-bottom: 10px; }
+    .rng-warehouse-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 10px; }
+    .rng-warehouse-stat { background: #fff; border: 1px solid #dce5f2; border-radius: 14px; padding: 17px 20px; }
+    .rng-warehouse-stat strong { display: block; color: #294a74; font-size: 24px; margin-bottom: 6px; overflow-wrap: anywhere; }
+    .rng-warehouse-stat span { color: #6a809f; font-size: 12px; }
+    .rng-warehouse-section { color: #294569; font-size: 21px; font-weight: 700; margin: 4px 0 8px; }
+    .rng-warehouse-help { color: #7388a4; font-size: 13px; line-height: 1.8; margin-bottom: 16px; }
+    .warehouse-form-title { direction: rtl; color: #48688e; font-size: 18px; font-weight: 600; text-align: right; margin: 4px 0 18px; }
+    .st-key-rng_warehouse_meta, .st-key-rng_warehouse_approval { background: #fff; border: 1px solid #dce5f2; padding: 24px; border-radius: 18px; margin: 6px 0 12px; }
+    .st-key-rng_warehouse_items [data-testid="stExpander"] { background: #fff; border: 1px solid #dce5f1; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
+    .st-key-rng_warehouse_items [data-testid="stExpander"] summary { color: #2e4e78; min-height: 60px; }
+    .st-key-rng_warehouse_items [data-testid="stExpander"] summary p { font-weight: 600; overflow-wrap: anywhere; }
+    .st-key-rng_warehouse_items [data-testid="stExpander"] summary:hover { background: #f2f6fd; }
+    .st-key-warehouse_detail input, .st-key-warehouse_detail textarea { direction: rtl; text-align: start; unicode-bidi: plaintext; background: #f9fbff; color: #2f486b; min-height: 44px; }
+    .st-key-warehouse_detail [data-testid="stWidgetLabel"] { direction: rtl; text-align: right; }
+    .st-key-warehouse_detail label p { color: #587193; font-size: 12px; }
+    .st-key-rng_warehouse_export { background: #e8eff9; border: 1px solid #d9e4f3; padding: 22px; border-radius: 18px; margin-top: 20px; }
+    .st-key-rng_warehouse_export .stDownloadButton button { background: #fff; color: #345781; border: 1px solid #c5d6ed; min-height: 46px; border-radius: 10px; }
+    .stApp:has(#rng-warehouse-marker) button:focus-visible { outline: 3px solid #9ab9e8; outline-offset: 2px; }
+    @media (max-width: 1100px) and (min-width: 701px) {
+        .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) > [data-testid="stColumn"] { min-width: calc(50% - 1rem); }
     }
-
-    .warehouse-card-title {
-        font-size: 18px;
-        font-weight: 650;
-        color: #172333;
+    @media (max-width: 700px) {
+        .rng-warehouse-hero { padding: 26px 22px; border-radius: 20px; }
+        .rng-warehouse-stats { gap: 8px; }
+        .rng-warehouse-stat { padding: 15px 10px; }
+        .rng-warehouse-stat strong { font-size: 21px; }
+        .rng-warehouse-stat span { font-size: 11px; }
+        .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) { flex-wrap: wrap; }
+        .st-key-rng_warehouse_board [data-testid="stHorizontalBlock"]:has([class*="st-key-rng_warehouse_card_"]) > [data-testid="stColumn"] { min-width: 100%; }
+        [class*="st-key-rng_warehouse_card_"] { padding: 20px; }
+        .st-key-rng_warehouse_meta, .st-key-rng_warehouse_approval, .st-key-rng_warehouse_export { padding: 18px; }
     }
-
-    .warehouse-card-text {
-        font-size: 13px;
-        color: #7b8794;
-        margin-top: 6px;
-    }
-
-    .warehouse-delete-warning {
-        background: #fff4f4;
-        border: 1px solid #f0caca;
-        border-radius: 10px;
-        padding: 12px;
-        margin: 8px 0;
-        color: #7a1f1f;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .warehouse-form-title {
-        text-align: center;
-        direction: rtl;
-        font-size: 25px;
-        font-weight: 700;
-        color: #172333;
-        margin: 15px 0;
-    }
-
-    .warehouse-form-header {
-        background: white;
-        border: 1px solid #444;
-        color: #172333;
-        font-size: 13px;
-        font-weight: 700;
-        min-height: 55px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        direction: rtl;
-        unicode-bidi: plaintext;
-        padding: 4px;
-        box-sizing: border-box;
-    }
-
-    /* Warehouse editable table */
-
-    .st-key-warehouse_form_table
-    div[data-testid="stHorizontalBlock"] {
-        gap: 0 !important;
-    }
-
-    .st-key-warehouse_form_table
-    div[data-testid="column"] {
-        min-width: 0 !important;
-        padding: 0 !important;
-    }
-
-    .st-key-warehouse_form_table
-    div[data-testid="stTextInput"] {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .st-key-warehouse_form_table
-    input {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext;
-        border-radius: 0 !important;
-        border: 1px solid #555 !important;
-        min-height: 42px !important;
-        font-size: 13px !important;
-        padding-right: 7px !important;
-    }
-
-    /* All Warehouse detail input fields */
-
-    .st-key-warehouse_detail
-    input {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext;
-    }
-
-    .st-key-warehouse_detail
-    div[data-testid="stWidgetLabel"] {
-        direction: rtl !important;
-        text-align: right !important;
-    }
-
-    .st-key-warehouse_detail
-    div[data-testid="stWidgetLabel"] p {
-        text-align: right !important;
-    }
-
-    @media (max-width: 768px) {
-
-        .warehouse-card {
-            min-height: 100px;
-            padding: 18px;
-        }
-
-        .warehouse-form-header {
-            font-size: 11px;
-        }
-
-    }
-
     </style>
     """, unsafe_allow_html=True)
+
+    def warehouse_item_count(data):
+        return sum(any(str(value).strip() for value in row) for row in data.get("items", []))
+
+    def warehouse_card_heading(name, index):
+        record_id = st.session_state.warehouse_card_ids[index]
+        data = st.session_state.warehouse_forms.get(record_id, {})
+        count = warehouse_item_count(data)
+        description = f"{count} line {('item' if count == 1 else 'items')}" if count else "Ready for your next request."
+        if data.get("number"):
+            description += " · Request " + str(data["number"])
+        st.markdown(
+            '<div class="rng-warehouse-card-top"><div class="rng-warehouse-icon">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4v11l-9 4-9-4Zm0 0 9 4 9-4m-9 4v11M7 5l10 4v5"/></svg>'
+            f'</div><span class="rng-warehouse-index">WAREHOUSE {index + 1:02}</span></div>'
+            f'<div class="warehouse-card-title">{escape(str(name))}</div>'
+            f'<div class="warehouse-card-text">{escape(description)}</div>'
+            '<div class="rng-warehouse-card-footer">PURCHASE REQUEST / ITEMS / APPROVALS</div>',
+            unsafe_allow_html=True
+        )
 
     # =========================================================
     # A5 LANDSCAPE PDF GENERATOR
@@ -3139,9 +3100,12 @@ elif page == "Warehouse":
             rng_rerun()
 
         st.markdown(
-            f'<div class="dashboard-title">{escape(warehouse_name)}</div>',
+            '<div class="rng-warehouse-hero"><div class="rng-warehouse-eyebrow">PURCHASE REQUEST WORKSPACE</div>'
+            f'<h1>{escape(str(warehouse_name))}</h1>'
+            '<p>From the first item to the final approval. Every detail in its place.</p></div>',
             unsafe_allow_html=True
         )
+        stats_slot = st.empty()
 
         if warehouse_template is None:
 
@@ -3154,214 +3118,106 @@ elif page == "Warehouse":
 
             with st.container(key="warehouse_detail"):
 
-                # =================================================
-                # FORM TITLE
-                # =================================================
+                with st.container(key="rng_warehouse_meta"):
+                    st.markdown('<div class="rng-warehouse-section">Request details</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="warehouse-form-title">' + escape(warehouse_template["title"]) + '</div>', unsafe_allow_html=True)
+                    number_col, date_col = st.columns(2)
+                    with number_col:
+                        form["number"] = st.text_input(warehouse_template["number_label"], value=form["number"], key=f"warehouse_number_{warehouse_id}")
+                    with date_col:
+                        form["date"] = st.text_input(warehouse_template["date_label"], value=form["date"], key=f"warehouse_date_{warehouse_id}")
 
                 st.markdown(
-                    '<div class="warehouse-form-title">'
-                    + escape(warehouse_template["title"])
-                    + '</div>',
+                    '<div class="rng-warehouse-section">Requested items</div>'
+                    '<div class="rng-warehouse-help">Open an item to enter its details. Your PDF keeps the original 10-line request form.</div>',
                     unsafe_allow_html=True
                 )
-
-                # =================================================
-                # DATE AND NUMBER FIELDS
-                # =================================================
-
-                # Right-to-left visual order.
-                # Number is rendered in the left column.
-                # Date is rendered in the right column.
-
-                info_cols = st.columns(2)
-
-                with info_cols[0]:
-
-                    form["number"] = st.text_input(
-                        warehouse_template["number_label"],
-                        value=form["number"],
-                        key=f"warehouse_number_{warehouse_id}"
-                    )
-
-                with info_cols[1]:
-
-                    form["date"] = st.text_input(
-                        warehouse_template["date_label"],
-                        value=form["date"],
-                        key=f"warehouse_date_{warehouse_id}"
-                    )
-
-                st.divider()
-
-                # =================================================
-                # TABLE HEADERS AND EDITABLE ROWS
-                # =================================================
-
                 headers = warehouse_template["headers"]
-
-                # Logical Excel order A to G:
-                # Item code, Description, Quantity, Usage, Notes.
-
-                logical_widths = [
-                    5.85546875,
-                    44.42578125,
-                    10.140625,
-                    15.5703125,
-                    23.13671875
-                ]
-
-                # Streamlit creates columns left to right.
-                # Reverse the visual order so the first
-                # logical Excel field appears at the far right.
-
-                visual_order = [4, 3, 2, 1, 0]
-
-                visual_widths = [
-                    logical_widths[index]
-                    for index in visual_order
-                ]
-
-                with st.container(key="warehouse_form_table"):
-
-                    header_cols = st.columns(
-                        visual_widths,
-                        gap=None
-                    )
-
-                    for visual_index, col in enumerate(
-                        header_cols
-                    ):
-
-                        data_index = visual_order[visual_index]
-
-                        with col:
-
-                            st.markdown(
-                                '<div class="warehouse-form-header">'
-                                + escape(headers[data_index])
-                                + '</div>',
-                                unsafe_allow_html=True
-                            )
-
-                    # ---------------------------------------------
-                    # TEN EDITABLE ROWS
-                    # ---------------------------------------------
-
+                with st.container(key="rng_warehouse_items"):
                     for row_index in range(10):
+                        values = list(form["items"][row_index])
+                        title_value = st.session_state.get(f"warehouse_{warehouse_id}_cell_{row_index}_1", values[1])
+                        label = f"{row_index + 1:02} · {title_value or values[0] or 'Item details'}"
+                        with st.expander(label, expanded=row_index == 0 or any(str(value).strip() for value in values)):
+                            quantity_col, code_col = st.columns(2)
+                            with code_col:
+                                values[0] = st.text_input(headers[0], value=values[0], key=f"warehouse_{warehouse_id}_cell_{row_index}_0")
+                            with quantity_col:
+                                values[2] = st.text_input(headers[2], value=values[2], key=f"warehouse_{warehouse_id}_cell_{row_index}_2")
+                            values[1] = st.text_area(headers[1], value=values[1], key=f"warehouse_{warehouse_id}_cell_{row_index}_1", height=90)
+                            notes_col, usage_col = st.columns(2)
+                            with usage_col:
+                                values[3] = st.text_area(headers[3], value=values[3], key=f"warehouse_{warehouse_id}_cell_{row_index}_3", height=90)
+                            with notes_col:
+                                values[4] = st.text_area(headers[4], value=values[4], key=f"warehouse_{warehouse_id}_cell_{row_index}_4", height=90)
+                        form["items"][row_index] = values
 
-                        row_cols = st.columns(
-                            visual_widths,
-                            gap=None
-                        )
+                with st.container(key="rng_warehouse_approval"):
+                    st.markdown('<div class="rng-warehouse-section">Request &amp; approval</div><div class="rng-warehouse-help">Keep the requester and approval information with the request.</div>', unsafe_allow_html=True)
+                    approver_col, requester_col = st.columns(2)
+                    with approver_col:
+                        form["approver"] = st.text_input(warehouse_template["approver_label"], value=form["approver"], key=f"warehouse_approver_{warehouse_id}")
+                        form["approver_signature"] = st.text_input(warehouse_template["signature_label"], value=form["approver_signature"], key=f"warehouse_app_sign_{warehouse_id}")
+                    with requester_col:
+                        form["requester"] = st.text_input(warehouse_template["requester_label"], value=form["requester"], key=f"warehouse_requester_{warehouse_id}")
+                        form["requester_signature"] = st.text_input(warehouse_template["signature_label"], value=form["requester_signature"], key=f"warehouse_req_sign_{warehouse_id}")
 
-                        for visual_index, col in enumerate(
-                            row_cols
-                        ):
-
-                            data_index = visual_order[visual_index]
-
-                            with col:
-
-                                current_value = form[
-                                    "items"
-                                ][row_index][data_index]
-
-                                new_value = st.text_input(
-                                    (
-                                        f"Row {row_index + 1}: "
-                                        f"{headers[data_index]}"
-                                    ),
-                                    value=current_value,
-                                    key=(
-                                        f"warehouse_{warehouse_id}_"
-                                        f"cell_{row_index}_{data_index}"
-                                    ),
-                                    label_visibility="collapsed"
-                                )
-
-                                form["items"][row_index][data_index] = (
-                                    new_value
-                                )
-
-                # =================================================
-                # REQUESTER AND APPROVER FIELDS
-                # =================================================
-
-                st.divider()
-
-                footer_cols = st.columns(2)
-
-                # Approver on LEFT.
-
-                with footer_cols[0]:
-
-                    form["approver"] = st.text_input(
-                        warehouse_template["approver_label"],
-                        value=form["approver"],
-                        key=f"warehouse_approver_{warehouse_id}"
-                    )
-
-                    form["approver_signature"] = st.text_input(
-                        warehouse_template["signature_label"],
-                        value=form["approver_signature"],
-                        key=f"warehouse_app_sign_{warehouse_id}"
-                    )
-
-                # Requester on RIGHT.
-
-                with footer_cols[1]:
-
-                    form["requester"] = st.text_input(
-                        warehouse_template["requester_label"],
-                        value=form["requester"],
-                        key=f"warehouse_requester_{warehouse_id}"
-                    )
-
-                    form["requester_signature"] = st.text_input(
-                        warehouse_template["signature_label"],
-                        value=form["requester_signature"],
-                        key=f"warehouse_req_sign_{warehouse_id}"
-                    )
+                item_count = warehouse_item_count(form)
+                stats_slot.markdown(
+                    '<div class="rng-warehouse-stats">'
+                    f'<div class="rng-warehouse-stat"><strong>{item_count}</strong><span>Line items</span></div>'
+                    f'<div class="rng-warehouse-stat"><strong>{10 - item_count}</strong><span>Empty lines</span></div>'
+                    f'<div class="rng-warehouse-stat"><strong>{escape(str(form["number"])) or "—"}</strong><span>Request no.</span></div></div>',
+                    unsafe_allow_html=True
+                )
+                with st.container(key="rng_warehouse_save_action"):
+                    if st.button("Save request", key=f"warehouse_save_form_{warehouse_id}", use_container_width=True):
+                        try:
+                            rng_save()
+                            st.success("Warehouse request saved.")
+                        except Exception as exc:
+                            st.error("Could not save your request. Please retry. " + str(exc))
 
                 # =================================================
                 # DOWNLOAD A5 LANDSCAPE PDF
                 # =================================================
 
-                st.divider()
+                with st.container(key="rng_warehouse_export"):
+                    st.markdown('<div class="rng-warehouse-section">Ready to send</div><div class="rng-warehouse-help">Download or share the original A5 landscape request, with its logo and Persian labels.</div>', unsafe_allow_html=True)
 
-                try:
+                    try:
 
-                    pdf_bytes = create_warehouse_pdf(
-                        form,
-                        warehouse_template
-                    )
-
-                    safe_filename = re.sub(
-                        r"[^\w.-]+",
-                        "_",
-                        warehouse_name
-                    )
-
-                    warehouse_pdf_filename = f"Purchase_Request_{safe_filename}.pdf"
-                    download_col, share_col = st.columns(2)
-                    with download_col:
-                        st.download_button(
-                            label="Download A5 Landscape PDF",
-                            data=pdf_bytes,
-                            file_name=warehouse_pdf_filename,
-                            mime="application/pdf",
-                            key=f"warehouse_pdf_{warehouse_id}",
-                            use_container_width=True
+                        pdf_bytes = create_warehouse_pdf(
+                            form,
+                            warehouse_template
                         )
-                    with share_col:
-                        rng_pdf_share_button(pdf_bytes, warehouse_pdf_filename)
 
-                except Exception as error:
+                        safe_filename = re.sub(
+                            r"[^\w.-]+",
+                            "_",
+                            warehouse_name
+                        )
 
-                    st.error(
-                        "Unable to generate the PDF: "
-                        + str(error)
-                    )
+                        warehouse_pdf_filename = f"Purchase_Request_{safe_filename}.pdf"
+                        download_col, share_col = st.columns(2)
+                        with download_col:
+                            st.download_button(
+                                label="Download A5 Landscape PDF",
+                                data=pdf_bytes,
+                                file_name=warehouse_pdf_filename,
+                                mime="application/pdf",
+                                key=f"warehouse_pdf_{warehouse_id}",
+                                use_container_width=True
+                            )
+                        with share_col:
+                            rng_pdf_share_button(pdf_bytes, warehouse_pdf_filename)
+
+                    except Exception as error:
+
+                        st.error(
+                            "Unable to generate the PDF: "
+                            + str(error)
+                        )
 
     # =========================================================
     # WAREHOUSE MAIN PAGE
@@ -3371,15 +3227,11 @@ elif page == "Warehouse":
 
         st.session_state.selected_warehouse = None
 
+        warehouse_total = len(st.session_state.warehouse_cards)
         st.markdown(
-            '<div class="dashboard-title">Warehouse</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            '<div class="dashboard-subtitle">'
-            'Manage your warehouse records'
-            '</div>',
+            '<div class="rng-warehouse-hero"><div class="rng-warehouse-eyebrow">ORGANIZED REQUESTS. CLEAR NEXT STEPS.</div>'
+            '<h1>Warehouse</h1><p>Keep every request, item, and approval in one place.</p>'
+            f'<span class="rng-warehouse-total">{warehouse_total} {"warehouse" if warehouse_total == 1 else "warehouses"} in your workspace</span></div>',
             unsafe_allow_html=True
         )
 
@@ -3388,70 +3240,72 @@ elif page == "Warehouse":
         # =====================================================
 
         if st.session_state.adding_warehouse:
+            with st.container(key="rng_warehouse_add_form"):
 
-            st.markdown(
-                '<div class="section-title">Add New Warehouse</div>',
-                unsafe_allow_html=True
-            )
+                st.markdown(
+                    '<div class="section-title">Add New Warehouse</div>',
+                    unsafe_allow_html=True
+                )
 
-            new_title = st.text_input(
-                "Warehouse title",
-                placeholder="Enter warehouse title",
-                key="new_warehouse_title"
-            )
+                new_title = st.text_input(
+                    "Warehouse title",
+                    placeholder="Enter warehouse title",
+                    key="new_warehouse_title"
+                )
 
-            add_col, cancel_col = st.columns(2)
+                add_col, cancel_col = st.columns(2)
 
-            with add_col:
+                with add_col:
 
-                if st.button(
-                    "Add Warehouse",
-                    key="warehouse_add_confirm",
-                    use_container_width=True
-                ):
+                    if st.button(
+                        "Add Warehouse",
+                        key="warehouse_add_confirm",
+                        use_container_width=True
+                    ):
 
-                    if new_title.strip():
+                        if new_title.strip():
 
-                        st.session_state.warehouse_cards.append(
-                            new_title.strip()
-                        )
+                            st.session_state.warehouse_cards.append(
+                                new_title.strip()
+                            )
 
-                        st.session_state.warehouse_card_ids.append(
-                            uuid4().hex
-                        )
+                            st.session_state.warehouse_card_ids.append(
+                                uuid4().hex
+                            )
+
+                            st.session_state.adding_warehouse = False
+
+                            rng_rerun()
+
+                        else:
+
+                            st.warning(
+                                "Please enter a warehouse title."
+                            )
+
+                with cancel_col:
+
+                    if st.button(
+                        "Cancel",
+                        key="warehouse_add_cancel",
+                        use_container_width=True
+                    ):
 
                         st.session_state.adding_warehouse = False
 
                         rng_rerun()
 
-                    else:
-
-                        st.warning(
-                            "Please enter a warehouse title."
-                        )
-
-            with cancel_col:
+        else:
+            with st.container(key="rng_warehouse_add_action"):
 
                 if st.button(
-                    "Cancel",
-                    key="warehouse_add_cancel",
-                    use_container_width=True
+                    "+ Add Warehouse",
+                    key="warehouse_add_button"
                 ):
 
-                    st.session_state.adding_warehouse = False
+                    st.session_state.adding_warehouse = True
 
                     rng_rerun()
-
-        else:
-
-            if st.button(
-                "+ Add Warehouse",
-                key="warehouse_add_button"
-            ):
-
-                st.session_state.adding_warehouse = True
-
-                rng_rerun()
 
         st.markdown(
             "<br>",
@@ -3462,197 +3316,173 @@ elif page == "Warehouse":
         # WAREHOUSE CARDS
         # =====================================================
 
-        cols = st.columns(3)
+        if not st.session_state.warehouse_cards:
+            st.markdown('<div class="rng-warehouse-empty"><strong>Everything starts with a clear request.</strong>Add a warehouse to organize purchase requests and their approvals.</div>', unsafe_allow_html=True)
+        with st.container(key="rng_warehouse_board"):
+            cols = st.columns(3)
 
-        for i, warehouse in enumerate(
-            st.session_state.warehouse_cards
-        ):
+            for i, warehouse in enumerate(
+                st.session_state.warehouse_cards
+            ):
 
-            with cols[i % 3]:
+                with cols[i % 3], st.container(key=f"rng_warehouse_card_{i}"):
 
-                safe_title = escape(warehouse)
+                    warehouse_card_heading(warehouse, i)
 
-                # =============================================
-                # DELETE CONFIRMATION
-                # =============================================
+                    safe_title = escape(warehouse)
 
-                if st.session_state.deleting_warehouse == i:
+                    # =============================================
+                    # DELETE CONFIRMATION
+                    # =============================================
 
-                    st.markdown(
-                        f"""
-                        <div class="warehouse-card">
-                            <div class="warehouse-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="warehouse-card-text">
-                                Warehouse records
-                            </div>
-                        </div>
+                    if st.session_state.deleting_warehouse == i:
 
-                        <div class="warehouse-delete-warning">
-                            Are you sure you want to delete
-                            "{safe_title}"?
-                            This cannot be undone.
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                        st.markdown(
+                            f'<div class="warehouse-delete-warning">Delete "{safe_title}"? This cannot be undone.</div>',
+                            unsafe_allow_html=True
+                        )
 
-                    confirm_col, cancel_col = st.columns(2)
+                        confirm_col, cancel_col = st.columns(2)
 
-                    with confirm_col:
+                        with confirm_col:
 
-                        if st.button(
-                            "Confirm Delete",
-                            key=f"warehouse_confirm_delete_{i}",
-                            use_container_width=True
-                        ):
+                            if st.button(
+                                "Confirm Delete",
+                                key=f"warehouse_confirm_delete_{i}",
+                                use_container_width=True
+                            ):
 
-                            deleted_id = (
-                                st.session_state.warehouse_card_ids.pop(i)
-                            )
-
-                            st.session_state.warehouse_cards.pop(i)
-
-                            st.session_state.warehouse_forms.pop(
-                                deleted_id,
-                                None
-                            )
-
-                            st.session_state.deleting_warehouse = None
-                            st.session_state.editing_warehouse = None
-
-                            rng_rerun()
-
-                    with cancel_col:
-
-                        if st.button(
-                            "Cancel",
-                            key=f"warehouse_cancel_delete_{i}",
-                            use_container_width=True
-                        ):
-
-                            st.session_state.deleting_warehouse = None
-
-                            rng_rerun()
-
-                # =============================================
-                # EDIT WAREHOUSE TITLE
-                # =============================================
-
-                elif st.session_state.editing_warehouse == i:
-
-                    edited_title = st.text_input(
-                        "Warehouse title",
-                        value=warehouse,
-                        key=f"warehouse_edit_input_{i}"
-                    )
-
-                    save_col, cancel_col = st.columns(2)
-
-                    with save_col:
-
-                        if st.button(
-                            "Save",
-                            key=f"warehouse_save_{i}",
-                            use_container_width=True
-                        ):
-
-                            if edited_title.strip():
-
-                                st.session_state.warehouse_cards[i] = (
-                                    edited_title.strip()
+                                deleted_id = (
+                                    st.session_state.warehouse_card_ids.pop(i)
                                 )
+
+                                st.session_state.warehouse_cards.pop(i)
+
+                                st.session_state.warehouse_forms.pop(
+                                    deleted_id,
+                                    None
+                                )
+
+                                st.session_state.deleting_warehouse = None
+                                st.session_state.editing_warehouse = None
+
+                                rng_rerun()
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"warehouse_cancel_delete_{i}",
+                                use_container_width=True
+                            ):
+
+                                st.session_state.deleting_warehouse = None
+
+                                rng_rerun()
+
+                    # =============================================
+                    # EDIT WAREHOUSE TITLE
+                    # =============================================
+
+                    elif st.session_state.editing_warehouse == i:
+
+                        edited_title = st.text_input(
+                            "Warehouse title",
+                            value=warehouse,
+                            key=f"warehouse_edit_input_{i}"
+                        )
+
+                        save_col, cancel_col = st.columns(2)
+
+                        with save_col:
+
+                            if st.button(
+                                "Save",
+                                key=f"warehouse_save_{i}",
+                                use_container_width=True
+                            ):
+
+                                if edited_title.strip():
+
+                                    st.session_state.warehouse_cards[i] = (
+                                        edited_title.strip()
+                                    )
+
+                                    st.session_state.editing_warehouse = None
+
+                                    rng_rerun()
+
+                                else:
+
+                                    st.warning(
+                                        "Please enter a warehouse title."
+                                    )
+
+                        with cancel_col:
+
+                            if st.button(
+                                "Cancel",
+                                key=f"warehouse_edit_cancel_{i}",
+                                use_container_width=True
+                            ):
 
                                 st.session_state.editing_warehouse = None
 
                                 rng_rerun()
 
-                            else:
+                    # =============================================
+                    # NORMAL WAREHOUSE CARD
+                    # =============================================
 
-                                st.warning(
-                                    "Please enter a warehouse title."
-                                )
+                    else:
 
-                    with cancel_col:
+                        button_col1, button_col2, button_col3 = st.columns(3)
 
-                        if st.button(
-                            "Cancel",
-                            key=f"warehouse_edit_cancel_{i}",
-                            use_container_width=True
-                        ):
+                        with button_col1, st.container(key=f"rng_warehouse_open_{i}"):
+
+                            open_button = st.button(
+                                "Open",
+                                key=f"warehouse_open_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col2:
+
+                            edit_button = st.button(
+                                "Edit",
+                                key=f"warehouse_edit_{i}",
+                                use_container_width=True
+                            )
+
+                        with button_col3:
+
+                            delete_button = st.button(
+                                "Delete",
+                                key=f"warehouse_delete_{i}",
+                                use_container_width=True
+                            )
+
+                        if open_button:
+
+                            st.session_state.selected_warehouse = i
+
+                            rng_rerun()
+
+                        if edit_button:
+
+                            st.session_state.editing_warehouse = i
+
+                            st.session_state.deleting_warehouse = None
+
+                            rng_rerun()
+
+                        if delete_button:
+
+                            st.session_state.deleting_warehouse = i
 
                             st.session_state.editing_warehouse = None
 
                             rng_rerun()
-
-                # =============================================
-                # NORMAL WAREHOUSE CARD
-                # =============================================
-
-                else:
-
-                    st.markdown(
-                        f"""
-                        <div class="warehouse-card">
-                            <div class="warehouse-card-title">
-                                {safe_title}
-                            </div>
-                            <div class="warehouse-card-text">
-                                Warehouse records
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-                    button_col1, button_col2, button_col3 = st.columns(3)
-
-                    with button_col1:
-
-                        open_button = st.button(
-                            "Open",
-                            key=f"warehouse_open_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col2:
-
-                        edit_button = st.button(
-                            "Edit",
-                            key=f"warehouse_edit_{i}",
-                            use_container_width=True
-                        )
-
-                    with button_col3:
-
-                        delete_button = st.button(
-                            "Delete",
-                            key=f"warehouse_delete_{i}",
-                            use_container_width=True
-                        )
-
-                    if open_button:
-
-                        st.session_state.selected_warehouse = i
-
-                        rng_rerun()
-
-                    if edit_button:
-
-                        st.session_state.editing_warehouse = i
-
-                        st.session_state.deleting_warehouse = None
-
-                        rng_rerun()
-
-                    if delete_button:
-
-                        st.session_state.deleting_warehouse = i
-
-                        st.session_state.editing_warehouse = None
-
-                        rng_rerun()
 
 
 

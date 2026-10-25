@@ -523,6 +523,16 @@ def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
                 rng_rerun()
 
 
+@st.cache_resource(max_entries=2, show_spinner=False)
+def rng_financial_renderer(source, filename):
+    """Load trusted repository source by content, even in an older running session."""
+    import types
+    module = types.ModuleType("rng_financial_runtime")
+    module.__file__ = filename
+    exec(compile(source, filename, "exec"), module.__dict__)
+    return module.render_financial
+
+
 # A compact, horizontally scrollable route to every workspace.
 if st.session_state.page != "Dashboard":
     st.markdown("""<style>
@@ -4121,7 +4131,8 @@ elif page == "Mission Report":
             text="",
             font_size=10,
             align="right",
-            shaded=False
+            shaded=False,
+            signature_path=None
         ):
 
             x = x_edges[last_col + 1]
@@ -4169,15 +4180,20 @@ elif page == "Mission Report":
                 stroke=1
             )
 
-            draw_text(
-                text,
-                x,
-                y,
-                width,
-                height,
-                size=font_size,
-                align=align
-            )
+            if signature_path is not None:
+                signature = ImageReader(str(signature_path))
+                image_width, image_height = signature.getSize()
+                scale = min(54 * mm / image_width, 28 * mm / image_height, (height - 12) / image_height)
+                signature_width = image_width * scale
+                signature_height = image_height * scale
+                # Reserve the left strip so even long descriptions cannot cover the signature.
+                text_inset = signature_width + 12
+                draw_text(text, x + text_inset, y, width - text_inset, height,
+                          size=font_size, align=align)
+                pdf.drawImage(signature, x + 5, y + 5, width=signature_width,
+                              height=signature_height, preserveAspectRatio=True, mask="auto")
+            else:
+                draw_text(text, x, y, width, height, size=font_size, align=align)
 
         # =====================================================
         # FIELD TEXT HELPER
@@ -4371,7 +4387,8 @@ elif page == "Mission Report":
             FIELD_LABELS["description"]
             + ":\n"
             + str(form.get("description", "")),
-            font_size=10
+            font_size=10,
+            signature_path=RNGPath(__file__).resolve().parent / "assets" / "Mission signature.png"
         )
 
         # =====================================================
@@ -6874,7 +6891,8 @@ elif page == "RNG Projects":
                     project["currency"] = "IRR"
                     rng_rerun()
         elif section == "Financial":
-            from project_financial import render_financial
+            financial_source = RNGPath(__file__).resolve().with_name("project_financial.py")
+            render_financial = rng_financial_renderer(financial_source.read_bytes(), str(financial_source))
             render_financial(projects, selected, rng_save, rng_pdf_runs)
 
         elif section == "Meeting Minutes":

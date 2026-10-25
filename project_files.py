@@ -40,7 +40,20 @@ def _payload(record):
         return None
 
 
-def _preview(record, namespace):
+def _file_actions(data, record, namespace, share_file):
+    filename = record.get("filename", "")
+    mime = record.get("mime") or mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    with st.container(key=f"project_file_actions_{namespace}"):
+        download, share = st.columns(2)
+        with download:
+            st.download_button("Download", data=data, file_name=filename, mime=mime,
+                               key=f"{namespace}_download", on_click="ignore", use_container_width=True)
+        if share_file is not None:
+            with share:
+                share_file(data, filename, mime)
+
+
+def _preview(record, namespace, share_file):
     data = _payload(record)
     if data is None:
         st.error("This file could not be read. Please try downloading it again later.")
@@ -49,8 +62,7 @@ def _preview(record, namespace):
     mime = record.get("mime") or mimetypes.guess_type(filename)[0] or "application/octet-stream"
     suffix = Path(filename).suffix.lower()
     if data:
-        st.download_button("Download file", data=data, file_name=filename, mime=mime,
-                           key=f"{namespace}_preview_download", on_click="ignore")
+        _file_actions(data, record, f"{namespace}_preview", share_file)
     if record.get("url"):
         from urllib.parse import urlparse
         parsed = urlparse(record["url"])
@@ -80,7 +92,7 @@ def _preview(record, namespace):
         st.info("Download this file to open it. In-app previews support PDFs, images, and text files.")
 
 
-def render_project_files(projects, project_id, section, save):
+def render_project_files(projects, project_id, section, save, share_file=None):
     """Return True on the library screen, False while viewing one file."""
     project = projects[project_id]
     field = SECTIONS[section]
@@ -90,6 +102,8 @@ def render_project_files(projects, project_id, section, save):
     edit_key, delete_key = f"rng_{namespace}_edit", f"rng_{namespace}_delete"
     st.markdown('''<style>
     [class*="st-key-project_files_"] button[kind^="primary"], [class*="st-key-project_files_"] button[kind^="primary"] p { background: #214b7f; border-color: #214b7f; color: #fff !important; }
+    [class*="st-key-project_file_actions_"] [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 6px; }
+    [class*="st-key-project_file_actions_"] [data-testid="stColumn"] { min-width: 0 !important; }
     .rng-files-heading { display: flex; align-items: center; justify-content: space-between; color: #243e62; margin: 8px 0 18px; }
     .rng-files-heading strong { font-size: 24px; } .rng-files-heading span { color: #7286a1; font-size: 12px; }
     .rng-files-empty { text-align: center; background: #ffffffb8; border: 1px dashed #c3d2e7; border-radius: 18px; padding: 44px 20px; color: #6a809d; }
@@ -121,7 +135,7 @@ def render_project_files(projects, project_id, section, save):
         st.caption(selected.get("filename") or "Document link")
         if selected.get("note"):
             st.write(selected["note"])
-        _preview(selected, namespace)
+        _preview(selected, namespace, share_file)
         return False
 
     with st.container(key=namespace):
@@ -209,8 +223,7 @@ def render_project_files(projects, project_id, section, save):
                                 st.rerun()
                             data = _payload(record)
                             if record.get("filename") and data is not None:
-                                st.download_button("Download file", data=data, file_name=record["filename"],
-                                                   mime=record.get("mime") or "application/octet-stream", key=f"{prefix}_download", use_container_width=True, on_click="ignore")
+                                _file_actions(data, record, prefix, share_file)
                             edit_col, delete_col = st.columns(2)
                             with edit_col:
                                 if st.button("Rename", key=f"{prefix}_rename", use_container_width=True):

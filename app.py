@@ -254,41 +254,49 @@ def rng_rerun():
 
 
 # =========================================================
-# NATIVE PDF SHARE BUTTON (ANDROID / SUPPORTED BROWSERS)
+# NATIVE FILE SHARING (ANDROID / SUPPORTED BROWSERS)
 # =========================================================
-def rng_pdf_share_button(pdf_bytes, filename, *, disabled=False):
-    """Share the actual PDF file, not an unauthenticated public URL.
+def rng_file_share_button(file_bytes, filename, mime="application/octet-stream", *, label="Share", disabled=False):
+    """Share the original file bytes without publishing a public URL.
 
     The Web Share API is called directly from the user's click. The
-    component keeps the PDF private in browser memory; no upload or
+    component keeps the file private in browser memory; no upload or
     public Supabase storage bucket is needed.
     """
     import base64
     import json
+    import re
     import streamlit.components.v1 as components
+    from html import escape
+
+    safe_label = escape(label)
+    def script_json(value):
+        return json.dumps(value, ensure_ascii=True).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
     if disabled:
         components.html(
             '<button type="button" disabled style="width:100%;height:42px;'
             'border-radius:9px;border:1px solid #ddd;opacity:.5;">'
-            'Share PDF</button>', height=46,
+            + safe_label + '</button>', height=46,
         )
         return
 
-    encoded_pdf = json.dumps(base64.b64encode(pdf_bytes).decode('ascii'))
-    safe_filename = json.dumps(str(filename), ensure_ascii=True)
-    # JSON encoding prevents stored form titles/file names becoming executable HTML.
+    encoded_file = script_json(base64.b64encode(file_bytes).decode('ascii'))
+    safe_filename = script_json(str(filename))
+    safe_mime = script_json(str(mime or "application/octet-stream"))
+    # Escape inline-script delimiters in uploaded file names and MIME types.
     html = """<!doctype html>
 <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;font-family:Arial,sans-serif;">
 <button id="rng-share" type="button" style="width:100%;height:42px;cursor:pointer;
  border-radius:9px;border:1px solid #d9e1ec;background:#fff;color:#172333;
- font:600 14px Arial,sans-serif;">&#x1F4E4; Share PDF</button>
+ font:600 14px Arial,sans-serif;">&#x1F4E4; __SHARE_LABEL__</button>
 <div id="rng-message" role="status" style="display:none;font-size:11px;
  color:#9a3412;padding:3px 2px;overflow-wrap:anywhere;"></div>
 <script>
-const pdfBase64 = __PDF_DATA__;
-const pdfFilename = __PDF_FILENAME__;
+const fileBase64 = __FILE_DATA__;
+const fileName = __FILE_NAME__;
+const fileMime = __FILE_MIME__;
 const shareButton = document.getElementById('rng-share');
 const msg = document.getElementById('rng-message');
 function showError(message) {
@@ -308,29 +316,36 @@ shareButton.addEventListener('click', async () => {
     }
   } catch (_) { /* Cross-origin embedding: use this frame's navigator. */ }
   if (typeof shareNavigator.share !== 'function') {
-    showError('Sharing is unavailable here. Open the Dashboard in Chrome on Android, or use Download PDF.');
+    showError('Sharing is unavailable here. Open the Dashboard in Chrome on Android, or use Download.');
     return;
   }
   try {
-    const binary = atob(pdfBase64);
+    const binary = atob(fileBase64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const file = new File([bytes], pdfFilename, {type:'application/pdf'});
+    const file = new File([bytes], fileName, {type:fileMime});
     if (typeof shareNavigator.canShare === 'function' &&
         !shareNavigator.canShare({files:[file]})) {
-      showError('This browser cannot share PDF files directly. Try Chrome on Android, or use Download PDF.');
+      showError('This browser cannot share this file type directly. Try Chrome on Android, or use Download.');
       return;
     }
     // Call inside the click callback; file sharing requires user activation.
-    await shareNavigator.share({files:[file], title:pdfFilename});
+    await shareNavigator.share({files:[file], title:fileName});
   } catch (error) {
     if (error && error.name === 'AbortError') return; // User closed share sheet.
-    showError('Native sharing was blocked or unsupported. Try Chrome on Android, or use Download PDF.');
+    showError('Native sharing was blocked or unsupported. Try Chrome on Android, or use Download.');
   }
 });
 </script></body></html>"""
-    html = html.replace('__PDF_DATA__', encoded_pdf).replace('__PDF_FILENAME__', safe_filename)
+    values = {"__FILE_DATA__": encoded_file, "__FILE_NAME__": safe_filename,
+              "__FILE_MIME__": safe_mime, "__SHARE_LABEL__": safe_label}
+    html = re.sub(r"__FILE_DATA__|__FILE_NAME__|__FILE_MIME__|__SHARE_LABEL__", lambda match: values[match.group()], html)
     components.html(html, height=70, scrolling=False)
+
+def rng_pdf_share_button(pdf_bytes, filename, *, disabled=False):
+    """Keep the existing PDF sharing controls and MIME type."""
+    return rng_file_share_button(pdf_bytes, filename, "application/pdf", label="Share PDF", disabled=disabled)
+
 
 import pandas as pd
 
@@ -6898,7 +6913,7 @@ elif page == "RNG Projects":
         elif section in ("Meeting Minutes", "Plans", "Documents"):
             files_source = RNGPath(__file__).resolve().with_name("project_files.py")
             render_files = rng_project_renderer(files_source.read_bytes(), str(files_source), "render_project_files")
-            browsing_library = render_files(projects, selected, section, rng_save)
+            browsing_library = render_files(projects, selected, section, rng_save, rng_file_share_button)
             if browsing_library and section == "Meeting Minutes" and project.get("meetings"):
                 with st.expander("Previously saved meeting records"):
                     project_records(selected, project, "meetings", "Meeting minutes", ["date", "title", "minutes", "actions", "owner"], {

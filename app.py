@@ -523,14 +523,14 @@ def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
                 rng_rerun()
 
 
-@st.cache_resource(max_entries=2, show_spinner=False)
-def rng_financial_renderer(source, filename):
+@st.cache_resource(max_entries=4, show_spinner=False)
+def rng_project_renderer(source, filename, entry_point):
     """Load trusted repository source by content, even in an older running session."""
     import types
     module = types.ModuleType("rng_financial_runtime")
     module.__file__ = filename
     exec(compile(source, filename, "exec"), module.__dict__)
-    return module.render_financial
+    return getattr(module, entry_point)
 
 
 # A compact, horizontally scrollable route to every workspace.
@@ -6892,79 +6892,31 @@ elif page == "RNG Projects":
                     rng_rerun()
         elif section == "Financial":
             financial_source = RNGPath(__file__).resolve().with_name("project_financial.py")
-            render_financial = rng_financial_renderer(financial_source.read_bytes(), str(financial_source))
-            render_financial(projects, selected, rng_save, rng_pdf_runs)
+            render_financial = rng_project_renderer(financial_source.read_bytes(), str(financial_source), "render_financial")
+            render_financial(projects, selected, rng_save, rng_pdf_runs, rng_pdf_share_button)
 
-        elif section == "Meeting Minutes":
-            project_records(selected, project, "meetings", "Meeting minutes", ["date", "title", "minutes", "actions", "owner"], {
-                "date": st.column_config.TextColumn("Date", width=120),
-                "title": st.column_config.TextColumn("Meeting title", width=220, required=True),
-                "minutes": st.column_config.TextColumn("Minutes / decisions", width=350),
-                "actions": st.column_config.TextColumn("Follow-up actions", width=300),
-                "owner": st.column_config.TextColumn("Responsible person", width=180),
-            })
-        elif section == "Plans":
-            project_records(selected, project, "plans", "Plans", ["title", "owner", "due", "status", "notes"], {
-                "title": st.column_config.TextColumn("Plan / milestone", width=260, required=True),
-                "owner": st.column_config.TextColumn("Responsible person", width=180),
-                "due": st.column_config.TextColumn("Due date", width=130),
-                "status": st.column_config.SelectboxColumn("Status", options=["Planned", "In progress", "Completed"], default="Planned", width=150),
-                "notes": st.column_config.TextColumn("Notes", width=350),
-            })
-        elif section == "Documents":
-            from urllib.parse import urlparse
-            documents = project.setdefault("documents", [])
-            st.subheader("Documents")
-            st.caption("Keep files and document links with this project. Files: up to 2 MB each, 10 MB total per project.")
-            with st.form(f"project_document_form_{selected}", clear_on_submit=True):
-                document_name = st.text_input("Document name (optional)")
-                document_file = st.file_uploader("Upload a file", max_upload_size=2)
-                document_url = st.text_input("Or add a document link", placeholder="https://…")
-                document_note = st.text_area("Description / revision")
-                add_document = st.form_submit_button("Add document", type="primary")
-            if add_document:
-                parsed_url = urlparse(document_url.strip())
-                if document_file is not None and document_url.strip():
-                    st.error("Choose a file or a link for this document.")
-                elif document_file is None and (parsed_url.scheme not in ["http", "https"] or not parsed_url.netloc):
-                    st.error("Upload a file or enter a valid http/https document link.")
-                else:
-                    payload = document_file.getvalue() if document_file is not None else b""
-                    total_bytes = sum(doc.get("size", 0) for doc in documents)
-                    if len(payload) > 2 * 1024 * 1024 or total_bytes + len(payload) > 10 * 1024 * 1024:
-                        st.error("The file exceeds this project's upload limit. Use a document link instead.")
-                    else:
-                        documents.append({"id": uuid4().hex, "title": document_name.strip() or (document_file.name if document_file is not None else parsed_url.netloc),
-                                          "note": document_note.strip(), "url": document_url.strip(),
-                                          "filename": document_file.name if document_file is not None else "", "mime": document_file.type if document_file is not None else "",
-                                          "size": len(payload), "data": rng_base64.b64encode(payload).decode("ascii") if document_file is not None else ""})
-                        rng_rerun()
-            if not documents:
-                st.info("No documents yet. Upload a file or add a link above.")
-            for document in documents:
-                with st.container(key=f"rng_project_document_{document['id']}", border=True):
-                    st.markdown(f'<div class="rng-financial-card-title">{escape(document["title"])}</div>', unsafe_allow_html=True)
-                    if document["note"]:
-                        st.write(document["note"])
-                    if document["filename"]:
-                        st.caption(f'{document["filename"]} · {document["size"] / 1024:,.0f} KB')
-                        st.download_button("Download file", data=rng_base64.b64decode(document["data"]), file_name=document["filename"], mime=document["mime"] or "application/octet-stream", key=f"project_download_{document['id']}")
-                    elif document["url"]:
-                        st.link_button("Open document", document["url"])
-                    if st.button("Delete document", key=f"project_delete_doc_{document['id']}"):
-                        st.session_state.rng_project_delete_doc = document["id"]
-                    if st.session_state.get("rng_project_delete_doc") == document["id"]:
-                        rng_delete_warning("Delete this document from the project? This cannot be undone.")
-                        confirm, cancel = st.columns(2)
-                        with confirm:
-                            if st.button("Yes, delete", key=f"project_confirm_doc_{document['id']}", type="primary"):
-                                project["documents"] = [doc for doc in documents if doc["id"] != document["id"]]
-                                st.session_state.rng_project_delete_doc = None
-                                rng_rerun()
-                        with cancel:
-                            if st.button("Cancel", key=f"project_cancel_doc_{document['id']}"):
-                                st.session_state.rng_project_delete_doc = None
-                                rng_rerun()
+        elif section in ("Meeting Minutes", "Plans", "Documents"):
+            files_source = RNGPath(__file__).resolve().with_name("project_files.py")
+            render_files = rng_project_renderer(files_source.read_bytes(), str(files_source), "render_project_files")
+            browsing_library = render_files(projects, selected, section, rng_save)
+            if browsing_library and section == "Meeting Minutes" and project.get("meetings"):
+                with st.expander("Previously saved meeting records"):
+                    project_records(selected, project, "meetings", "Meeting minutes", ["date", "title", "minutes", "actions", "owner"], {
+                        "date": st.column_config.TextColumn("Date", width=120),
+                        "title": st.column_config.TextColumn("Meeting title", width=220, required=True),
+                        "minutes": st.column_config.TextColumn("Minutes / decisions", width=350),
+                        "actions": st.column_config.TextColumn("Follow-up actions", width=300),
+                        "owner": st.column_config.TextColumn("Responsible person", width=180),
+                    })
+            if browsing_library and section == "Plans" and project.get("plans"):
+                with st.expander("Previously saved plan records"):
+                    project_records(selected, project, "plans", "Plans", ["title", "owner", "due", "status", "notes"], {
+                        "title": st.column_config.TextColumn("Plan / milestone", width=260, required=True),
+                        "owner": st.column_config.TextColumn("Responsible person", width=180),
+                        "due": st.column_config.TextColumn("Due date", width=130),
+                        "status": st.column_config.SelectboxColumn("Status", options=["Planned", "In progress", "Completed"], default="Planned", width=150),
+                        "notes": st.column_config.TextColumn("Notes", width=350),
+                    })
     else:
         st.markdown('<div class="rng-financial-hero"><small>PROJECT WORKSPACE</small><h1>RNG Projects</h1>'
                     '<p>One home for your project finances, meetings, plans and documents.</p></div>', unsafe_allow_html=True)

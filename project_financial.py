@@ -307,7 +307,7 @@ def pdf_report(project, pdf_runs, logo_path=None):
     return output.getvalue()
 
 
-def render_financial(projects, project_id, save, pdf_runs):
+def render_financial(projects, project_id, save, pdf_runs, share_pdf=None):
     project = projects[project_id]
     draft_key = f"rng_financial_draft_{project_id}"
     st.session_state.setdefault(draft_key, make_draft(project))
@@ -340,28 +340,34 @@ def render_financial(projects, project_id, save, pdf_runs):
     .rng-finance-summary.expenses > div { background: #eaf1fb; border-top: 3px solid #86a5cd; }
     .rng-finance-summary span, .rng-finance-summary small { display: block; font-family: Arial, Tahoma, sans-serif; color: #587193; font-size: 12px; line-height: 1.5; }
     .rng-finance-summary strong { display: block; font-family: Arial, Tahoma, sans-serif; font-size: 23px; color: #203f68; margin: 8px 0; overflow-wrap: anywhere; }
-    .st-key-financial_grid { --finance-cols: 44px 116px 112px 126px minmax(230px, 1fr) 160px 160px 190px 56px 48px; overflow-x: auto; width: 100%; max-width: 100%; direction: rtl; border: 1px solid #d5e1ef; border-radius: 12px; background: #fff; gap: 0 !important; }
-    .rng-finance-grid-head { display: grid; grid-template-columns: var(--finance-cols); direction: rtl; min-width: 1320px; min-height: 54px; align-items: center; background: #203f68; color: #fff; padding: 12px 8px; gap: 8px; font-family: 'Financial Nazanin', Tahoma, sans-serif; font-size: 20px; text-align: center; }
+    .st-key-financial_grid { --finance-cols: 36px 92px 80px 88px minmax(140px, 1fr) 100px 100px 136px 40px 32px; overflow-x: auto; width: 100%; max-width: 100%; direction: rtl; border: 1px solid #d5e1ef; border-radius: 12px; background: #fff; gap: 0 !important; }
+    .rng-finance-grid-head { display: grid; grid-template-columns: var(--finance-cols); direction: rtl; min-width: 920px; min-height: 54px; align-items: center; background: #203f68; color: #fff; padding: 10px 8px; gap: 6px; font-family: 'Financial Nazanin', Tahoma, sans-serif; font-size: 18px; text-align: center; }
     .rng-finance-grid-head > div:nth-child(5) { text-align: right; padding-right: 12px; }
-    [class*="st-key-finance_row_"] { min-width: 1320px; min-height: 66px; padding: 10px 8px; margin: 0 !important; border-bottom: 1px solid #e0e8f3; }
+    [class*="st-key-finance_row_"] { min-width: 920px; min-height: 58px; padding: 8px; margin: 0 !important; border-bottom: 1px solid #e0e8f3; }
     [class*="st-key-finance_row_"]:nth-child(even) { background: #f4f7fc; }
-    [class*="st-key-finance_row_"] [data-testid="stHorizontalBlock"] { display: grid !important; grid-template-columns: var(--finance-cols); direction: rtl; gap: 8px; align-items: center; }
+    [class*="st-key-finance_row_"] [data-testid="stHorizontalBlock"] { display: grid !important; grid-template-columns: var(--finance-cols); direction: rtl; gap: 6px; align-items: center; }
     [class*="st-key-finance_row_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 0 !important; width: 100% !important; }
     [class*="st-key-finance_row_"] [data-testid="stElementContainer"] { margin-bottom: 0; }
     .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid input,
     .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid button,
     .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid p,
     .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid label,
-    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid [data-testid="stMarkdownContainer"] { font-family: 'Financial Nazanin', Tahoma, sans-serif !important; color: #243e62 !important; font-size: 20px; }
-    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid input { min-height: 44px !important; height: 44px; direction: rtl; text-align: right; }
+    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid [data-testid="stMarkdownContainer"] { font-family: 'Financial Nazanin', Tahoma, sans-serif !important; color: #243e62 !important; font-size: 18px; }
+    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid input { min-height: 40px !important; height: 40px; direction: rtl; text-align: right; }
     .st-key-financial_grid [data-testid="stNumberInput"] button { display: none; }
-    .st-key-financial_grid [data-testid="stNumberInput"] input { width: 100% !important; font-size: 23px !important; }
-    .st-key-financial_grid [data-testid="stSelectbox"] button { min-height: 44px; }
+    .st-key-financial_grid [data-testid="stNumberInput"] input { width: 100% !important; font-size: 20px !important; }
+    .st-key-financial_grid [data-testid="stSelectbox"] button { min-height: 40px; }
     .st-key-financial_grid [data-testid="stTextInput"] > div,
     .st-key-financial_grid [data-testid="stNumberInput"] > div { background: #f8faff; }
-    .st-key-financial_grid [data-testid="stColumn"]:first-child p { text-align: center; line-height: 44px; margin: 0; }
+    .st-key-financial_grid [data-testid="stColumn"]:first-child p { text-align: center; line-height: 40px; margin: 0; }
     body:has(#rng-financial-ledger-marker) [role="option"] { font-family: 'Financial Nazanin', Tahoma, sans-serif !important; font-size: 20px; direction: rtl; color: #243e62; background: #fff; }
-    .st-key-rng_financial_workspace [data-testid="stForm"] { min-width: 0; }
+    .stApp:has(#rng-financial-ledger-marker) .block-container { max-width: 1600px; padding-left: clamp(12px, 2vw, 32px); padding-right: clamp(12px, 2vw, 32px); }
+    .stApp:has(#rng-financial-ledger-marker) .st-key-rng_financial_workspace [data-testid="stForm"] { min-width: 0; padding: 16px; }
+    [class*="st-key-financial_budget_"] [data-testid="stNumberInput"] button { display: none; }
+    .st-key-financial_grid [data-testid="stSelectbox"] button { width: 24px; min-width: 24px; }
+    .st-key-financial_grid input { padding-left: 6px; padding-right: 6px; }
+    .st-key-finance_export_actions [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; }
+    .st-key-finance_export_actions [data-testid="stColumn"] { min-width: 0 !important; }
     @media(max-width: 900px) { .rng-finance-summary { grid-template-columns: repeat(3, 1fr); } .rng-finance-summary.expenses { grid-template-columns: repeat(2, 1fr); } }
     @media(max-width: 600px) { .rng-finance-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; } .rng-finance-summary > div { padding: 12px; } .rng-finance-summary strong { font-size: 20px; } }
     </style>'''.replace('__FONT_DATA__', font_data), unsafe_allow_html=True)
@@ -475,6 +481,13 @@ def render_financial(projects, project_id, save, pdf_runs):
         try:
             pdf = pdf_report(project, pdf_runs)
             report_name = "".join("_" if char in '/\\:\n\r' else char for char in project["title"]).strip() or "پروژه"
-            st.download_button("Download financial report (PDF)", data=pdf, file_name=f"گزارش مالی - {report_name}.pdf", mime="application/pdf", key=f"finance_pdf_{project_id}", use_container_width=True)
+            filename = f"گزارش مالی - {report_name}.pdf"
+            with st.container(key="finance_export_actions"):
+                download_col, share_col = st.columns(2)
+                with download_col:
+                    st.download_button("Download PDF", data=pdf, file_name=filename, mime="application/pdf", key=f"finance_pdf_{project_id}", use_container_width=True)
+                if share_pdf is not None:
+                    with share_col:
+                        share_pdf(pdf, filename)
         except Exception:
             st.error("Could not create the PDF report. Please try again.")

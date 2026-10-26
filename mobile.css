@@ -1,3 +1,5 @@
+[data-testid="stLayoutWrapper"]:has(> .st-key-rng_task_scroll_bootstrap),
+.st-key-rng_task_scroll_bootstrap { display: none; }
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_history),
 .st-key-rng_mobile_history,
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_viewport_bootstrap),

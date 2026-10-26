@@ -1,0 +1,20 @@
+<script>
+(() => {
+  const host = window.parent;
+  const doc = host.document;
+  if (host.__rngTaskJump) doc.removeEventListener('click', host.__rngTaskJump);
+  host.__rngTaskJump = event => {
+    const link = event.target.closest?.('a[data-rng-task-target]');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const marker = doc.getElementById(link.dataset.rngTaskTarget);
+    if (!marker) return;
+    event.preventDefault();
+    host.__rngTaskJumpRequest = {target: link.dataset.rngTaskTarget, at: Date.now()};
+    const card = marker.closest('[class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"]') || marker;
+    card.scrollIntoView({block: 'start', behavior: 'instant'});
+    card.setAttribute('tabindex', '-1');
+    card.focus({preventScroll: true});
+  };
+  doc.addEventListener('click', host.__rngTaskJump);
+})();
+</script>

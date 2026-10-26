@@ -53,6 +53,9 @@ with st.container(key="rng_viewport_bootstrap"):
     import streamlit.components.v1 as rng_components
     rng_components.html(RNGPath(__file__).with_name("mobile_viewport.html").read_text(), height=0)
 
+with st.container(key="rng_task_scroll_bootstrap"):
+    rng_components.html(RNGPath(__file__).with_name("task_navigation.html").read_text(), height=0)
+
 
 def rng_pdf_font_name():
     """Register B Nazanin for PDF Persian text; do not need Windows fonts."""
@@ -437,8 +440,8 @@ st.markdown("""
 }
 
 .note-box {
-    background: #fffdf0;
-    border: 1px solid #eee5b8;
+    background: #f6f8fc;
+    border: 1px solid #dce5f0;
     border-radius: 12px;
     padding: 16px 18px;
     margin-bottom: 10px;
@@ -512,6 +515,49 @@ def rng_delete_warning(message):
         st.warning(message)
 
 
+def rng_sorted_task_indices(records):
+    from datetime import datetime
+
+    def created(index):
+        task = records[index]
+        try:
+            return datetime.fromisoformat(str(task.get("created_at") or task.get("created", "")).replace("Z", "+00:00")).timestamp()
+        except (TypeError, ValueError, OverflowError):
+            return float("-inf")
+
+    newest = sorted(range(len(records)), key=lambda index: (created(index), index), reverse=True)
+    return ([index for index in newest if not records[index]["done"]],
+            [index for index in newest if records[index]["done"]])
+
+
+def rng_task_rows(unfinished, completed):
+    for title, indices in (("In progress", unfinished), ("Completed", completed)):
+        for offset in range(0, len(indices), 3):
+            yield title, indices[offset:offset + 3], offset == 0
+
+
+def rng_task_jump_list(records, indices, namespace):
+    from html import escape
+    st.markdown("""<style>
+    .rng-task-jumps { padding: 20px; background: #fff; border: 1px solid #dce5f1; border-radius: 16px; margin: 10px 0 24px; }
+    .rng-task-jumps strong { display: block; color: #294b75; margin-bottom: 12px; font-size: 17px; }
+    .rng-task-jumps nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .rng-task-jumps a { display: block; padding: 12px 16px; color: #294f7e !important; background: #edf3fb; border: 1px solid #dae5f4; border-radius: 10px; text-decoration: none; overflow-wrap: anywhere; }
+    .rng-task-jumps a:hover { background: #dfeafa; }
+    .rng-task-jumps a:focus-visible { outline: 3px solid #83a9e0; outline-offset: 2px; }
+    .rng-task-group { color: #294b75; font-size: 21px; font-weight: 700; margin: 16px 0 8px; }
+    [class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"] { scroll-margin-top: 24px; }
+    .rng-task-notes { white-space: pre-wrap; overflow-wrap: anywhere; unicode-bidi: plaintext; color: #39516f; background: #f1f5fb; border: 1px solid #dee7f3; border-radius: 10px; padding: 14px; font-size: 15px; line-height: 1.7; margin: 8px 0 12px; }
+    @media(max-width: 700px), (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+      .rng-task-jumps nav { flex-direction: column; }
+      .rng-task-jumps a, .rng-task-notes { font-size: 18px; }
+    }
+    </style>""", unsafe_allow_html=True)
+    if indices:
+        links = ''.join(f'<a href="#rng-task-{namespace}-{index}" target="_self" data-rng-task-target="rng-task-{namespace}-{index}">{escape(str(records[index]["title"]))}</a>' for index in indices)
+        st.markdown(f'<section class="rng-task-jumps"><strong>In progress · Jump to a task</strong><nav aria-label="In-progress tasks">{links}</nav></section>', unsafe_allow_html=True)
+
+
 def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
     """Shared task actions; deletion requires an explicit second click."""
     pending_key = f"{tasks_key}_pending_delete"
@@ -536,7 +582,7 @@ def rng_task_actions(tasks_key, task_index, editing_key, prefix=""):
                 # Task widgets use list positions. Discard editor drafts before
                 # those positions are reused by the remaining tasks.
                 draft_prefixes = tuple(f"{prefix}{name}_" for name in (
-                    "edit_title", "edit_subtask", "edit_new_subtask"
+                    "edit_title", "edit_subtask", "edit_new_subtask", "edit_notes"
                 ))
                 for key in list(st.session_state):
                     if key.startswith(draft_prefixes):
@@ -750,7 +796,7 @@ if page == "Dashboard":
     .rng-section-caption { color: #526d8e; font-size: 13px; margin-top: 5px; }
     .rng-empty-notes { border: 1px dashed #b9cbe2; border-radius: 12px; padding: 26px 22px; color: #526d8e; line-height: 1.9; background: repeating-linear-gradient(#f9fbff, #f9fbff 31px, #e9eff9 32px); margin-top: 20px; }
     .rng-empty-notes strong { display: block; color: #2d4c74; font-size: 20px; font-weight: 600; }
-    .st-key-rng_glass_notes .note-box { background: #fffdf4; color: #30435b; border: 1px solid #eae3ca; border-left: 3px solid #a6bce0; border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px; }
+    .st-key-rng_glass_notes .note-box { background: #f6f8fc; color: #30435b; border: 1px solid #dce5f0; border-left: 3px solid #a6bce0; border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 48px; }
     .st-key-rng_glass_notes .stButton button { color: #ffffff; background: #203c60; border-color: #33537b; min-height: 44px; }
     .st-key-rng_glass_notes .stButton button:hover { color: #ffffff; background: #2b4a73; border-color: #6a90c0; }
     .st-key-rng_add_note .stButton button { background: linear-gradient(110deg, #1a3558, #2a5180); color: #fff; border-color: #254b79; min-height: 48px; box-shadow: 0 5px 12px #16345b20; }
@@ -1155,6 +1201,8 @@ elif page == "To Do List":
                             "created": datetime.now().strftime("%Y-%m-%d"),
                             "completed": None,
                             "done": False,
+                            "notes": "",
+                            "created_at": datetime.now().astimezone().isoformat(),
                         })
 
                         st.session_state.creating_task = False
@@ -1178,17 +1226,9 @@ elif page == "To Do List":
     # SORT TASKS
     # =========================================================
 
-    unfinished = [
-        task for task in st.session_state.tasks
-        if not task["done"]
-    ]
-
-    completed = [
-        task for task in st.session_state.tasks
-        if task["done"]
-    ]
-
+    unfinished, completed = rng_sorted_task_indices(st.session_state.tasks)
     sorted_tasks = unfinished + completed
+    rng_task_jump_list(st.session_state.tasks, unfinished, "todo")
 
     def todo_persist_change():
         try:
@@ -1217,7 +1257,7 @@ elif page == "To Do List":
     # =========================================================
 
     st.markdown(
-        '<div class="rng-todo-section">Your tasks<span>Unfinished first · Progress always visible</span></div>',
+        '<div class="rng-todo-section">Your tasks<span>Newest first · In progress above completed</span></div>',
         unsafe_allow_html=True
     )
     if not sorted_tasks:
@@ -1228,16 +1268,14 @@ elif page == "To Do List":
         )
 
     with st.container(key="rng_todo_board"):
-        for row_start in range(0, len(sorted_tasks), 3):
-
-            row_tasks = sorted_tasks[row_start:row_start + 3]
-
+        for group_title, row_indices, first_row in rng_task_rows(unfinished, completed):
+            if first_row:
+                st.markdown(f'<div class="rng-task-group">{group_title}</div>', unsafe_allow_html=True)
             columns = st.columns(3)
-
-            for column_number, task in enumerate(row_tasks):
-
-                task_index = st.session_state.tasks.index(task)
+            for column_number, task_index in enumerate(row_indices):
+                task = st.session_state.tasks[task_index]
                 with columns[column_number], st.container(key=f"rng_todo_card_{task_index}"):
+                    st.markdown(f'<div id="rng-task-todo-{task_index}"></div>', unsafe_allow_html=True)
 
                     # =================================================
                     # EDIT MODE
@@ -1284,6 +1322,11 @@ elif page == "To Do List":
                             key=f"edit_new_subtask_{task_index}"
                         )
 
+                        edited_notes = st.text_area(
+                            "Task notes", value=str(task.get("notes") or ""),
+                            key=f"edit_notes_{task_index}", placeholder="Notes, details, or reminders..."
+                        )
+
                         save_col, cancel_col = st.columns(2)
 
                         with save_col:
@@ -1297,11 +1340,16 @@ elif page == "To Do List":
                                 if edited_title.strip():
                                     task["title"] = edited_title.strip()
 
+                                original_subtask_count = len(task["subtasks"])
                                 task["subtasks"] = [
                                     subtask
                                     for subtask in edited_subtasks
                                     if subtask["text"].strip()
                                 ]
+
+                                subtask_structure_changed = (
+                                    len(task["subtasks"]) != original_subtask_count or bool(new_edit_subtask.strip())
+                                )
 
                                 if new_edit_subtask.strip():
                                     task["subtasks"].append({
@@ -1309,26 +1357,28 @@ elif page == "To Do List":
                                         "done": False
                                     })
 
-                                if (
-                                    len(task["subtasks"]) > 0
-                                    and all(
-                                        subtask["done"]
-                                        for subtask in task["subtasks"]
-                                    )
-                                ):
-
-                                    task["done"] = True
-
-                                    if not task["completed"]:
-                                        task["completed"] = (
-                                            datetime.now().strftime("%Y-%m-%d")
+                                if subtask_structure_changed:
+                                    if (
+                                        len(task["subtasks"]) > 0
+                                        and all(
+                                            subtask["done"]
+                                            for subtask in task["subtasks"]
                                         )
+                                    ):
 
-                                else:
+                                        task["done"] = True
 
-                                    task["done"] = False
-                                    task["completed"] = None
+                                        if not task["completed"]:
+                                            task["completed"] = (
+                                                datetime.now().strftime("%Y-%m-%d")
+                                            )
 
+                                    else:
+
+                                        task["done"] = False
+                                        task["completed"] = None
+
+                                task["notes"] = edited_notes.strip()
                                 st.session_state.editing_task = None
                                 rng_rerun()
 
@@ -1395,6 +1445,10 @@ elif page == "To Do List":
                             subtask["text"], key=f"sub_checkbox_{task_index}_{sub_index}",
                             on_change=todo_toggle_subtask, args=(task_index, sub_index)
                         )
+
+                    if task.get("notes"):
+                        st.markdown('<div class="todo-section-title">Notes</div>'
+                                    f'<div class="rng-task-notes">{escape(str(task["notes"]))}</div>', unsafe_allow_html=True)
 
                     # =================================================
                     # DATES
@@ -5125,6 +5179,8 @@ elif page == "Rah Nia Development":
                             "created": datetime.now().strftime("%Y-%m-%d"),
                             "completed": None,
                             "done": False,
+                            "notes": "",
+                            "created_at": datetime.now().astimezone().isoformat(),
                         })
 
                         st.session_state.development_creating_task = False
@@ -5148,17 +5204,9 @@ elif page == "Rah Nia Development":
     # SORT TASKS
     # =========================================================
 
-    unfinished = [
-        task for task in st.session_state.development_tasks
-        if not task["done"]
-    ]
-
-    completed = [
-        task for task in st.session_state.development_tasks
-        if task["done"]
-    ]
-
+    unfinished, completed = rng_sorted_task_indices(st.session_state.development_tasks)
     sorted_tasks = unfinished + completed
+    rng_task_jump_list(st.session_state.development_tasks, unfinished, "development")
 
     def development_persist_change():
         try:
@@ -5187,7 +5235,7 @@ elif page == "Rah Nia Development":
     # =========================================================
 
     st.markdown(
-        '<div class="rng-development-section">Your tasks<span>Unfinished first · Progress always visible</span></div>',
+        '<div class="rng-development-section">Your tasks<span>Newest first · In progress above completed</span></div>',
         unsafe_allow_html=True
     )
     if not sorted_tasks:
@@ -5198,16 +5246,14 @@ elif page == "Rah Nia Development":
         )
 
     with st.container(key="rng_development_board"):
-        for row_start in range(0, len(sorted_tasks), 3):
-
-            row_tasks = sorted_tasks[row_start:row_start + 3]
-
+        for group_title, row_indices, first_row in rng_task_rows(unfinished, completed):
+            if first_row:
+                st.markdown(f'<div class="rng-task-group">{group_title}</div>', unsafe_allow_html=True)
             columns = st.columns(3)
-
-            for column_number, task in enumerate(row_tasks):
-
-                task_index = st.session_state.development_tasks.index(task)
+            for column_number, task_index in enumerate(row_indices):
+                task = st.session_state.development_tasks[task_index]
                 with columns[column_number], st.container(key=f"rng_development_card_{task_index}"):
+                    st.markdown(f'<div id="rng-task-development-{task_index}"></div>', unsafe_allow_html=True)
 
                     # =================================================
                     # EDIT MODE
@@ -5254,6 +5300,11 @@ elif page == "Rah Nia Development":
                             key=f"development_edit_new_subtask_{task_index}"
                         )
 
+                        edited_notes = st.text_area(
+                            "Task notes", value=str(task.get("notes") or ""),
+                            key=f"development_edit_notes_{task_index}", placeholder="Notes, details, or reminders..."
+                        )
+
                         save_col, cancel_col = st.columns(2)
 
                         with save_col:
@@ -5267,11 +5318,16 @@ elif page == "Rah Nia Development":
                                 if edited_title.strip():
                                     task["title"] = edited_title.strip()
 
+                                original_subtask_count = len(task["subtasks"])
                                 task["subtasks"] = [
                                     subtask
                                     for subtask in edited_subtasks
                                     if subtask["text"].strip()
                                 ]
+
+                                subtask_structure_changed = (
+                                    len(task["subtasks"]) != original_subtask_count or bool(new_edit_subtask.strip())
+                                )
 
                                 if new_edit_subtask.strip():
                                     task["subtasks"].append({
@@ -5279,26 +5335,28 @@ elif page == "Rah Nia Development":
                                         "done": False
                                     })
 
-                                if (
-                                    len(task["subtasks"]) > 0
-                                    and all(
-                                        subtask["done"]
-                                        for subtask in task["subtasks"]
-                                    )
-                                ):
-
-                                    task["done"] = True
-
-                                    if not task["completed"]:
-                                        task["completed"] = (
-                                            datetime.now().strftime("%Y-%m-%d")
+                                if subtask_structure_changed:
+                                    if (
+                                        len(task["subtasks"]) > 0
+                                        and all(
+                                            subtask["done"]
+                                            for subtask in task["subtasks"]
                                         )
+                                    ):
 
-                                else:
+                                        task["done"] = True
 
-                                    task["done"] = False
-                                    task["completed"] = None
+                                        if not task["completed"]:
+                                            task["completed"] = (
+                                                datetime.now().strftime("%Y-%m-%d")
+                                            )
 
+                                    else:
+
+                                        task["done"] = False
+                                        task["completed"] = None
+
+                                task["notes"] = edited_notes.strip()
                                 st.session_state.development_editing_task = None
                                 rng_rerun()
 
@@ -5365,6 +5423,10 @@ elif page == "Rah Nia Development":
                             subtask["text"], key=f"development_sub_checkbox_{task_index}_{sub_index}",
                             on_change=development_toggle_subtask, args=(task_index, sub_index)
                         )
+
+                    if task.get("notes"):
+                        st.markdown('<div class="todo-section-title">Notes</div>'
+                                    f'<div class="rng-task-notes">{escape(str(task["notes"]))}</div>', unsafe_allow_html=True)
 
                     # =================================================
                     # DATES

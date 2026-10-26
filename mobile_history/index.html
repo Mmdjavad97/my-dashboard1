@@ -49,7 +49,16 @@
     host.clearTimeout(nav.timer);
     nav.timer = host.setTimeout(() => {
       if (nav.pending) return;
-      host.document.querySelector('[data-testid="stMain"]')?.scrollTo({top: 0});
+      // Preserve a task jump made while the new screen was still settling.
+      const taskFocused = host.document.activeElement?.matches('[class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"]');
+      const jump = host.__rngTaskJumpRequest;
+      const namespace = route.page === 'To Do List' ? 'todo' : route.page === 'Rah Nia Development' ? 'development' : null;
+      const recentJump = namespace && jump && jump.target.startsWith(`rng-task-${namespace}-`) && Date.now() - jump.at < 1500;
+      if (recentJump) {
+        const marker = host.document.getElementById(jump.target);
+        marker?.closest('[class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"]')?.scrollIntoView({block: 'start', behavior: 'instant'});
+      } else if (!taskFocused) host.document.querySelector('[data-testid="stMain"]')?.scrollTo({top: 0});
+      host.__rngTaskJumpRequest = null;
       if (!nav.entries.length) {
         nav.entries = [route];
         nav.index = 0;

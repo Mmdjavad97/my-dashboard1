@@ -17,6 +17,7 @@ import base64 as rng_base64
 from pathlib import Path as RNGPath
 
 RNG_FONT_FILE = RNGPath(__file__).resolve().parent / "B-NAZANIN.TTF"
+RNG_MOBILE_CSS = RNGPath(__file__).resolve().with_name("mobile.css").read_text()
 
 if RNG_FONT_FILE.is_file():
     rng_font_base64 = rng_base64.b64encode(RNG_FONT_FILE.read_bytes()).decode("ascii")
@@ -37,10 +38,12 @@ if RNG_FONT_FILE.is_file():
         .stApp [data-testid="stMarkdownContainer"] {
             font-family: 'RNG B Nazanin Persian', 'Source Sans Pro', sans-serif !important;
         }
+        """ + RNG_MOBILE_CSS + """
         </style>""",
         unsafe_allow_html=True
     )
 else:
+    st.markdown("<style>" + RNG_MOBILE_CSS + "</style>", unsafe_allow_html=True)
     st.warning("B-NAZANIN.TTF not found beside app.py; Persian font unavailable.")
 
 
@@ -181,7 +184,7 @@ if rng_user is None:
             pass
         rng_clear_private_state()
 
-    st.markdown("## My Dashboard")
+    st.markdown('<div id="rng-login-marker"></div>\n\n## My Dashboard', unsafe_allow_html=True)
     st.caption("Private workspace · Sign in to continue")
     with st.form("rng_login_form"):
         email = st.text_input("Email", autocomplete="email")
@@ -470,7 +473,7 @@ st.markdown("""
 }
 
 </style>
-<style>""" + RNGPath(__file__).with_name("mobile.css").read_text() + """</style>""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 
 # =========================================================
@@ -562,18 +565,21 @@ def rng_mobile_navigate():
 
 
 # CSS hides this control completely on desktop, including its layout wrapper.
-if st.session_state.page != "Dashboard":
-    with st.container(key="rng_mobile_navigation"):
-        home, menu = st.columns([1, 4])
-        with home:
-            if st.button("Home", key="rng_mobile_home", use_container_width=True):
-                st.session_state.page = "Dashboard"
-                rng_rerun()
-        with menu:
-            st.session_state.rng_mobile_destination = st.session_state.page
-            st.selectbox("Go to section", pages + ["Log out"],
-                         key="rng_mobile_destination", label_visibility="collapsed",
-                         on_change=rng_mobile_navigate)
+with st.container(key="rng_mobile_navigation"):
+    home, projects_shortcut, menu = st.columns([1, 1, 2.2])
+    with home:
+        if st.button("Home", key="rng_mobile_home", use_container_width=True):
+            st.session_state.page = "Dashboard"
+            rng_rerun()
+    with projects_shortcut:
+        if st.button("Projects", key="rng_mobile_projects", use_container_width=True):
+            st.session_state.page = "RNG Projects"
+            rng_rerun()
+    with menu:
+        st.session_state.rng_mobile_destination = st.session_state.page
+        st.selectbox("Go to section", pages + ["Log out"],
+                     key="rng_mobile_destination", label_visibility="collapsed",
+                     on_change=rng_mobile_navigate)
 
 
 # A compact, horizontally scrollable route to every workspace.

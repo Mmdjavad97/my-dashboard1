@@ -2,11 +2,11 @@
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation),
 .st-key-rng_mobile_full_table { display: none; }
 
-@media (max-width: 700px) {
+@media (max-width: 700px), (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .stApp [data-testid="stHeader"] { visibility: hidden; }
     .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > style):not(:has([data-testid="stMarkdownContainer"] > :not(style))),
     .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > [id$="-marker"]:only-child) { display: none; }
-    .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: max(32px, env(safe-area-inset-bottom)) !important; }
+    .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important; }
     .stApp [data-testid="stMainBlockContainer"] { min-width: 0; }
     .stApp input, .stApp textarea { font-size: 16px !important; }
     .stApp .stButton button, .stApp .stDownloadButton button,
@@ -21,12 +21,37 @@
     .stApp [data-testid="stForm"] { padding: 14px !important; }
     .st-key-rng_section_nav { display: none !important; }
     [data-testid="stLayoutWrapper"]:has(> .st-key-rng_section_nav) { display: none; }
-    [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation) { display: flex; position: sticky; top: 8px; z-index: 50; }
-    .st-key-rng_mobile_navigation { background: #fff; border: 1px solid #dce5f0; border-radius: 16px; padding: 8px; box-shadow: 0 6px 20px #142c4b12; }
+    [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation) { display: flex; position: fixed; top: auto; bottom: max(8px, env(safe-area-inset-bottom)); left: 12px; right: 12px; width: calc(100% - 24px) !important; box-sizing: border-box; z-index: 100; }
+    .st-key-rng_mobile_navigation { width: 100% !important; min-width: 0; box-sizing: border-box; background: #fff; border: 1px solid #dce5f0; border-radius: 22px; padding: 8px; box-shadow: 0 8px 32px #142c4b26; }
     .st-key-rng_mobile_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; align-items: center; }
     .st-key-rng_mobile_navigation [data-testid="stColumn"] { min-width: 0 !important; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 64px !important; }
-    .st-key-rng_mobile_navigation button { min-height: 44px; color: #203f68; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 60px !important; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"]:nth-child(2) { flex: 0 0 66px !important; }
+    .st-key-rng_mobile_navigation button { min-height: 54px; color: #203f68; border: 0; background: #edf3fb; border-radius: 14px; display: flex; flex-direction: column; gap: 0; padding: 3px; }
+    .st-key-rng_mobile_navigation button p { font-size: 10px !important; }
+    .st-key-rng_mobile_home button::before { content: '⌂' / ''; font: 24px Arial, sans-serif; }
+    .st-key-rng_mobile_projects button::before { content: '▦' / ''; font: 22px Arial, sans-serif; }
+    .st-key-rng_mobile_navigation [data-testid="stSelectbox"]::before { content: 'WORKSPACE'; display: block; color: #6a809c; font: 9px Arial, sans-serif; letter-spacing: 1px; margin-bottom: 3px; }
+    .st-key-rng_mobile_navigation [data-testid="stSelectbox"] input { font-size: 12px !important; }
+    .stApp [data-testid="stMain"] { scroll-padding-bottom: 110px; }
+    .stApp .block-container::before { content: 'RNG WORKSPACE'; display: block; color: #6b819d; font: 700 10px Arial, sans-serif; letter-spacing: 2px; margin: 8px 2px 18px; }
+    .stApp:has(#rng-dashboard-marker) .block-container::before { color: #b7cce8; }
+    .stApp [class*="st-key-project_file_card_"] { padding: 18px !important; border-radius: 20px !important; }
+    .stApp :is([class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"], [class*="st-key-rng_meeting_card_"], [class*="st-key-rng_warehouse_card_"], [class*="st-key-rng_mission_card_"], [class*="st-key-rng_bom_card_"], [class*="st-key-financial_card_"]) { border-radius: 20px !important; border-top-width: 1px !important; box-shadow: 0 5px 18px #183b680a; }
+
+    /* Authentication receives the same phone layout before private content loads. */
+    .stApp:has(#rng-login-marker) { background: radial-gradient(ellipse at top right, #284c76, transparent 65%), #0e2039; }
+    .stApp:has(#rng-login-marker) .block-container { max-width: 430px; min-height: 100svh; padding: 60px 24px 30px !important; display: flex; align-items: center; }
+    .stApp:has(#rng-login-marker) .block-container::before { display: none; }
+    .stApp:has(#rng-login-marker) .block-container > [data-testid="stVerticalBlock"] { width: 100%; }
+    .stApp:has(#rng-login-marker) h2 { color: #f5f9ff; font: 700 36px/1.1 Arial, sans-serif !important; letter-spacing: -1px; padding-bottom: 8px; }
+    .stApp:has(#rng-login-marker) [data-testid="stCaptionContainer"] { color: #adc5e4; font-size: 14px; margin-bottom: 24px; }
+    .stApp:has(#rng-login-marker) [data-testid="stForm"] { background: #fff; border: 1px solid #fff; border-radius: 24px; padding: 24px 20px !important; box-shadow: 0 18px 50px #040e2355; }
+    .stApp:has(#rng-login-marker) [data-testid="stForm"]::before { content: 'Welcome back'; display: block; color: #213e63; font: 700 23px Arial, sans-serif; margin-bottom: 18px; }
+    .stApp:has(#rng-login-marker) label p { color: #4a6383; font: 13px Arial, sans-serif !important; }
+    .stApp:has(#rng-login-marker) input { background: #f3f6fb; color: #213e63; min-height: 48px; }
+    .stApp:has(#rng-login-marker) [data-testid="stFormSubmitButton"] button { color: #fff; background: #203f68; border-color: #203f68; border-radius: 14px; min-height: 50px; }
+
     .st-key-rng_mobile_navigation input { color: #203f68 !important; font-size: 14px !important; }
     .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) { padding: 22px 18px !important; border-radius: 18px !important; }
     .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) p { font-size: 13px; line-height: 1.6; }

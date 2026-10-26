@@ -382,6 +382,8 @@ def render_financial(projects, project_id, save, pdf_runs, share_pdf=None):
         requested_attachment = None
         requested_delete = None
         with st.form(f"financial_detail_{project_id}"):
+            # CSS switches layouts immediately without submitting or resetting edits.
+            st.toggle("Show full table on phone", key="rng_mobile_full_table")
             budget = st.number_input("Project budget (IRR / Rial)", min_value=0, value=int(draft["budget"]), step=1, format="%d", key=f"financial_budget_{project_id}")
             st.subheader("Income & expenses")
             st.caption("Dates use the Solar Hijri calendar. All amounts are in Rial. Use + beside a row to attach an image or PDF. Scroll sideways on smaller screens.")

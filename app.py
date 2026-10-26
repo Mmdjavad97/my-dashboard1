@@ -470,7 +470,7 @@ st.markdown("""
 }
 
 </style>
-""", unsafe_allow_html=True)
+<style>""" + RNGPath(__file__).with_name("mobile.css").read_text() + """</style>""", unsafe_allow_html=True)
 
 
 # =========================================================
@@ -546,6 +546,34 @@ def rng_project_renderer(source, filename, entry_point):
     module.__file__ = filename
     exec(compile(source, filename, "exec"), module.__dict__)
     return getattr(module, entry_point)
+
+
+def rng_mobile_navigate():
+    destination = st.session_state.rng_mobile_destination
+    if destination == "Log out":
+        rng_logout()
+    st.session_state.page = destination
+    st.session_state.tasks_pending_delete = None
+    st.session_state.development_tasks_pending_delete = None
+    try:
+        rng_save()
+    except Exception as exc:
+        rng_fail("The change could not be saved. Please retry. Details: " + str(exc))
+
+
+# CSS hides this control completely on desktop, including its layout wrapper.
+if st.session_state.page != "Dashboard":
+    with st.container(key="rng_mobile_navigation"):
+        home, menu = st.columns([1, 4])
+        with home:
+            if st.button("Home", key="rng_mobile_home", use_container_width=True):
+                st.session_state.page = "Dashboard"
+                rng_rerun()
+        with menu:
+            st.session_state.rng_mobile_destination = st.session_state.page
+            st.selectbox("Go to section", pages + ["Log out"],
+                         key="rng_mobile_destination", label_visibility="collapsed",
+                         on_change=rng_mobile_navigate)
 
 
 # A compact, horizontally scrollable route to every workspace.

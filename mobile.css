@@ -1,0 +1,74 @@
+/* New controls have no desktop footprint. All visual changes are phone-only. */
+[data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation),
+.st-key-rng_mobile_full_table { display: none; }
+
+@media (max-width: 700px) {
+    .stApp [data-testid="stHeader"] { visibility: hidden; }
+    .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > style):not(:has([data-testid="stMarkdownContainer"] > :not(style))),
+    .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > [id$="-marker"]:only-child) { display: none; }
+    .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: max(32px, env(safe-area-inset-bottom)) !important; }
+    .stApp [data-testid="stMainBlockContainer"] { min-width: 0; }
+    .stApp input, .stApp textarea { font-size: 16px !important; }
+    .stApp .stButton button, .stApp .stDownloadButton button,
+    .stApp [data-testid="stFormSubmitButton"] button { min-height: 46px; touch-action: manipulation; }
+    .stApp [data-testid="stCheckbox"] label { min-height: 44px; }
+    .stApp [data-testid="stWidgetLabel"] p { overflow-wrap: anywhere; }
+    .stApp h1 { font-size: 28px !important; letter-spacing: -.6px !important; }
+    .stApp h2 { font-size: 23px !important; }
+    .stApp h3 { font-size: 20px !important; }
+    .stApp [data-testid="stFileUploaderDropzone"] { padding: 12px; flex-wrap: wrap; gap: 8px; }
+    .stApp [data-testid="stFileUploaderDropzoneInstructions"] { min-width: 0; }
+    .stApp [data-testid="stForm"] { padding: 14px !important; }
+    .st-key-rng_section_nav { display: none !important; }
+    [data-testid="stLayoutWrapper"]:has(> .st-key-rng_section_nav) { display: none; }
+    [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation) { display: flex; position: sticky; top: 8px; z-index: 50; }
+    .st-key-rng_mobile_navigation { background: #fff; border: 1px solid #dce5f0; border-radius: 16px; padding: 8px; box-shadow: 0 6px 20px #142c4b12; }
+    .st-key-rng_mobile_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; align-items: center; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"] { min-width: 0 !important; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 64px !important; }
+    .st-key-rng_mobile_navigation button { min-height: 44px; color: #203f68; }
+    .st-key-rng_mobile_navigation input { color: #203f68 !important; font-size: 14px !important; }
+    .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) { padding: 22px 18px !important; border-radius: 18px !important; }
+    .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) p { font-size: 13px; line-height: 1.6; }
+    .stApp :is([class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"], [class*="st-key-rng_meeting_card_"], [class*="st-key-rng_warehouse_card_"], [class*="st-key-rng_mission_card_"], [class*="st-key-rng_bom_card_"], [class*="st-key-financial_card_"]) { padding: 18px !important; min-height: 0 !important; }
+    .stApp [class*="st-key-rng_project_space_"] { padding: 16px 12px 12px !important; min-height: 0; }
+    .rng-project-space-icon { margin-bottom: 10px !important; }
+    .rng-project-space-caption { min-height: 58px !important; font-size: 11px !important; }
+
+    /* A shorter portrait cover keeps notes within easy reach. */
+    [data-testid="stMain"]:has(#rng-dashboard-marker)::before { height: 350px !important; background-size: auto 250px !important; background-position: right bottom !important;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 65%), linear-gradient(180deg, #000 85%, transparent) !important;
+        mask-image: linear-gradient(90deg, transparent, #000 65%), linear-gradient(180deg, #000 85%, transparent) !important; }
+    .stApp .rng-intro { min-height: 330px !important; margin-left: 0 !important; padding-top: 12px; }
+    .stApp .rng-intro h1.rng-hero-title { font-size: 32px !important; max-width: 190px; }
+    .rng-intro-copy { max-width: 180px; }
+    .rng-eyebrow { font-size: 10px !important; }
+    .stApp .st-key-rng_glass_notes { width: 100% !important; margin-left: 0 !important; padding: 16px !important; border-radius: 18px; }
+    .st-key-rng_main_navigation { max-width: none !important; margin-top: 20px !important; }
+    .st-key-rng_main_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; }
+    .st-key-rng_main_navigation [data-testid="stColumn"] { min-width: 0 !important; flex: 1 1 0 !important; }
+    .st-key-rng_main_navigation .stButton button { min-height: 106px !important; padding: 12px 5px !important; gap: 8px !important; border-radius: 16px; }
+    .st-key-rng_main_navigation .stButton button::before { width: 24px !important; height: 24px !important; }
+    .st-key-rng_main_navigation .stButton button p { font-size: 11px !important; line-height: 1.35; overflow-wrap: anywhere; }
+    .rng-dashboard-signature { font-size: 10px !important; }
+
+    /* Same financial widgets and saved data; only their layout changes. */
+    .st-key-rng_mobile_full_table { display: flex; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) .st-key-financial_grid { border: 0; background: transparent; overflow: visible; gap: 12px !important; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) .rng-finance-grid-head { display: none; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [data-testid="stElementContainer"]:has(.rng-finance-grid-head) { display: none; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] { min-width: 0 !important; padding: 14px !important; border: 1px solid #d5e1ef; border-radius: 14px; background: #f8faff; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stHorizontalBlock"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; align-items: start; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:is(:first-child, :nth-child(5), :nth-child(8)) { grid-column: 1 / -1; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]::before { display: block; font-family: 'Financial Nazanin', Tahoma, sans-serif; font-size: 17px; color: #4a6383; text-align: right; margin-bottom: 3px; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:first-child::before { content: 'ردیف'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(2)::before { content: 'تاریخ'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(3)::before { content: 'نوع'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(4)::before { content: 'دسته بندی'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(5)::before { content: 'شرح'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(6)::before { content: 'پرداخت کننده'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(7)::before { content: 'طرف حساب'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(8)::before { content: 'مبلغ'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(9)::before { content: 'پیوست'; }
+    .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(10)::before { content: 'حذف'; }
+}

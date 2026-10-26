@@ -1,0 +1,27 @@
+<script>
+(() => {
+  let host;
+  try { host = window.parent; void host.document; } catch (_) { return; }
+  const phone = host.matchMedia('(pointer: coarse)').matches &&
+    Math.min(host.screen.width, host.screen.height) <= 700;
+  if (!phone || host.__rngPhoneViewportReady) return;
+  host.__rngPhoneViewportReady = true;
+  // Walk only through documents the browser permits us to access.
+  for (;;) {
+    try {
+      const doc = host.document;
+      let viewport = doc.querySelector('meta[name="viewport"]');
+      if (!viewport) {
+        viewport = doc.createElement('meta');
+        viewport.name = 'viewport';
+        doc.head.appendChild(viewport);
+      }
+      // No maximum-scale or user-scalable restriction: accessibility zoom stays available.
+      viewport.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+      if (host.parent === host) break;
+      void host.parent.document;
+      host = host.parent;
+    } catch (_) { break; }
+  }
+})();
+</script>

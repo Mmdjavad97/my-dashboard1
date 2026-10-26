@@ -47,6 +47,13 @@ else:
     st.warning("B-NAZANIN.TTF not found beside app.py; Persian font unavailable.")
 
 
+# Configure the accessible app document, rather than an individual share iframe.
+# Run once per browser document; preserve pinch zoom and leave desktop untouched.
+with st.container(key="rng_viewport_bootstrap"):
+    import streamlit.components.v1 as rng_components
+    rng_components.html(RNGPath(__file__).with_name("mobile_viewport.html").read_text(), height=0)
+
+
 def rng_pdf_font_name():
     """Register B Nazanin for PDF Persian text; do not need Windows fonts."""
     if not RNG_FONT_FILE.is_file():

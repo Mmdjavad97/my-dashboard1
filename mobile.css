@@ -1,6 +1,12 @@
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_viewport_bootstrap),
 .st-key-rng_viewport_bootstrap { display: none; }
 
+/* Real phone detection comes from the viewport bootstrap; desktop zoom is untouched. */
+html[data-rng-phone-fixed-scale="true"],
+html[data-rng-phone-fixed-scale="true"] body,
+html[data-rng-phone-fixed-scale="true"] .stApp,
+html[data-rng-phone-fixed-scale="true"] [data-testid="stMain"] { touch-action: pan-x pan-y; }
+
 /* New controls have no desktop footprint. All visual changes are phone-only. */
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation),
 .st-key-rng_mobile_full_table { display: none; }
@@ -12,29 +18,34 @@
     .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important; }
     .stApp [data-testid="stMainBlockContainer"] { min-width: 0; }
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-    .stApp input, .stApp textarea { font-size: 16px !important; }
+    .stApp input, .stApp textarea { font-size: 18px !important; }
+    .stApp [data-testid="stTextInput"] input,
+    .stApp [data-testid="stNumberInput"] input { min-height: 50px !important; }
+    .stApp [data-testid="stSelectbox"] input { min-height: 48px !important; }
+    .stApp [class$="-card-title"], .stApp .todo-title { font-size: 22px !important; line-height: 1.4; }
+
     .stApp [data-testid="stMarkdownContainer"] p,
     .stApp [data-testid="stWidgetLabel"] p,
     .stApp [data-testid="stCheckbox"] p,
-    .stApp [data-testid="stSelectbox"] input { font-size: 16px !important; line-height: 1.5; }
+    .stApp [data-testid="stSelectbox"] input { font-size: 18px !important; line-height: 1.5; }
     .stApp [class$="-card-text"], .stApp [class$="-card-footer"],
     .stApp [class$="-card-date"], .stApp [class$="-help"],
     .stApp .rng-file-meta, .stApp .rng-file-type, .stApp .rng-files-heading span,
     .stApp .todo-section-title, .stApp .rng-meeting-stat span,
-    .stApp .rng-intro-date, .stApp .rng-solar-date { font-size: 14px !important; line-height: 1.5; }
+    .stApp .rng-intro-date, .stApp .rng-solar-date { font-size: 16px !important; line-height: 1.5; }
     .stApp [data-testid="stCaptionContainer"],
-    .stApp [data-testid="stCaptionContainer"] p { font-size: 14px !important; line-height: 1.5; }
+    .stApp [data-testid="stCaptionContainer"] p { font-size: 16px !important; line-height: 1.5; }
     .stApp :is(.todo-date, .todo-completed, .rng-subtask-count, .rng-task-status,
         .rng-meeting-card-meta, .rng-financial-card-client, .rng-project-card-caption,
-        .rng-project-space-caption, .rng-section-caption, .rng-note-count) { font-size: 14px !important; }
+        .rng-project-space-caption, .rng-section-caption, .rng-note-count) { font-size: 16px !important; }
     .stApp :is(.rng-todo-stat, .rng-development-stat) span,
-    .stApp .rng-finance-summary span, .stApp .rng-finance-summary small { font-size: 14px !important; }
+    .stApp .rng-finance-summary span, .stApp .rng-finance-summary small { font-size: 16px !important; }
     .stApp .stButton button p, .stApp .stDownloadButton button p,
-    .stApp [data-testid="stFormSubmitButton"] button p { font-size: 16px !important; }
+    .stApp [data-testid="stFormSubmitButton"] button p { font-size: 18px !important; }
 
     .stApp .stButton button, .stApp .stDownloadButton button,
-    .stApp [data-testid="stFormSubmitButton"] button { min-height: 48px; touch-action: manipulation; }
-    .stApp [data-testid="stCheckbox"] label { min-height: 44px; }
+    .stApp [data-testid="stFormSubmitButton"] button { min-height: 56px; touch-action: manipulation; }
+    .stApp [data-testid="stCheckbox"] label { min-height: 48px; }
     .stApp [data-testid="stWidgetLabel"] p { overflow-wrap: anywhere; }
     .stApp h1 { font-size: 28px !important; letter-spacing: -.6px !important; }
     .stApp h2 { font-size: 23px !important; }
@@ -48,14 +59,14 @@
     .st-key-rng_mobile_navigation { width: 100% !important; min-width: 0; box-sizing: border-box; background: #fff; border: 1px solid #dce5f0; border-radius: 22px; padding: 8px; box-shadow: 0 8px 32px #142c4b26; }
     .st-key-rng_mobile_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; align-items: center; }
     .st-key-rng_mobile_navigation [data-testid="stColumn"] { min-width: 0 !important; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 60px !important; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"]:nth-child(2) { flex: 0 0 66px !important; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 68px !important; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"]:nth-child(2) { flex: 0 0 76px !important; }
     .st-key-rng_mobile_navigation button { min-height: 54px; color: #203f68; border: 0; background: #edf3fb; border-radius: 14px; display: flex; flex-direction: column; gap: 0; padding: 3px; }
-    .stApp .st-key-rng_mobile_navigation button p { font-size: 14px !important; }
+    .stApp .st-key-rng_mobile_navigation button p { font-size: 16px !important; }
     .st-key-rng_mobile_home button::before { content: '⌂' / ''; font: 24px Arial, sans-serif; }
     .st-key-rng_mobile_projects button::before { content: '▦' / ''; font: 22px Arial, sans-serif; }
     .st-key-rng_mobile_navigation [data-testid="stSelectbox"]::before { content: 'WORKSPACE'; display: block; color: #6a809c; font: 9px Arial, sans-serif; letter-spacing: 1px; margin-bottom: 3px; }
-    .st-key-rng_mobile_navigation [data-testid="stSelectbox"] input { font-size: 16px !important; }
+    .st-key-rng_mobile_navigation [data-testid="stSelectbox"] input { font-size: 18px !important; }
     .stApp [data-testid="stMain"] { scroll-padding-bottom: 110px; }
     .stApp .block-container::before { content: 'RNG WORKSPACE'; display: block; color: #6b819d; font: 700 10px Arial, sans-serif; letter-spacing: 2px; margin: 8px 2px 18px; }
     .stApp:has(#rng-dashboard-marker) .block-container::before { color: #b7cce8; }
@@ -71,17 +82,17 @@
     .stApp:has(#rng-login-marker) [data-testid="stCaptionContainer"] { color: #adc5e4; font-size: 14px; margin-bottom: 24px; }
     .stApp:has(#rng-login-marker) [data-testid="stForm"] { background: #fff; border: 1px solid #fff; border-radius: 24px; padding: 24px 20px !important; box-shadow: 0 18px 50px #040e2355; }
     .stApp:has(#rng-login-marker) [data-testid="stForm"]::before { content: 'Welcome back'; display: block; color: #213e63; font: 700 23px Arial, sans-serif; margin-bottom: 18px; }
-    .stApp:has(#rng-login-marker) label p { color: #4a6383; font: 16px Arial, sans-serif !important; }
-    .stApp:has(#rng-login-marker) input { background: #f3f6fb; color: #213e63; min-height: 48px; }
+    .stApp:has(#rng-login-marker) label p { color: #4a6383; font: 18px Arial, sans-serif !important; }
+    .stApp:has(#rng-login-marker) input { background: #f3f6fb; color: #213e63; min-height: 56px; }
     .stApp:has(#rng-login-marker) [data-testid="stFormSubmitButton"] button { color: #fff; background: #203f68; border-color: #203f68; border-radius: 14px; min-height: 50px; }
 
-    .st-key-rng_mobile_navigation input { color: #203f68 !important; font-size: 16px !important; }
+    .st-key-rng_mobile_navigation input { color: #203f68 !important; font-size: 18px !important; }
     .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) { padding: 22px 18px !important; border-radius: 18px !important; }
     .stApp :is(.rng-todo-heading, .rng-development-heading, .rng-meeting-hero, .rng-warehouse-hero, .rng-mission-hero, .rng-bom-hero, .rng-financial-hero) p { font-size: 13px; line-height: 1.6; }
     .stApp :is([class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"], [class*="st-key-rng_meeting_card_"], [class*="st-key-rng_warehouse_card_"], [class*="st-key-rng_mission_card_"], [class*="st-key-rng_bom_card_"], [class*="st-key-financial_card_"]) { padding: 18px !important; min-height: 0 !important; }
     .stApp [class*="st-key-rng_project_space_"] { padding: 16px 12px 12px !important; min-height: 0; }
     .rng-project-space-icon { margin-bottom: 10px !important; }
-    .rng-project-space-caption { min-height: 58px !important; font-size: 14px !important; }
+    .rng-project-space-caption { min-height: 58px !important; font-size: 16px !important; }
 
     /* A shorter portrait cover keeps notes within easy reach. */
     [data-testid="stMain"]:has(#rng-dashboard-marker)::before { height: 350px !important; background-size: auto 250px !important; background-position: right bottom !important;
@@ -89,7 +100,7 @@
         mask-image: linear-gradient(90deg, transparent, #000 65%), linear-gradient(180deg, #000 85%, transparent) !important; }
     .stApp .rng-intro { min-height: 330px !important; margin-left: 0 !important; padding-top: 12px; }
     .stApp .rng-intro h1.rng-hero-title { font-size: 32px !important; max-width: 190px; }
-    .rng-intro-copy { max-width: 200px; font-size: 16px !important; }
+    .rng-intro-copy { max-width: 200px; font-size: 18px !important; }
     .rng-eyebrow { font-size: 10px !important; }
     .stApp .st-key-rng_glass_notes { width: 100% !important; margin-left: 0 !important; padding: 16px !important; border-radius: 18px; }
     /* Flatten the existing desktop rows into a two-column phone launcher. */
@@ -99,9 +110,9 @@
     .st-key-rng_main_navigation [data-testid="stHorizontalBlock"] { display: contents !important; }
     .st-key-rng_main_navigation [data-testid="stColumn"] { min-width: 0 !important; width: 100% !important; }
     .st-key-rng_main_navigation [data-testid="stColumn"]:not(:has(button)) { display: none; }
-    .st-key-rng_main_navigation .stButton button { min-height: 116px !important; padding: 16px 10px !important; gap: 10px !important; border-radius: 16px; }
+    .st-key-rng_main_navigation .stButton button { min-height: 132px !important; padding: 16px 10px !important; gap: 10px !important; border-radius: 16px; }
     .st-key-rng_main_navigation .stButton button::before { width: 30px !important; height: 30px !important; }
-    .st-key-rng_main_navigation .stButton button p { font-size: 16px !important; line-height: 1.35; overflow-wrap: anywhere; }
+    .st-key-rng_main_navigation .stButton button p { font-size: 18px !important; line-height: 1.35; overflow-wrap: anywhere; }
     .rng-dashboard-signature { font-size: 10px !important; }
 
     /* Same financial widgets and saved data; only their layout changes. */

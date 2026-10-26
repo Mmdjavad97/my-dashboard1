@@ -4,8 +4,8 @@
   try { host = window.parent; void host.document; } catch (_) { return; }
   const phone = host.matchMedia('(pointer: coarse)').matches &&
     Math.min(host.screen.width, host.screen.height) <= 700;
-  if (!phone || host.__rngPhoneViewportReady) return;
-  host.__rngPhoneViewportReady = true;
+  if (!phone || host.__rngPhoneViewportVersion === 2) return;
+  host.__rngPhoneViewportVersion = 2;
   // Walk only through documents the browser permits us to access.
   for (;;) {
     try {
@@ -16,8 +16,28 @@
         viewport.name = 'viewport';
         doc.head.appendChild(viewport);
       }
-      // No maximum-scale or user-scalable restriction: accessibility zoom stays available.
-      viewport.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+      const fixedViewport = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+      viewport.content = fixedViewport;
+      // User-requested fixed phone scale. Single-finger scrolling and text editing remain native.
+      doc.documentElement.dataset.rngPhoneFixedScale = 'true';
+      if (!doc.__rngFixedScaleListeners) {
+        doc.__rngFixedScaleListeners = true;
+        const preventGesture = event => event.preventDefault();
+        doc.addEventListener('gesturestart', preventGesture, {passive: false});
+        doc.addEventListener('gesturechange', preventGesture, {passive: false});
+        const preventPinch = event => {
+          if (event.touches.length > 1) event.preventDefault();
+        };
+        doc.addEventListener('touchstart', preventPinch, {passive: false, capture: true});
+        doc.addEventListener('touchmove', preventPinch, {passive: false, capture: true});
+        doc.addEventListener('dblclick', event => {
+          if (!event.target.closest?.('input, textarea, [contenteditable="true"]')) event.preventDefault();
+        });
+        // Retain this viewport if a host script rewrites its initial settings.
+        new MutationObserver(() => {
+          if (viewport.content !== fixedViewport) viewport.content = fixedViewport;
+        }).observe(viewport, {attributes: true, attributeFilter: ['content']});
+      }
       if (host.parent === host) break;
       void host.parent.document;
       host = host.parent;

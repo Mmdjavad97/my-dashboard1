@@ -558,35 +558,26 @@ def rng_project_renderer(source, filename, entry_point):
     return getattr(module, entry_point)
 
 
-def rng_mobile_navigate():
-    destination = st.session_state.rng_mobile_destination
-    if destination == "Log out":
-        rng_logout()
-    st.session_state.page = destination
-    st.session_state.tasks_pending_delete = None
-    st.session_state.development_tasks_pending_delete = None
-    try:
-        rng_save()
-    except Exception as exc:
-        rng_fail("The change could not be saved. Please retry. Details: " + str(exc))
-
-
 # CSS hides this control completely on desktop, including its layout wrapper.
 with st.container(key="rng_mobile_navigation"):
-    home, projects_shortcut, menu = st.columns([1, 1, 2.2])
-    with home:
-        if st.button("Home", key="rng_mobile_home", use_container_width=True):
-            st.session_state.page = "Dashboard"
-            rng_rerun()
-    with projects_shortcut:
-        if st.button("Projects", key="rng_mobile_projects", use_container_width=True):
-            st.session_state.page = "RNG Projects"
-            rng_rerun()
-    with menu:
-        st.session_state.rng_mobile_destination = st.session_state.page
-        st.selectbox("Go to section", pages + ["Log out"],
-                     key="rng_mobile_destination", label_visibility="collapsed",
-                     on_change=rng_mobile_navigate)
+    destinations = pages + ["Log out"]
+    for column, destination in zip(st.columns(len(destinations)), destinations):
+        with column:
+            label = "Home" if destination == "Dashboard" else destination
+            if st.button(label, key=f"rng_mobile_tab_{destination}",
+                         type="primary" if destination == st.session_state.page else "secondary",
+                         use_container_width=True):
+                if destination == "Log out":
+                    rng_logout()
+                st.session_state.page = destination
+                selected_key = {"Meeting Minutes": "selected_meeting", "Warehouse": "selected_warehouse",
+                                "Mission Report": "selected_mission_report", "BOM": "selected_bom",
+                                "RNG Projects": "financial_selected"}.get(destination)
+                if selected_key:
+                    st.session_state[selected_key] = None
+                st.session_state.tasks_pending_delete = None
+                st.session_state.development_tasks_pending_delete = None
+                rng_rerun()
 
 
 # A compact, horizontally scrollable route to every workspace.
@@ -7072,3 +7063,40 @@ try:
     rng_save()
 except Exception as exc:
     st.error("Unable to save changes to Supabase: " + str(exc))
+
+
+# Phone-only browser history, including card detail and project file screens.
+# No record contents, credentials, or drafts are sent to browser history.
+rng_navigation_keys = (
+    "page", "selected_meeting", "selected_warehouse", "selected_mission_report",
+    "selected_bom", "financial_selected", "rng_project_section",
+)
+rng_view_keys = [key for key in st.session_state if key.startswith("rng_project_files_") and key.endswith("_view")]
+rng_route = {key: st.session_state.get(key) for key in rng_navigation_keys}
+rng_route.update({key: st.session_state[key] for key in rng_view_keys if st.session_state.get(key) is not None})
+with st.container(key="rng_mobile_history"):
+    rng_history_component = rng_components.declare_component(
+        "rng_mobile_history", path=str(RNGPath(__file__).with_name("mobile_history")))
+    rng_history_event = rng_history_component(route=rng_route, handled=st.session_state.get("rng_handled_history"), key="rng_phone_history", default=None)
+if isinstance(rng_history_event, dict) and rng_history_event.get("id") != st.session_state.get("rng_handled_history"):
+    st.session_state.rng_handled_history = rng_history_event.get("id")
+    previous = rng_history_event.get("route", {})
+    if isinstance(previous, dict) and previous.get("page") in pages:
+        allowed = set(rng_navigation_keys) | set(rng_view_keys)
+        card_lists = {"selected_warehouse": "warehouse_cards", "selected_mission_report": "mission_report_cards", "selected_bom": "bom_cards"}
+        for key in allowed:
+            value = previous.get(key)
+            if key in card_lists and value is not None:
+                if not isinstance(value, int) or not 0 <= value < len(st.session_state.get(card_lists[key], [])):
+                    value = None
+            if key == "selected_meeting" and value not in st.session_state.get("meeting_cards", []):
+                value = None
+            if key == "financial_selected" and value not in st.session_state.get("financial_projects", {}):
+                value = None
+            if key == "rng_project_section" and value not in (None, "Financial", "Meeting Minutes", "Plans", "Documents"):
+                value = None
+            if value is None or isinstance(value, (str, int)):
+                st.session_state[key] = value
+        st.session_state.tasks_pending_delete = None
+        st.session_state.development_tasks_pending_delete = None
+        rng_rerun()

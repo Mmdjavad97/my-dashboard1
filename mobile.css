@@ -1,3 +1,5 @@
+[data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_history),
+.st-key-rng_mobile_history,
 [data-testid="stLayoutWrapper"]:has(> .st-key-rng_viewport_bootstrap),
 .st-key-rng_viewport_bootstrap { display: none; }
 
@@ -15,7 +17,7 @@ html[data-rng-phone-fixed-scale="true"] [data-testid="stMain"] { touch-action: p
     .stApp [data-testid="stHeader"] { visibility: hidden; }
     .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > style):not(:has([data-testid="stMarkdownContainer"] > :not(style))),
     .stApp [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > [id$="-marker"]:only-child) { display: none; }
-    .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important; }
+    .stApp .block-container { padding: 12px 14px 32px !important; padding-bottom: calc(140px + env(safe-area-inset-bottom)) !important; }
     .stApp [data-testid="stMainBlockContainer"] { min-width: 0; }
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .stApp input, .stApp textarea { font-size: 18px !important; }
@@ -57,17 +59,12 @@ html[data-rng-phone-fixed-scale="true"] [data-testid="stMain"] { touch-action: p
     [data-testid="stLayoutWrapper"]:has(> .st-key-rng_section_nav) { display: none; }
     [data-testid="stLayoutWrapper"]:has(> .st-key-rng_mobile_navigation) { display: flex; position: fixed; top: auto; bottom: max(8px, env(safe-area-inset-bottom)); left: 12px; right: 12px; width: calc(100% - 24px) !important; box-sizing: border-box; z-index: 100; }
     .st-key-rng_mobile_navigation { width: 100% !important; min-width: 0; box-sizing: border-box; background: #fff; border: 1px solid #dce5f0; border-radius: 22px; padding: 8px; box-shadow: 0 8px 32px #142c4b26; }
-    .st-key-rng_mobile_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 8px; align-items: center; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"] { min-width: 0 !important; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"]:first-child { flex: 0 0 68px !important; }
-    .st-key-rng_mobile_navigation [data-testid="stColumn"]:nth-child(2) { flex: 0 0 76px !important; }
-    .st-key-rng_mobile_navigation button { min-height: 54px; color: #203f68; border: 0; background: #edf3fb; border-radius: 14px; display: flex; flex-direction: column; gap: 0; padding: 3px; }
-    .stApp .st-key-rng_mobile_navigation button p { font-size: 16px !important; }
-    .st-key-rng_mobile_home button::before { content: '⌂' / ''; font: 24px Arial, sans-serif; }
-    .st-key-rng_mobile_projects button::before { content: '▦' / ''; font: 22px Arial, sans-serif; }
-    .st-key-rng_mobile_navigation [data-testid="stSelectbox"]::before { content: 'WORKSPACE'; display: block; color: #6a809c; font: 9px Arial, sans-serif; letter-spacing: 1px; margin-bottom: 3px; }
-    .st-key-rng_mobile_navigation [data-testid="stSelectbox"] input { font-size: 18px !important; }
-    .stApp [data-testid="stMain"] { scroll-padding-bottom: 110px; }
+    .st-key-rng_mobile_navigation [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 10px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: thin; scrollbar-color: #8ba7cb #eaf0f9; }
+    .st-key-rng_mobile_navigation [data-testid="stColumn"] { min-width: 144px !important; width: 144px !important; flex: 0 0 144px !important; }
+    .stApp .st-key-rng_mobile_navigation button { width: 100%; min-height: 76px; padding: 12px 10px; color: #203f68; background: #edf3fb; border: 1px solid #d9e4f3; border-radius: 16px; }
+    .stApp .st-key-rng_mobile_navigation button p { font-size: 18px !important; line-height: 1.35; }
+    .stApp .st-key-rng_mobile_navigation button[kind="primary"] { background: #203f68; border-color: #203f68; color: #fff; }
+    .stApp [data-testid="stMain"] { scroll-padding-bottom: 140px; }
     .stApp .block-container::before { content: 'RNG WORKSPACE'; display: block; color: #6b819d; font: 700 10px Arial, sans-serif; letter-spacing: 2px; margin: 8px 2px 18px; }
     .stApp:has(#rng-dashboard-marker) .block-container::before { color: #b7cce8; }
     .stApp [class*="st-key-project_file_card_"] { padding: 18px !important; border-radius: 20px !important; }
@@ -134,4 +131,24 @@ html[data-rng-phone-fixed-scale="true"] [data-testid="stMain"] { touch-action: p
     .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(8)::before { content: 'مبلغ'; }
     .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(9)::before { content: 'پیوست'; }
     .stApp:not(:has(.st-key-rng_mobile_full_table input:checked)) [class*="st-key-finance_row_"] [data-testid="stColumn"]:nth-child(10)::before { content: 'حذف'; }
+
+    /* Phone cards remain full width, including landscape; nested action rows stay intact. */
+    .stApp :is(.st-key-rng_todo_board, .st-key-rng_development_board, .st-key-rng_meeting_board, .st-key-rng_warehouse_board, .st-key-rng_mission_board, .st-key-rng_bom_board, .st-key-financial_board, .st-key-project_files_board, .st-key-rng_project_sections) > [data-testid="stLayoutWrapper"] > [data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; gap: 20px !important; }
+    .stApp :is(.st-key-rng_todo_board, .st-key-rng_development_board, .st-key-rng_meeting_board, .st-key-rng_warehouse_board, .st-key-rng_mission_board, .st-key-rng_bom_board, .st-key-financial_board, .st-key-project_files_board, .st-key-rng_project_sections) > [data-testid="stLayoutWrapper"] > [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { min-width: 100% !important; width: 100% !important; flex: 1 1 100% !important; }
+    .stApp :is(.st-key-rng_todo_board, .st-key-rng_development_board, .st-key-rng_meeting_board, .st-key-rng_warehouse_board, .st-key-rng_mission_board, .st-key-rng_bom_board, .st-key-financial_board, .st-key-project_files_board) > [data-testid="stLayoutWrapper"] > [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:not(:has(button, input, textarea, iframe)) { display: none; }
+    .stApp :is([class*="st-key-rng_todo_card_"], [class*="st-key-rng_development_card_"], [class*="st-key-rng_meeting_card_"], [class*="st-key-rng_warehouse_card_"], [class*="st-key-rng_mission_card_"], [class*="st-key-rng_bom_card_"], [class*="st-key-financial_card_"], [class*="st-key-project_file_card_"], [class*="st-key-rng_project_space_"]) { padding: 26px 20px !important; min-height: 230px !important; }
+    .stApp [class$="-card-title"], .stApp .todo-title, .stApp .rng-file-title { font-size: 26px !important; }
+    .stApp [class$="-card-text"], .stApp .rng-file-meta, .stApp .rng-project-space-caption { font-size: 19px !important; line-height: 1.7; }
+    .stApp:has(#rng-login-marker) .block-container { max-width: none; padding: 24px 12px !important; }
+    .stApp:has(#rng-login-marker) [data-testid="stForm"] { padding: 36px 22px !important; min-height: 410px; }
+    .stApp:has(#rng-login-marker) input { min-height: 64px !important; font-size: 20px !important; }
+    .stApp:has(#rng-login-marker) [data-testid="stFormSubmitButton"] button { min-height: 66px; font-size: 20px; }
+    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid :is(input, button, p, label, [data-testid="stMarkdownContainer"]) { font-size: 23px !important; }
+    .st-key-financial_grid [data-testid="stNumberInput"] input { font-size: 24px !important; }
+    .stApp:has(#rng-financial-ledger-marker) [class*="st-key-finance_row_"] [data-testid="stColumn"]::before { font-size: 22px; }
+    .stApp .st-key-bom_detail [data-testid="stElementContainer"]:has([data-testid="stDataFrame"]) { zoom: 1.45; width: calc(100% / 1.45) !important; }
+    .stApp:has(#rng-financial-ledger-marker) .st-key-financial_grid { --finance-cols: 48px 140px 120px 130px minmax(240px, 1fr) 180px 180px 220px 72px 64px; }
+    .stApp:has(.st-key-rng_mobile_full_table input:checked) .rng-finance-grid-head,
+    .stApp:has(.st-key-rng_mobile_full_table input:checked) [class*="st-key-finance_row_"] { min-width: 1600px !important; }
+    .stApp:has(#rng-financial-ledger-marker) .rng-finance-grid-head { font-size: 23px; }
 }

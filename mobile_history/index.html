@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><script>
+(() => {
+  const send = (type, payload = {}) => window.parent.postMessage({isStreamlitMessage: true, type, ...payload}, '*');
+  send('streamlit:componentReady', {apiVersion: 1});
+  send('streamlit:setFrameHeight', {height: 0});
+  const host = window.parent;
+  const phone = host.matchMedia('(pointer: coarse)').matches && Math.min(host.screen.width, host.screen.height) <= 700;
+  if (!phone) return;
+  const hash = route => JSON.stringify(Object.fromEntries(Object.entries(route).sort(([a], [b]) => a.localeCompare(b))));
+  const stateName = '__rngPhoneHistory';
+  let nav = host[stateName];
+  if (!nav) nav = host[stateName] = {session: crypto.randomUUID(), entries: [], index: 0, pending: null};
+  // Streamlit can remount this iframe when a screen adds PDF/file components.
+  // Bind the parent listener to the current iframe realm on every mount.
+  if (nav.onPop) host.removeEventListener('popstate', nav.onPop);
+  nav.onPop = event => {
+    const saved = event.state?.rngPhoneNavigation;
+    if (!saved || saved.session !== nav.session) return;
+    host.clearTimeout(nav.timer);
+    nav.index = saved.index;
+    nav.pending = {hash: hash(saved.route), id: crypto.randomUUID()};
+    nav.deliver?.(saved.route, nav.pending.id);
+  };
+  host.addEventListener('popstate', nav.onPop);
+  nav.deliver = (route, id) => send('streamlit:setComponentValue', {
+    value: {id, route}, dataType: 'json'
+  });
+  window.addEventListener('message', event => {
+    if (event.source !== host || event.data.type !== 'streamlit:render') return;
+    const route = event.data.args.route;
+    if (nav.page !== route.page) {
+      nav.page = route.page;
+      host.requestAnimationFrame(() => host.document.querySelector('.st-key-rng_mobile_navigation button[kind="primary"]')?.scrollIntoView({block: 'nearest', inline: 'nearest'}));
+    }
+
+    const routeHash = hash(route);
+    if (nav.pending) {
+      if (event.data.args.handled === nav.pending.id) {
+        nav.pending = null;
+        host.document.querySelector('[data-testid="stMain"]')?.scrollTo({top: 0});
+        nav.entries[nav.index] = route;
+        host.history.replaceState({...host.history.state, rngPhoneNavigation: {session: nav.session, index: nav.index, route}}, '');
+      }
+      return;
+    }
+    if (nav.entries.length && hash(nav.entries[nav.index]) === routeHash) return;
+    // Let Streamlit's iframe navigations finish before adding the app route.
+    // Otherwise Android Back can traverse an iframe load instead of this screen.
+    host.clearTimeout(nav.timer);
+    nav.timer = host.setTimeout(() => {
+      if (nav.pending) return;
+      host.document.querySelector('[data-testid="stMain"]')?.scrollTo({top: 0});
+      if (!nav.entries.length) {
+        nav.entries = [route];
+        nav.index = 0;
+        host.history.replaceState({...host.history.state, rngPhoneNavigation: {session: nav.session, index: 0, route}}, '');
+      } else {
+        nav.entries = nav.entries.slice(0, nav.index + 1);
+        nav.entries.push(route);
+        nav.index++;
+        host.history.pushState({...host.history.state, rngPhoneNavigation: {session: nav.session, index: nav.index, route}}, '');
+      }
+    }, 250);
+  });
+})();
+</script></body></html>

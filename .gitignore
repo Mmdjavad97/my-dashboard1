@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.streamlit/secrets.toml
+*.sqlite3
+*.sqlite3-*
+server/windows/runtime/
+**/secrets.toml
+supabase-export-*.json
+server.lock
+server*.log
+*.tmp

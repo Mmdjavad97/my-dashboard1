@@ -1,5 +1,5 @@
 # =========================================================
-# RNG PRIVATE LOGIN AND PERMANENT SUPABASE STORAGE
+# RNG PRIVATE LOGIN AND PERSISTENT CLOUD / LOCAL STORAGE
 # =========================================================
 import copy
 import json
@@ -152,26 +152,48 @@ def rng_fail(message):
     st.stop()
 
 
-try:
-    settings = st.secrets["supabase"]
-    rng_url = str(settings["url"]).strip()
-    rng_key = str(settings["key"]).strip()
-    # Owner UID is an additional access-control gate on ALL Streamlit pages.
-    rng_owner_uid = str(settings["owner_uid"]).strip().lower()
-    if not rng_url.startswith("https://") or not rng_key or not rng_owner_uid:
-        raise ValueError("Missing or invalid Supabase configuration")
-except (KeyError, ValueError, TypeError) as exc:
-    rng_fail(
-        "Database setup is incomplete. In Streamlit Cloud → App settings → "
-        "Secrets, set [supabase] url, key and owner_uid. "
-        "Use your Supabase Authentication → Users UID for owner_uid."
-    )
+rng_backend = str(st.secrets.get("storage", {}).get("backend", "supabase")).lower()
+rng_storage_label = "local database" if rng_backend == "sqlite" else "Supabase"
+if rng_backend == "sqlite":
+    try:
+        settings = st.secrets["storage"]
+        rng_database_path = str(settings["path"])
+        rng_owner_uid = str(settings["owner_uid"]).strip().lower()
+        if not rng_database_path or not rng_owner_uid:
+            raise ValueError("Missing local database configuration")
+    except (KeyError, ValueError, TypeError):
+        rng_fail("Local setup is incomplete. Run the Windows setup and migration tool.")
+elif rng_backend == "supabase":
+    try:
+        settings = st.secrets["supabase"]
+        rng_url = str(settings["url"]).strip()
+        rng_key = str(settings["key"]).strip()
+        # Owner UID is an additional access-control gate on ALL Streamlit pages.
+        rng_owner_uid = str(settings["owner_uid"]).strip().lower()
+        if not rng_url.startswith("https://") or not rng_key or not rng_owner_uid:
+            raise ValueError("Missing or invalid Supabase configuration")
+    except (KeyError, ValueError, TypeError) as exc:
+        rng_fail(
+            "Database setup is incomplete. In Streamlit Cloud → App settings → "
+            "Secrets, set [supabase] url, key and owner_uid. "
+            "Use your Supabase Authentication → Users UID for owner_uid."
+        )
+else:
+    rng_fail("Unknown storage backend. Use supabase or sqlite.")
 
+if st.session_state.get("rng_backend_mode", rng_backend) != rng_backend:
+    rng_clear_private_state()
+st.session_state.rng_backend_mode = rng_backend
 if "rng_client" not in st.session_state:
     try:
-        st.session_state.rng_client = create_client(rng_url, rng_key)
+        if rng_backend == "sqlite":
+            from local_backend import LocalClient
+            st.session_state.rng_client = LocalClient(rng_database_path, rng_owner_uid)
+        else:
+            st.session_state.rng_client = create_client(rng_url, rng_key)
     except Exception:
-        rng_fail("Unable to initialize Supabase. Check your Streamlit Secrets.")
+        rng_fail("Unable to open your local database. Check the setup and database path." if rng_backend == "sqlite" else
+                 "Unable to initialize Supabase. Check your Streamlit Secrets.")
 
 rng_client = st.session_state.rng_client
 
@@ -233,8 +255,8 @@ if not st.session_state.get("rng_data_loaded"):
         st.session_state.rng_data_loaded = True
         st.session_state.rng_saved_snapshot = rng_snapshot()
     except Exception as exc:
-        rng_fail("Could not load your records from Supabase. No changes were made. "
-                 "Check the database connection and RLS policy. " + str(exc))
+        rng_fail(f"Could not load your records from {rng_storage_label}. No changes were made. " +
+                 ("Check the database file and Windows permissions. " if rng_backend == "sqlite" else "Check the database connection and RLS policy. ") + str(exc))
 
 
 def rng_save():
@@ -7124,7 +7146,7 @@ elif page == "Employer Report":
 try:
     rng_save()
 except Exception as exc:
-    st.error("Unable to save changes to Supabase: " + str(exc))
+    st.error(f"Unable to save changes to {rng_storage_label}: " + str(exc))
 
 
 # Phone-only browser history, including card detail and project file screens.

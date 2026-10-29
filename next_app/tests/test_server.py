@@ -128,3 +128,28 @@ class CloudMigrationTests(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+class SafeMigrationDiagnostics(unittest.TestCase):
+    def test_http_status_and_stage_without_sensitive_response(self):
+        from io import BytesIO
+        from urllib.error import HTTPError
+        secret = 'NEVER-PRINT-THIS-CREDENTIAL'
+        error = HTTPError('https://example.invalid/auth/v1/token', 400, secret, {}, BytesIO(json.dumps({'code':'invalid_credentials', 'message':secret}).encode()))
+        with patch.object(configure.urllib.request, 'urlopen', side_effect=error):
+            with self.assertRaises(configure.MigrationRequestError) as result:
+                configure.request_json('https://example.invalid', '/auth/v1/token?grant_type=password', secret, payload={'password':secret})
+        message = str(result.exception)
+        self.assertIn('sign-in failed (HTTP 400)', message)
+        self.assertIn('DASHBOARD login', message)
+        self.assertNotIn(secret, message)
+
+    def test_table_error_and_untrusted_body_are_safe(self):
+        from io import BytesIO
+        from urllib.error import HTTPError
+        for body in (b'{"code":"PGRST205"}', b'<html>private response</html>'):
+            error = HTTPError('https://example.invalid/rest/v1/dashboard_data', 404, 'private reason', {}, BytesIO(body))
+            with patch.object(configure.urllib.request, 'urlopen', side_effect=error):
+                with self.assertRaises(configure.MigrationRequestError) as result:
+                    configure.request_json('https://example.invalid', '/rest/v1/dashboard_data', 'fixture-key')
+            self.assertIn('record download failed (HTTP 404)', str(result.exception))
+            self.assertNotIn('private', str(result.exception))

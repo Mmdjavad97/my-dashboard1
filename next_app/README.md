@@ -56,6 +56,7 @@ Updates on GitHub do not automatically update this extracted installation. Back 
 - Missing offline package: extract the entire new ZIP, including `next_app\windows\wheels`; use Python 3.12, 64-bit. A timeout during migration means the server could not reach your Supabase project.
 - Server fails to open: inspect `%LOCALAPPDATA%\RNGDashboardNext\server-errors.log` locally. Do not share passwords, exports or database files.
 - Another-device conflict: the app rejects stale saves and keeps the current editor open. Copy any unsaved text before reloading the latest records and reapplying your change. It does not silently merge transactions.
+- Migration HTTP error: the installer prints the failing stage and HTTP status, with a fixed hint. Share only that diagnostic line; do not send keys, passwords, exports or database files. Use your existing dashboard login credentials, which may differ from your Supabase website account.
 - Login expires: reload and sign in again. Sessions expire after twelve hours and on server restart.
 - PDF/share: save edits first. Use Download if the device's native share dialog is unavailable.
 

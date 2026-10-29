@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 import urllib.parse
 
@@ -15,15 +16,52 @@ sys.path.insert(0, str(ROOT))
 from local_backend import initialize, LocalClient, connect, backup_database
 
 
+class MigrationRequestError(Exception):
+    """Only fixed diagnostic text; never expose response bodies or credentials."""
+    pass
+
+
 def request_json(base, path, key, token=None, payload=None):
     headers = {'apikey': key, 'Content-Type': 'application/json'}
     if token:
         headers['Authorization'] = 'Bearer ' + token
     request = urllib.request.Request(base + path, headers=headers,
         data=json.dumps(payload).encode() if payload is not None else None)
-    with urllib.request.urlopen(request, timeout=180) as response:
-        body = response.read()
-        return json.loads(body) if body else None
+    try:
+        with urllib.request.urlopen(request, timeout=180) as response:
+            body = response.read()
+            return json.loads(body) if body else None
+    except urllib.error.HTTPError as error:
+        stage = 'sign-in' if path.startswith('/auth/v1/token') else 'record download' if path.startswith('/rest/') else 'session cleanup'
+        hints = {
+            'invalid_credentials': 'Use the email and password for the existing DASHBOARD login, not your Supabase website account.',
+            'email_not_confirmed': 'The dashboard login email has not been confirmed.',
+            'invalid_api_key': 'Copy the publishable or anon PUBLIC key from this same Supabase project.',
+            'over_request_rate_limit': 'Wait a few minutes before trying again.',
+            'user_banned': 'This dashboard login account is disabled.',
+            'PGRST205': 'The dashboard_data table was not found in the selected project.',
+            '42501': 'The signed-in account cannot read dashboard_data. Check its existing database permissions; do not disable row-level security.',
+        }
+        hint = ''
+        try:
+            details = json.loads(error.read(16384))
+            if isinstance(details, dict):
+                code = details.get('error_code') or details.get('code')
+                hint = hints.get(code, '') if isinstance(code, str) else ''
+                # Recognize fixed gateway messages, but never print arbitrary server text.
+                if details.get('message') == 'Invalid API key':
+                    hint = hints['invalid_api_key']
+        except (ValueError, TypeError, OSError):
+            pass
+        finally:
+            error.close()
+        if not hint:
+            hint = {400: 'Check the project key and dashboard login details.',
+                    401: 'The project key or login authorization was rejected.',
+                    403: 'Access was refused. Check project permissions and whether your network or VPN blocks the request.',
+                    404: 'Check the project URL and that the dashboard_data table exists.',
+                    429: 'Wait a few minutes before trying again.'}.get(error.code, 'The service or network returned an error. Retry when connectivity is stable.')
+        raise MigrationRequestError(f'Supabase {stage} failed (HTTP {error.code}). {hint}') from None
 
 
 def cloud_rows(base, key, email, password, owner_uid):
@@ -131,6 +169,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     try:
         run(args.data_dir)
+    except MigrationRequestError as error:
+        print(str(error), file=sys.stderr)
+        print('No cloud records were changed. Keep any existing local database or export.', file=sys.stderr)
+        sys.exit(1)
     except Exception as error:
         print(f'Configuration stopped ({type(error).__name__}). No cloud records were changed. Keep any export/database created; do not delete it to retry.', file=sys.stderr)
         sys.exit(1)

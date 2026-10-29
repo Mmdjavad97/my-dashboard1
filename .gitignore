@@ -9,3 +9,6 @@ supabase-export-*.json
 server.lock
 server*.log
 *.tmp
+next_app/frontend/node_modules/
+next_app/.venv/
+next_app/runtime/

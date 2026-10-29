@@ -1,0 +1,4 @@
+# Preserve Windows launchers' CRLF endings in downloaded source archives.
+next_app/windows/*.cmd -text whitespace=cr-at-eol
+next_app/windows/*.ps1 -text whitespace=cr-at-eol
+next_app/windows/*.vbs -text whitespace=cr-at-eol

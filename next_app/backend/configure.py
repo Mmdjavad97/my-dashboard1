@@ -1,0 +1,136 @@
+"""Interactive migration. Never overwrite existing records or store cloud credentials."""
+from contextlib import closing
+from datetime import datetime, timezone
+from getpass import getpass
+from pathlib import Path
+import argparse
+import json
+import os
+import sys
+import urllib.request
+import urllib.parse
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from local_backend import initialize, LocalClient, connect, backup_database
+
+
+def request_json(base, path, key, token=None, payload=None):
+    headers = {'apikey': key, 'Content-Type': 'application/json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    request = urllib.request.Request(base + path, headers=headers,
+        data=json.dumps(payload).encode() if payload is not None else None)
+    with urllib.request.urlopen(request, timeout=180) as response:
+        body = response.read()
+        return json.loads(body) if body else None
+
+
+def cloud_rows(base, key, email, password, owner_uid):
+    parsed = urllib.parse.urlsplit(base)
+    if parsed.scheme != 'https' or not parsed.netloc or parsed.path not in ('', '/') or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ValueError('Use the HTTPS Supabase project URL, without a path.')
+    base = base.rstrip('/')
+    auth = request_json(base, '/auth/v1/token?grant_type=password', key, payload={'email': email, 'password': password})
+    token = auth['access_token']
+    try:
+        if auth['user']['id'] != owner_uid:
+            raise ValueError('The signed-in account is not the configured owner.')
+        rows, offset = [], 0
+        while True:
+            batch = request_json(base, f'/rest/v1/dashboard_data?select=section,data&order=section.asc&limit=1000&offset={offset}', key, token)
+            if not isinstance(batch, list):
+                raise ValueError('Unexpected migration data.')
+            rows.extend(batch)
+            if len(batch) < 1000:
+                break
+            offset += len(batch)
+        if not rows:
+            raise ValueError('No records were returned. Migration stopped to prevent an empty dashboard.')
+        return rows
+    finally:
+        try:
+            request_json(base, '/auth/v1/logout?scope=local', key, token, {})
+        except Exception:
+            pass
+
+
+def verify_copy(path, rows):
+    with closing(connect(path)) as db:
+        if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+            raise ValueError('Database verification failed.')
+        copied = {r['section']: json.loads(r['data']) for r in db.execute('SELECT section,data FROM dashboard_data')}
+    if copied != {r['section']: r['data'] for r in rows}:
+        raise ValueError('The copied records differ from the source.')
+
+
+def import_rows(folder, rows, email, password, owner):
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / 'dashboard.sqlite3'
+    if path.exists():
+        raise FileExistsError('A database already exists. Nothing was replaced.')
+    timestamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    export = folder / ('supabase-export-' + timestamp + '.json')
+    descriptor = os.open(export, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    with os.fdopen(descriptor, 'w', encoding='utf-8') as file:
+        json.dump(rows, file, ensure_ascii=False, allow_nan=False)
+    initialize(path, email, password, owner, rows)
+    verify_copy(path, rows)
+    backup_database(path, folder / 'backups' / ('initial-' + timestamp + '.sqlite3'))
+    return path
+
+
+def run(folder):
+    folder = Path(folder).resolve()
+    folder.mkdir(parents=True, exist_ok=True)
+    destination = folder / 'dashboard.sqlite3'
+    if destination.exists():
+        with closing(connect(destination)) as db:
+            owner = db.execute('SELECT uid FROM owner').fetchone()['uid']
+        LocalClient(destination, owner)
+        print('Existing installation detected; it was not replaced.')
+        return
+    print('RNG Dashboard - configure the NEW app. Your old cloud app is unchanged.')
+    print('1. Copy an existing local dashboard database (if the earlier migration finished).')
+    print('2. Copy your records directly from Supabase (usual choice).')
+    choice = input('Choose 1 or 2: ').strip()
+    if choice == '1':
+        default = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'RNGDashboard' / 'dashboard.sqlite3'
+        source = Path(input(f'Existing database path [{default}]: ').strip().strip('"') or default).resolve()
+        with closing(connect(source)) as db:
+            owner = db.execute('SELECT uid FROM owner').fetchone()['uid']
+            rows = [{'section': r['section'], 'data': json.loads(r['data'])} for r in db.execute('SELECT section,data FROM dashboard_data')]
+        LocalClient(source, owner)
+        backup_database(source, destination)
+        verify_copy(destination, rows)
+        backup_database(destination, folder / 'backups' / ('initial-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ') + '.sqlite3'))
+        print('Copied and verified. Use your existing LOCAL login password.')
+    elif choice == '2':
+        print('Pause editing in the old app until this copy finishes. Enter credentials only here.')
+        base = input('Supabase project URL [https://kbpfderanmjenrjieftw.supabase.co]: ').strip() or 'https://kbpfderanmjenrjieftw.supabase.co'
+        owner = input('Owner UID [b240b34d-828b-47c7-8a13-6c9f3d8c1d94]: ').strip() or 'b240b34d-828b-47c7-8a13-6c9f3d8c1d94'
+        key = getpass('Supabase publishable/anon key (hidden): ').strip()
+        email = input('Existing dashboard login email: ').strip()
+        password = getpass('Existing dashboard password (hidden): ')
+        rows = cloud_rows(base, key, email, password, owner)
+        local_password = getpass('New local password, or Enter to keep the existing password: ') or password
+        if local_password != password:
+            if len(local_password) < 8 or local_password != getpass('Confirm new password: '):
+                raise ValueError('Passwords must match and have at least eight characters.')
+        import_rows(folder, rows, email, local_password, owner)
+        print('All records copied and verified. Your local login is ready.')
+    else:
+        raise ValueError('Choose 1 or 2. Nothing was imported.')
+    print('Check every section and file before switching. Cloud and local versions do NOT synchronize.')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data-dir', required=True)
+    args = parser.parse_args()
+    try:
+        run(args.data_dir)
+    except Exception as error:
+        print(f'Configuration stopped ({type(error).__name__}). No cloud records were changed. Keep any export/database created; do not delete it to retry.', file=sys.stderr)
+        sys.exit(1)

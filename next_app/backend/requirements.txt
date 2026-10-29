@@ -1,0 +1,9 @@
+fastapi==0.121.0
+uvicorn==0.38.0
+reportlab>=4.4,<6
+arabic-reshaper==3.0.1
+python-bidi>=0.6,<0.7
+Pillow>=11,<14
+openpyxl==3.1.5
+jdatetime==5.2.0
+tzdata

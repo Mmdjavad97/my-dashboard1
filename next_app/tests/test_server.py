@@ -153,3 +153,23 @@ class SafeMigrationDiagnostics(unittest.TestCase):
                     configure.request_json('https://example.invalid', '/rest/v1/dashboard_data', 'fixture-key')
             self.assertIn('record download failed (HTTP 404)', str(result.exception))
             self.assertNotIn('private', str(result.exception))
+
+
+class LegacyAuthDiagnostics(unittest.TestCase):
+    def test_older_gotrue_and_gateway_responses(self):
+        from io import BytesIO
+        from urllib.error import HTTPError
+        examples = [
+            (b'{"error":"invalid_grant","error_description":"Invalid login credentials"}', 'explicitly returned'),
+            (b'{"msg":"Email not confirmed"}', 'has not been confirmed'),
+            (b'{"code":"captcha_failed"}', 'CAPTCHA'),
+            (b'<html>gateway-secret</html>', 'gateway or proxy'),
+            (b'{"message":"unknown-secret"}', 'does not establish'),
+        ]
+        for body, expected in examples:
+            error = HTTPError('https://example.invalid', 400, 'secret', {}, BytesIO(body))
+            with patch.object(configure.urllib.request, 'urlopen', side_effect=error):
+                with self.assertRaises(configure.MigrationRequestError) as result:
+                    configure.request_json('https://example.invalid', '/auth/v1/token?grant_type=password', 'fixture-key')
+            self.assertIn(expected, str(result.exception))
+            self.assertNotIn('secret', str(result.exception))

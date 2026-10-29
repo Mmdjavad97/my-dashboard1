@@ -34,6 +34,10 @@ def request_json(base, path, key, token=None, payload=None):
     except urllib.error.HTTPError as error:
         stage = 'sign-in' if path.startswith('/auth/v1/token') else 'record download' if path.startswith('/rest/') else 'session cleanup'
         hints = {
+            'email_provider_disabled': 'Supabase reports that email/password login is disabled for this project.',
+            'captcha_failed': 'Supabase requires a CAPTCHA that this migration login cannot complete.',
+            'validation_failed': 'Supabase rejected the login request format.',
+            'bad_json': 'Supabase could not parse the login request.',
             'invalid_credentials': 'Use the email and password for the existing DASHBOARD login, not your Supabase website account.',
             'email_not_confirmed': 'The dashboard login email has not been confirmed.',
             'invalid_api_key': 'Copy the publishable or anon PUBLIC key from this same Supabase project.',
@@ -46,13 +50,24 @@ def request_json(base, path, key, token=None, payload=None):
         try:
             details = json.loads(error.read(16384))
             if isinstance(details, dict):
-                code = details.get('error_code') or details.get('code')
+                code = details.get('error_code') or details.get('code') or details.get('error')
                 hint = hints.get(code, '') if isinstance(code, str) else ''
-                # Recognize fixed gateway messages, but never print arbitrary server text.
-                if details.get('message') == 'Invalid API key':
-                    hint = hints['invalid_api_key']
+                # Older GoTrue versions use error/error_description instead of code.
+                fixed_messages = {
+                    'Invalid API key': hints['invalid_api_key'],
+                    'Invalid login credentials': 'Supabase explicitly returned: Invalid login credentials. This is its authentication response, not a Streamlit loading failure.',
+                    'Email not confirmed': hints['email_not_confirmed'],
+                    'Email logins are disabled': hints['email_provider_disabled'],
+                }
+                for field in ('message', 'msg', 'error_description'):
+                    value = details.get(field)
+                    if isinstance(value, str) and value in fixed_messages:
+                        hint = fixed_messages[value]
+                        break
+                if not hint:
+                    hint = 'The server returned a JSON error this installer does not recognize. This does not establish that your credentials are wrong.'
         except (ValueError, TypeError, OSError):
-            pass
+            hint = 'The response was not a readable Supabase JSON error. A network gateway or proxy may be involved; this does not establish that your credentials are wrong.'
         finally:
             error.close()
         if not hint:

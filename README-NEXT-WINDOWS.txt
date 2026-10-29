@@ -8,9 +8,10 @@ Do NOT use server\windows\Setup.cmd (that is the older Streamlit installer).
 1. Extract the entire ZIP into a permanent folder.
 2. Install Python 3.12 (64-bit), including the Python launcher.
 3. Run next_app\windows\Setup.cmd.
-4. Choose 2 to copy Supabase data if your earlier migration never finished.
-5. Enter credentials only into the LOCAL setup prompts, never into chat.
-6. Open the new RNG Dashboard Next desktop shortcut.
+4. Export ALL rows of dashboard_data as CSV in Supabase Dashboard.
+5. Choose 3 in Setup, select the CSV, and create your local email/password.
+6. Keep the CSV private; enter passwords only into the LOCAL prompts.
+7. Open the new RNG Dashboard Next desktop shortcut.
 
 The frontend is already built; Node.js is not required on your server.
 Read next_app\README.md for testing, backup, phone install and private access.

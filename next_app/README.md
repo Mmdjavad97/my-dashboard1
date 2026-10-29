@@ -2,13 +2,21 @@
 
 React + FastAPI replacement for the original dashboard. This directory runs independently of Streamlit and Supabase. The existing `app.py` and cloud deployment are unchanged.
 
+## Simplest migration: export a file, then import it
+
+Open your project in Supabase Dashboard, select **Table Editor → dashboard_data**, clear any filters, and use the table's export option to download **all rows as CSV**. Keep the export private: it contains your records and embedded uploaded files. Do not send it in chat. This step uses the Supabase website, not the blocked Streamlit app.
+
+Run the new Windows Setup, choose **3**, select that CSV in the file picker, and choose an email/password for your **local** login. No API key, old dashboard password or network connection to Supabase is needed for this import. The email does not need to match your previous cloud login. Import checks the CSV structure, rejects duplicate/empty section names and empty exports, copies the records, verifies the stored JSON exactly, and creates an initial backup. It refuses to replace an existing local database.
+
+If configuration reports an existing installation, it will preserve it. Do not delete that database to force a CSV import; back it up and investigate before replacing records. Review the full set of records after import to ensure your export was not filtered or incomplete.
+
 ## Install on the Windows server
 
 1. Keep the existing cloud app and Supabase project. Pause editing there while copying records.
 2. Download the complete repository ZIP and extract it into a permanent folder. Do not copy just `next_app`: original images, fonts and report templates at repository root are required.
 3. Install **Python 3.12, 64-bit**, including its launcher. No Node.js installation is needed on the server: the compiled React interface is included.
 4. Run **`next_app\windows\Setup.cmd`**. This is a different installer from the earlier `server\windows\Setup.cmd`.
-5. Choose **2** to copy from Supabase if the previous migration never finished. Enter URL, publishable/anon key, existing login email and password into the local prompts only. The defaults contain your project URL and owner UID, not a secret key.
+5. Choose **3** for the simpler CSV import described above. Alternatively, choose **2** to copy directly from Supabase if the previous migration never finished. Enter URL, publishable/anon key, existing login email and password into the local prompts only. The defaults contain your project URL and owner UID, not a secret key.
 6. If you already finished the earlier local migration, choose **1** and copy that database. It preserves its existing local login credentials. The source database is not modified.
 7. Open **RNG Dashboard Next** from the desktop. The server runs at `http://127.0.0.1:8765`; Edge opens it in a separate app window.
 

@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from getpass import getpass
 from pathlib import Path
 import argparse
+import csv
 import json
 import os
 import sys
@@ -134,6 +135,39 @@ def import_rows(folder, rows, email, password, owner):
     return path
 
 
+def read_csv_export(path):
+    """Read a Supabase dashboard CSV without contacting any cloud service."""
+    csv.field_size_limit(1024 * 1024 * 1024)
+    with Path(path).open('r', encoding='utf-8-sig', newline='') as file:
+        reader = csv.DictReader(file)
+        if not {'section', 'data'}.issubset(reader.fieldnames or []):
+            raise ValueError('Export the dashboard_data table with its section and data columns.')
+        rows, seen = [], set()
+        for row in reader:
+            section = row['section']
+            if not section or section in seen:
+                raise ValueError('The export has empty or duplicate section names. Do not combine different users or tables.')
+            seen.add(section)
+            rows.append({'section': section, 'data': json.loads(row['data'])})
+        if not rows:
+            raise ValueError('The export is empty. No database was created.')
+        return rows
+
+
+def choose_export_file():
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            return filedialog.askopenfilename(title='Choose the dashboard_data CSV export', filetypes=[('Supabase CSV export', '*.csv')])
+        finally:
+            root.destroy()
+    except Exception:
+        return input('CSV export file path: ').strip().strip('"')
+
+
 def run(folder):
     folder = Path(folder).resolve()
     folder.mkdir(parents=True, exist_ok=True)
@@ -147,7 +181,8 @@ def run(folder):
     print('RNG Dashboard - configure the NEW app. Your old cloud app is unchanged.')
     print('1. Copy an existing local dashboard database (if the earlier migration finished).')
     print('2. Copy your records directly from Supabase (usual choice).')
-    choice = input('Choose 1 or 2: ').strip()
+    print('3. Import a dashboard_data CSV exported from Supabase Dashboard (no cloud login needed).')
+    choice = input('Choose 1, 2 or 3: ').strip()
     if choice == '1':
         default = Path(os.environ.get('LOCALAPPDATA', str(Path.home()))) / 'RNGDashboard' / 'dashboard.sqlite3'
         source = Path(input(f'Existing database path [{default}]: ').strip().strip('"') or default).resolve()
@@ -173,8 +208,22 @@ def run(folder):
                 raise ValueError('Passwords must match and have at least eight characters.')
         import_rows(folder, rows, email, local_password, owner)
         print('All records copied and verified. Your local login is ready.')
+    elif choice == '3':
+        source = choose_export_file()
+        if not source:
+            raise ValueError('File selection cancelled. Nothing was imported.')
+        rows = read_csv_export(source)
+        print(f'Export read: {len(rows)} record groups. Create your LOCAL login next.')
+        email = input('Choose an email for your local dashboard login: ').strip()
+        if not email or '@' not in email:
+            raise ValueError('Enter an email for the local login.')
+        password = getpass('Choose a local password (at least 8 characters, hidden): ')
+        if len(password) < 8 or password != getpass('Confirm local password (hidden): '):
+            raise ValueError('Passwords must match and have at least eight characters.')
+        import_rows(folder, rows, email, password, 'b240b34d-828b-47c7-8a13-6c9f3d8c1d94')
+        print('All exported records copied and verified. Your local login is ready.')
     else:
-        raise ValueError('Choose 1 or 2. Nothing was imported.')
+        raise ValueError('Choose 1, 2 or 3. Nothing was imported.')
     print('Check every section and file before switching. Cloud and local versions do NOT synchronize.')
 
 

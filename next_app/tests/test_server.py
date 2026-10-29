@@ -173,3 +173,23 @@ class LegacyAuthDiagnostics(unittest.TestCase):
                     configure.request_json('https://example.invalid', '/auth/v1/token?grant_type=password', 'fixture-key')
             self.assertIn(expected, str(result.exception))
             self.assertNotIn('secret', str(result.exception))
+
+class CsvMigrationTests(unittest.TestCase):
+    def test_csv_export_preserves_unicode_and_file_bytes(self):
+        import csv
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / 'dashboard_data.csv'
+            original = fixture()
+            with path.open('w', encoding='utf-8-sig', newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=['section', 'data', 'updated_at'])
+                writer.writeheader()
+                for key, value in original.items():
+                    writer.writerow({'section': key, 'data': json.dumps(value, ensure_ascii=False), 'updated_at': 'fixture'})
+            rows = configure.read_csv_export(path)
+            self.assertEqual({r['section']: r['data'] for r in rows}, original)
+            destination = configure.import_rows(Path(folder) / 'local', rows, 'local@example.invalid', 'new-password', 'owner')
+            configure.verify_copy(destination, rows)
+            with path.open('a', encoding='utf-8') as file:
+                file.write('tasks,[],fixture\n')
+            with self.assertRaises(ValueError):
+                configure.read_csv_export(path)

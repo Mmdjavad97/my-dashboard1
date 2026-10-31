@@ -56,6 +56,16 @@ Use **`next_app\windows\Backup.cmd`** or **Back up on server** in the app at any
 
 To restore, first stop this app's Python process (identify it by `uvicorn next_app.backend.main:app`, not the old Streamlit process). Preserve the current database. Copy a verified backup to `dashboard.sqlite3` in the new data folder and reopen the app. The login password is the one used when that backup was made.
 
+## RNG Logo icon update
+
+The app now supplies RNG monogram PNG icons for Android/desktop installation, a maskable Android variant, an Apple touch icon, a browser favicon, and a Windows ICO. The original full RNG Logo used in reports is unchanged.
+
+For an existing Windows installation, download `downloads/RNG-Logo-Update.zip`, extract the entire archive, and run **Apply-Logo-Update.cmd on the server PC**. In the folder picker choose the existing installed program folder containing `next_app`, not the update folder. The updater checks old program hashes before changing files, saves old program files, restarts only the selected installation's server, and refreshes its existing server desktop shortcut icon. It does not read, replace or re-import the database. This package supports the earlier versions distributed in this conversation; a modified program file causes it to stop rather than overwrite changes.
+
+Afterward close the app on your phone/PC and refresh its existing Tailscale HTTPS address. Browsers may retain the installed icon; if it stays old, remove the app shortcut and install that same address again. The records stay on the server. Re-pin a Windows taskbar shortcut if needed. `RNG.ico` in the update archive is also available for manual Windows shortcut properties. Do not delete the server installation or its AppData folder, and do not rerun the CSV import.
+
+The icon routes, dimensions, manifest and package hashes have automated checks. The native Windows updater and installed-icon refresh still need verification on your devices.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

@@ -24,6 +24,7 @@ $Shortcut = $Shell.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desk
 $Shortcut.TargetPath = 'powershell.exe'
 $Shortcut.Arguments = '-NoProfile -ExecutionPolicy Bypass -File "' + (Join-Path $PSScriptRoot 'Open.ps1') + '"'
 $Shortcut.WorkingDirectory = $Root
+$Shortcut.IconLocation = Join-Path $Root 'next_app\frontend\dist\app-icons\rng.ico'
 $Shortcut.Save()
 $Startup = $Shell.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Startup')) 'RNG Dashboard Next Server.lnk'))
 $Startup.TargetPath = 'wscript.exe'

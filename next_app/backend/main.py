@@ -295,7 +295,9 @@ def health():
 
 # Public files are a strict allowlist; never serve the repository or data directory.
 ASSETS = {'portrait.png': ROOT / 'My Pic.png', 'logo.png': ROOT / 'assets' / 'RNG Logo.png',
-          'nazanin.ttf': ROOT / 'B-NAZANIN.TTF'}
+          'nazanin.ttf': ROOT / 'B-NAZANIN.TTF',
+          **{name: FRONTEND / 'app-icons' / name for name in
+             ('rng-32.png', 'rng-180.png', 'rng-192.png', 'rng-512.png', 'rng-maskable-512.png', 'rng.ico')}}
 
 
 @app.get('/brand/{name}')
@@ -307,9 +309,13 @@ def brand(name: str):
 
 @app.get('/manifest.webmanifest')
 def manifest():
-    return JSONResponse({'name': 'RNG Dashboard', 'short_name': 'RNG', 'start_url': '/', 'scope': '/',
+    return JSONResponse({'name': 'RNG Dashboard', 'short_name': 'RNG', 'id': '/', 'start_url': '/', 'scope': '/',
         'display': 'standalone', 'background_color': '#edf2f8', 'theme_color': '#132b4b',
-        'icons': [{'src': '/icon.svg', 'sizes': 'any', 'type': 'image/svg+xml', 'purpose': 'any'}]}, media_type='application/manifest+json')
+        'icons': [
+            {'src': '/brand/rng-192.png?v=rng1', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+            {'src': '/brand/rng-512.png?v=rng1', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+            {'src': '/brand/rng-maskable-512.png?v=rng1', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]},
+        media_type='application/manifest+json', headers={'Cache-Control': 'no-cache'})
 
 
 if (FRONTEND / 'assets').is_dir():

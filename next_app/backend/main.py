@@ -312,9 +312,9 @@ def manifest():
     return JSONResponse({'name': 'RNG Dashboard', 'short_name': 'RNG', 'id': '/', 'start_url': '/', 'scope': '/',
         'display': 'standalone', 'background_color': '#edf2f8', 'theme_color': '#132b4b',
         'icons': [
-            {'src': '/brand/rng-192.png?v=rng1', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
-            {'src': '/brand/rng-512.png?v=rng1', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
-            {'src': '/brand/rng-maskable-512.png?v=rng1', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]},
+            {'src': '/brand/rng-192.png?v=rng2', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+            {'src': '/brand/rng-512.png?v=rng2', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+            {'src': '/brand/rng-maskable-512.png?v=rng2', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]},
         media_type='application/manifest+json', headers={'Cache-Control': 'no-cache'})
 
 

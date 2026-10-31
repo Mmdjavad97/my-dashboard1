@@ -20,7 +20,7 @@ try {
         $Target = Join-Path $Root $Relative
         if (Test-Path $Target) {
             $Current = (Get-FileHash $Target -Algorithm SHA256).Hash.ToLower()
-            if ($Current -ne $File.sha256 -and $Current -ne $File.previous) { throw ('Your program version differs at ' + $File.path + '. Nothing was changed. Keep this installation and request an update for its version.') }
+            if ($Current -ne $File.sha256 -and $Current -ne $File.previous -and @($File.previous_versions) -notcontains $Current) { throw ('Your program version differs at ' + $File.path + '. Nothing was changed. Keep this installation and request an update for its version.') }
         } elseif ($File.previous) { throw ('An existing program file is missing: ' + $File.path) }
     }
     $Data = Join-Path $env:LOCALAPPDATA 'RNGDashboardNext'

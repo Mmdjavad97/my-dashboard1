@@ -20,7 +20,11 @@ class IconTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             image = Image.open(BytesIO(response.content))
             self.assertEqual(f'{image.width}x{image.height}', record['sizes'])
-            self.assertTrue(all(channel >= 245 for channel in image.getpixel((0, 0))))
+            if record['purpose'] == 'maskable':
+                self.assertEqual(image.getpixel((0, 0)), (19,43,75))
+            else:
+                self.assertEqual(image.mode, 'RGBA')
+                self.assertEqual(image.getpixel((0,0))[3], 0)
         for name, size in [('rng-32.png', 32), ('rng-180.png', 180)]:
             image = Image.open(BytesIO(client.get('/brand/' + name).content))
             self.assertEqual(image.size, (size, size))

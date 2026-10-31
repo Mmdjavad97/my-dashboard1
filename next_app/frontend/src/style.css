@@ -1609,3 +1609,45 @@ tr:nth-child(even) {
     transition: none !important;
   }
 }
+
+/* RNG identity: real artwork in the login, app header and home page. */
+.rng-logo {
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 22%;
+}
+.header-logo {
+  width: 48px;
+  height: 48px;
+}
+.login-logo {
+  width: 92px;
+  height: 92px;
+  margin: 0 0 18px;
+}
+.dashboard-logo {
+  width: 88px;
+  height: 88px;
+  margin: 0 0 26px;
+}
+.loading-logo {
+  width: 68px;
+  height: 68px;
+}
+@media (max-width: 700px),
+  (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+  .header-logo {
+    width: 43px;
+    height: 43px;
+  }
+  .login-logo {
+    width: 96px;
+    height: 96px;
+  }
+  .dashboard-logo {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 24px;
+  }
+}

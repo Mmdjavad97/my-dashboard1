@@ -58,7 +58,7 @@ To restore, first stop this app's Python process (identify it by `uvicorn next_a
 
 ## RNG Logo icon update
 
-The app now supplies RNG monogram PNG icons for Android/desktop installation, a maskable Android variant, an Apple touch icon, a browser favicon, and a Windows ICO. The original full RNG Logo used in reports is unchanged.
+The login page, app header and dashboard home now display the RNG mark. Its white logo sections and burgundy accent sit on a dark navy icon with rounded corners. The app supplies RNG monogram PNG icons for Android/desktop installation, a maskable Android variant, an Apple touch icon, a browser favicon, and a Windows ICO. The original full RNG Logo used in reports is unchanged.
 
 For an existing Windows installation, download `downloads/RNG-Logo-Update.zip`, extract the entire archive, and run **Apply-Logo-Update.cmd on the server PC**. In the folder picker choose the existing installed program folder containing `next_app`, not the update folder. The updater checks old program hashes before changing files, saves old program files, restarts only the selected installation's server, and refreshes its existing server desktop shortcut icon. It does not read, replace or re-import the database. This package supports the earlier versions distributed in this conversation; a modified program file causes it to stop rather than overwrite changes.
 

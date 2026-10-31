@@ -88,6 +88,17 @@ function useRoute() {
   }, []);
   return r;
 }
+function BrandLogo({ className = "" }) {
+  return (
+    <img
+      className={"rng-logo " + className}
+      src="/brand/rng-192.png?v=rng2"
+      alt="RNG Logo"
+      width="64"
+      height="64"
+    />
+  );
+}
 function Button({ children, icon: Icon, kind = "", ...props }) {
   return (
     <button className={"button " + kind} {...props}>
@@ -380,7 +391,7 @@ function App() {
   if (checking)
     return (
       <div className="loading">
-        <div className="brandmark">R</div>
+        <BrandLogo className="loading-logo" />
         <p>Opening your workspace…</p>
       </div>
     );
@@ -399,7 +410,7 @@ function App() {
     <>
       <header className="topbar">
         <a className="brand" href="#/home">
-          <span className="brandmark">R</span>
+          <BrandLogo className="header-logo" />
           <span>
             MY DASHBOARD<small>PERSONAL WORKSPACE</small>
           </span>
@@ -571,7 +582,7 @@ function Login({ onLogin }) {
           }
         }}
       >
-        <span className="brandmark">R</span>
+        <BrandLogo className="login-logo" />
         <h2>Welcome back.</h2>
         <p>Sign in to your private workspace.</p>
         <Field
@@ -624,6 +635,7 @@ function Home({ state, save, busy }) {
     <>
       <div className="portrait" />
       <div className="home-content">
+        <BrandLogo className="dashboard-logo" />
         <div className="home-top">
           <span className="eyebrow">MAKE ROOM FOR WHAT MATTERS</span>
           <div className="date">

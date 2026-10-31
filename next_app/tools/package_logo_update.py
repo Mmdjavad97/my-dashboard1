@@ -5,18 +5,25 @@ import json
 import subprocess
 import zipfile
 ROOT = Path(__file__).resolve().parents[2]
-BASE = 'a97d8d8e39f23aa50f6a9a185a8d9578d6d101f8'
+BASE = '9a9a04aee8eefdea906c520408d53bff405f98e7'
+SUPPORTED = [BASE, 'a97d8d8e39f23aa50f6a9a185a8d9578d6d101f8', '38b7a78ef816a49bbf593e572dbfdc687c7f4b88']
 paths = ['assets/RNG-App-Icon.png', 'next_app/tools/build_icons.py', 'next_app/backend/main.py',
-         'next_app/frontend/index.html', 'next_app/frontend/dist/index.html',
+         'next_app/frontend/index.html', 'next_app/frontend/src/main.jsx', 'next_app/frontend/src/style.css', 'next_app/frontend/dist/index.html',
          'next_app/frontend/public/icon.svg', 'next_app/frontend/dist/icon.svg', 'next_app/windows/Setup.ps1']
 for folder in ('public', 'dist'):
     paths += [p.relative_to(ROOT).as_posix() for p in sorted((ROOT / 'next_app/frontend' / folder / 'app-icons').glob('*'))]
+paths += [p.relative_to(ROOT).as_posix() for p in sorted((ROOT / 'next_app/frontend/dist/assets').glob('*'))]
 files = []
 for path in paths:
     old = subprocess.run(['git','show',BASE + ':' + path], cwd=ROOT, capture_output=True)
-    files.append({'path':path, 'sha256':hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),
+    previous_versions = []
+    for ref in SUPPORTED:
+        prior = subprocess.run(['git','show',ref + ':' + path],cwd=ROOT,capture_output=True)
+        if prior.returncode == 0: previous_versions.append(hashlib.sha256(prior.stdout).hexdigest())
+    files.append({'path':path, 'previous_versions':previous_versions, 'sha256':hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),
                   'previous':hashlib.sha256(old.stdout).hexdigest() if old.returncode == 0 else None})
-readme = '''RNG Logo update - run on your SERVER PC only.
+readme = '''RNG navy Logo update - run on your SERVER PC only.
+Includes white/burgundy mark on rounded navy icon and logos on login/home/header.
 
 1. Extract this entire ZIP.
 2. Double-click Apply-Logo-Update.cmd.
@@ -47,7 +54,7 @@ with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
     prefix = 'RNG-Logo-Update/'
     for name in ('Apply-Logo-Update.ps1','Apply-Logo-Update.cmd'):
         z.write(ROOT/'next_app/windows'/name,prefix+name)
-    z.writestr(prefix+'logo-update.json',json.dumps({'version':'rng-logo-20261031','files':files},indent=2))
+    z.writestr(prefix+'logo-update.json',json.dumps({'version':'rng-navy-logo-20261031','files':files},indent=2))
     z.writestr(prefix+'README.txt',readme.replace('\n','\r\n'))
     z.write(ROOT/'next_app/frontend/dist/app-icons/rng.ico',prefix+'RNG.ico')
     for path in paths: z.write(ROOT/path,prefix+'payload/'+path)

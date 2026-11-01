@@ -74,6 +74,14 @@ The login no longer reserves space for absent bottom navigation; its spacing als
 
 Desktop login/home/BOM screenshots were compared; phone checks cover 390×844, 360×640 and 844×390, plus BOM quantity edits, saving, reopening, an additional table and PDF export. Installed Windows update execution still needs verification on the server.
 
+## Compact desktop home and midnight background update
+
+Use `downloads/RNG-Dashboard-Update.zip` on the server: extract it, run **Apply-Dashboard-Update.cmd**, and choose the existing program folder containing `next_app`. Reopen/refresh the existing address on PC and phone. This frontend-only update supports the preceding phone-layout and navy-logo installations; it checks existing files before replacing them. No data import, credentials, dependencies, icon reinstall or Tailscale changes are needed.
+
+The upper branding bar is removed. The PC home includes Log out as the ninth tile in its compact 3×3 navigation grid, while other PC pages put Log out beside their horizontal navigation tabs. Phones put Log out at the end of the horizontally scrollable bottom navigation. The PC home fits tested 1440×900, 1366×768, 1024×768 and 1024×600 windows. Longer note lists scroll within their own panel; the page itself stays in the window. All notes remain accessible. Very narrow desktop windows retain a naturally scrolling layout instead of shrinking controls excessively.
+
+All pages share a navy backdrop with subtle architectural grid and diagonal lines. Forms, cards and financial tables retain light surfaces and dark text; dialogs and transaction row numbers remain readable. PDF/report layouts and original uploaded files are unchanged. Browser checks cover navigation, logout on both device types, and phone login fit; actual Windows update execution still needs verification on the server.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

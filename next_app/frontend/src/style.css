@@ -236,7 +236,7 @@ p {
   background: #f9fbfd;
   flex-wrap: wrap;
 }
-.desktop-nav a {
+.desktop-nav :is(a, button) {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -245,11 +245,11 @@ p {
   border-radius: 7px;
   color: #6d8199;
 }
-.desktop-nav a.active {
+.desktop-nav :is(a, button).active {
   background: #e4ecf6;
   color: #224c7b;
 }
-.desktop-nav a:hover {
+.desktop-nav :is(a, button):hover {
   background: #eaf0f7;
 }
 .workspace {
@@ -1118,7 +1118,7 @@ tr:nth-child(even) {
   .financial-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .desktop-nav a {
+  .desktop-nav :is(a, button) {
     font-size: 10px;
     padding: 7px;
   }
@@ -1210,7 +1210,7 @@ tr:nth-child(even) {
     scrollbar-width: none;
     overscroll-behavior-x: contain;
   }
-  .bottom-nav a {
+  .bottom-nav :is(a, button) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1225,7 +1225,7 @@ tr:nth-child(even) {
     flex-shrink: 0;
     text-align: center;
   }
-  .bottom-nav a.active {
+  .bottom-nav :is(a, button).active {
     color: #fff;
     background: #31537b;
   }
@@ -1711,14 +1711,14 @@ tr:nth-child(even) {
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
     gap: 6px;
   }
-  :where(html[data-rng-phone]) .bottom-nav a {
+  :where(html[data-rng-phone]) .bottom-nav :is(a, button) {
     min-width: 98px;
     min-height: 58px;
     padding: 6px 8px;
     gap: 5px;
     font-size: 11px;
   }
-  :where(html[data-rng-phone]) .bottom-nav a svg {
+  :where(html[data-rng-phone]) .bottom-nav :is(a, button) svg {
     width: 21px;
     height: 21px;
   }
@@ -1893,4 +1893,375 @@ tr:nth-child(even) {
   :where(html[data-rng-phone]) .login-box > .button {
     min-height: 46px;
   }
+}
+
+/* Midnight workspace: one continuous architectural backdrop on every screen. */
+:root {
+  background: #09182b;
+}
+body {
+  color: #e6eef9;
+  background-color: #09182b;
+  background-image:
+    radial-gradient(ellipse at 12% 8%, #23497666, transparent 52%),
+    radial-gradient(ellipse at 94% 68%, #24497133, transparent 48%),
+    repeating-linear-gradient(0deg, transparent 0 79px, #a8ccf207 79px 80px),
+    repeating-linear-gradient(90deg, transparent 0 79px, #a8ccf207 79px 80px),
+    linear-gradient(
+      125deg,
+      transparent 0 62%,
+      #8ab6e00c 62% 62.1%,
+      transparent 62.1%
+    );
+  background-attachment: fixed;
+}
+.home,
+.login-scene {
+  background: transparent;
+}
+.card,
+.panel,
+.modal,
+.login-box,
+.financial-stats > div {
+  color: #203650;
+}
+.page-heading {
+  border-color: #2c425e;
+}
+.page-heading h1,
+.home h1,
+.section-heading h2,
+.section-heading h3 {
+  color: #edf4ff;
+}
+.panel .section-heading h3,
+.modal .section-heading h3,
+.card .section-heading h3 {
+  color: #203650;
+}
+.eyebrow,
+.page-heading .eyebrow {
+  color: #91adcc;
+}
+.panel .eyebrow,
+.modal .eyebrow {
+  color: #6f88a3;
+}
+.home h1 > span,
+.home .date {
+  color: #b2c6df;
+}
+.section-heading > span {
+  color: #8da7c5;
+}
+.panel .section-heading > span {
+  color: #687e97;
+}
+.toolbar > p,
+.toolbar > span,
+.back-link {
+  color: #b3c9e3;
+}
+.search {
+  color: #90accb;
+}
+.search input {
+  color: #edf4ff;
+  border-color: #395673;
+}
+.search input::placeholder {
+  color: #9ab0ca;
+}
+.empty {
+  background: #142c47cf;
+  color: #9fbbdc;
+  border-color: #375374;
+}
+.empty h3 {
+  color: #e7f1ff;
+}
+.empty p {
+  color: #b0c3db;
+}
+.jump-list {
+  background: #142e4bd9;
+  border-color: #34516f;
+}
+.jump-list .eyebrow {
+  color: #a4c0df;
+}
+.note {
+  background: #f1f5fb;
+  border-color: #cbd9ea;
+}
+.note-add input {
+  background: #f4f7fc;
+  color: #203650;
+}
+.home-tile {
+  background: linear-gradient(145deg, #1e3b5be8, #112942e8);
+  border-color: #355475;
+  box-shadow: 0 6px 20px #00000010;
+}
+.home-tile span {
+  color: #e7f0fd;
+}
+.home-tile > svg {
+  color: #9fc4ec;
+}
+.home-tile .tile-arrow {
+  color: #8dacd0;
+}
+.home-tile small {
+  color: #829dbd;
+}
+.home-tile:hover {
+  background: #25486b;
+  box-shadow: 0 8px 25px #00000022;
+}
+.logout-tile {
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.logout-tile span,
+.logout-tile > svg {
+  color: #f0c4ca;
+}
+.desktop-nav {
+  background: #10253fd9;
+  border-color: #2d4562;
+  backdrop-filter: blur(12px);
+}
+.desktop-nav :is(a, button) {
+  color: #aabfd9;
+}
+.desktop-nav a.active {
+  background: #294869;
+  color: #eff6ff;
+}
+.desktop-nav :is(a, button):hover {
+  background: #244362;
+  color: #fff;
+}
+.nav-logout {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.desktop-nav .nav-logout {
+  color: #efbec7;
+}
+.bottom-nav .nav-logout {
+  color: #efbec7;
+}
+footer {
+  border-color: #2b415b;
+  color: #829cbb;
+}
+footer .button {
+  color: #afc7e3;
+  border-color: #385473;
+  background: #152f4b8c;
+}
+:where(html[data-rng-phone]) .logout-tile {
+  display: none;
+}
+:where(html[data-rng-phone]) .home {
+  min-height: 100dvh;
+}
+
+/* PC home: bounded workspace, three rows of navigation, notes scroll internally. */
+@media (min-width: 760px) {
+  :where(html:not([data-rng-phone])) .home {
+    height: calc(100dvh - 44px);
+    min-height: 0;
+  }
+  :where(html:not([data-rng-phone])) .home-content {
+    width: 64vw;
+    max-width: 1100px;
+    height: 100%;
+    margin-left: 34vw;
+    padding: 22px 4vw 20px 0;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    column-gap: 16px;
+    row-gap: 12px;
+  }
+  :where(html:not([data-rng-phone])) .dashboard-logo {
+    grid-column: 1;
+    grid-row: 1/3;
+    width: 64px;
+    height: 64px;
+    margin: 0;
+    align-self: center;
+  }
+  :where(html:not([data-rng-phone])) .home-top {
+    grid-column: 2;
+    grid-row: 1;
+    align-items: center;
+    gap: 12px;
+  }
+  :where(html:not([data-rng-phone])) .home-top > .eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+  :where(html:not([data-rng-phone])) .home .date {
+    font-size: 10px;
+  }
+  :where(html:not([data-rng-phone])) .home .date small {
+    font-size: 15px;
+  }
+  :where(html:not([data-rng-phone])) .home h1 {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    font-size: clamp(28px, 2.6vw, 40px);
+    letter-spacing: -1px;
+  }
+  :where(html:not([data-rng-phone])) .home h1 > span {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-top: 6px;
+  }
+  :where(html:not([data-rng-phone])) .home h1 > span br {
+    display: none;
+  }
+  :where(html:not([data-rng-phone])) .notes-section {
+    grid-column: 1/-1;
+    grid-row: 3;
+    min-height: 0;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+  }
+  :where(html:not([data-rng-phone])) .notes-section > .section-heading {
+    margin: 0 0 10px;
+    flex-shrink: 0;
+  }
+  :where(html:not([data-rng-phone])) .notes-section h2 {
+    font-size: 20px;
+  }
+  :where(html:not([data-rng-phone])) .notes {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #58789d transparent;
+  }
+  :where(html:not([data-rng-phone])) .note {
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+  :where(html:not([data-rng-phone])) .note p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  :where(html:not([data-rng-phone])) .note-add {
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+  :where(html:not([data-rng-phone])) .note-add input {
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+  :where(html:not([data-rng-phone])) .note-add .button {
+    min-height: 38px;
+    padding: 8px 14px;
+  }
+  :where(html:not([data-rng-phone])) .spaces-heading {
+    grid-column: 1/-1;
+    grid-row: 4;
+    margin: 0;
+  }
+  :where(html:not([data-rng-phone])) .spaces-heading h2 {
+    font-size: 19px;
+  }
+  :where(html:not([data-rng-phone])) .spaces-heading > span {
+    font-size: 8px;
+  }
+  :where(html:not([data-rng-phone])) .home-tiles {
+    grid-column: 1/-1;
+    grid-row: 5;
+    gap: 8px;
+  }
+  :where(html:not([data-rng-phone])) .home-tile {
+    min-height: clamp(58px, 9.4vh, 82px);
+    padding: 10px 26px 10px 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    border-radius: 11px;
+  }
+  :where(html:not([data-rng-phone])) .home-tile span {
+    font-size: clamp(11px, 1vw, 14px);
+    line-height: 1.35;
+  }
+  :where(html:not([data-rng-phone])) .home-tile > svg:not(.tile-arrow) {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  :where(html:not([data-rng-phone])) .home-tile .tile-arrow {
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 13px;
+  }
+  :where(html:not([data-rng-phone])) .home-tile small {
+    display: none;
+  }
+  :where(html:not([data-rng-phone])) .home .portrait {
+    width: 35vw;
+    height: 95%;
+    opacity: 0.78;
+  }
+  :where(html:not([data-rng-phone])) body:has(.home) footer {
+    height: 44px;
+    padding: 6px 4vw;
+  }
+  :where(html:not([data-rng-phone])) body:has(.home) footer .button {
+    min-height: 29px;
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+}
+@media (min-width: 760px) and (max-height: 680px) {
+  :where(html:not([data-rng-phone])) .home-content {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    row-gap: 8px;
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+  :where(html:not([data-rng-phone])) .dashboard-logo {
+    width: 52px;
+    height: 52px;
+  }
+  :where(html:not([data-rng-phone])) .home h1 {
+    font-size: 28px;
+  }
+  :where(html:not([data-rng-phone])) .home h1 > span {
+    display: none;
+  }
+  :where(html:not([data-rng-phone])) .home-tile {
+    min-height: 54px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  :where(html:not([data-rng-phone])) .note {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+/* Ledger row numbers and attachment counts remain dark on light table cells. */
+.ledger,
+.bom-table {
+  color: #203650;
 }

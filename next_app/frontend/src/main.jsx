@@ -411,27 +411,10 @@ function App() {
         }}
       />
     );
-  const context = { state, save, busy, notify };
+  const context = { state, save, busy, notify, onLogout: logout };
   const current = pages.find((p) => p[0] === page) || pages[0];
   return (
     <>
-      <header className="topbar">
-        <a className="brand" href="#/home">
-          <BrandLogo className="header-logo" />
-          <span>
-            MY DASHBOARD<small>PERSONAL WORKSPACE</small>
-          </span>
-        </a>
-        <div className="top-actions">
-          <span className="private">
-            <ShieldCheck size={15} />
-            Private workspace
-          </span>
-          <Button icon={LogOut} onClick={logout}>
-            Log out
-          </Button>
-        </div>
-      </header>
       {page !== "home" && (
         <nav className="desktop-nav" aria-label="Sections">
           {pages.map(([key, title, Icon]) => (
@@ -444,6 +427,15 @@ function App() {
               {title}
             </a>
           ))}
+          <button
+            className="nav-logout"
+            type="button"
+            onClick={logout}
+            disabled={busy}
+          >
+            <LogOut size={16} />
+            <span>Log out</span>
+          </button>
         </nav>
       )}
       <main className={page === "home" ? "home" : "workspace"}>
@@ -494,6 +486,15 @@ function App() {
             <span>{title}</span>
           </a>
         ))}
+        <button
+          className="nav-logout"
+          type="button"
+          onClick={logout}
+          disabled={busy}
+        >
+          <LogOut size={23} />
+          <span>Log out</span>
+        </button>
       </nav>
       {notice && (
         <div
@@ -624,7 +625,7 @@ function Login({ onLogin }) {
     </div>
   );
 }
-function Home({ state, save, busy }) {
+function Home({ state, save, busy, onLogout }) {
   const [note, setNote] = useState(""),
     [edit, setEdit] = useState(null),
     [draft, setDraft] = useState(""),
@@ -661,7 +662,7 @@ function Home({ state, save, busy }) {
           My Dashboard
           <span>
             A clear mind.
-            <br />A space to make things happen.
+            <br /> A space to make things happen.
           </span>
         </h1>
         <section className="notes-section">
@@ -715,7 +716,7 @@ function Home({ state, save, busy }) {
             </Button>
           </form>
         </section>
-        <div className="section-heading">
+        <div className="section-heading spaces-heading">
           <h2>Your spaces</h2>
           <span>ONE WORKSPACE. MANY POSSIBILITIES.</span>
         </div>
@@ -728,6 +729,18 @@ function Home({ state, save, busy }) {
               <small>{String(i + 1).padStart(2, "0")}</small>
             </a>
           ))}
+          <button
+            className="home-tile logout-tile"
+            type="button"
+            aria-label="Log out"
+            onClick={onLogout}
+            disabled={busy}
+          >
+            <LogOut size={27} />
+            <span>Log out</span>
+            <ArrowUpRight className="tile-arrow" size={17} />
+            <small>09</small>
+          </button>
         </div>
       </div>
       {edit !== null && (

@@ -66,6 +66,14 @@ Afterward close the app on your phone/PC and refresh its existing Tailscale HTTP
 
 The icon routes, dimensions, manifest and package hashes have automated checks. The native Windows updater and installed-icon refresh still need verification on your devices.
 
+## Phone-only compact layout update
+
+Existing navy-logo installations can use `downloads/RNG-Phone-Update.zip`. Extract it on the server, run **Apply-Phone-Update.cmd**, and select the existing dashboard program folder containing `next_app`. Reopen/refresh the same app address on the phone afterward. No data import, dependencies, icon reinstall or Tailscale changes are needed.
+
+The login no longer reserves space for absent bottom navigation; its spacing also adapts to shorter phone screens. Bottom navigation, sticky notes and home tiles are moderately smaller. Each BOM row becomes an editable RTL item card with every field visible vertically, so no horizontal table scrolling is required. The same inputs, row indices, saved values, quantity calculation and PDF format are retained. Detection uses a touch screen with a smaller side of at most 700 CSS pixels, and the new styles apply only up to a 1000px viewport, including landscape. Narrow desktop windows retain their existing layout. The updater replaces frontend program files only and checks the installed navy-logo version before applying them.
+
+Desktop login/home/BOM screenshots were compared; phone checks cover 390×844, 360×640 and 844×390, plus BOM quantity edits, saving, reopening, an additional table and PDF export. Installed Windows update execution still needs verification on the server.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

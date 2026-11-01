@@ -1651,3 +1651,246 @@ tr:nth-child(even) {
     margin-bottom: 24px;
   }
 }
+
+/* Phone-only polish. Desktop typography, table layout and spacing stay intact. */
+@media (max-width: 1000px) {
+  :where(html[data-rng-phone]) body {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  :where(html[data-rng-phone]) body:has(.login-scene) {
+    padding-bottom: 0;
+  }
+  :where(html[data-rng-phone]) .login-scene {
+    min-height: 100dvh;
+    padding: 18px 20px;
+    gap: 16px;
+  }
+  :where(html[data-rng-phone]) .login-intro h1 {
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 8px 0;
+  }
+  :where(html[data-rng-phone]) .login-box {
+    padding: 24px 22px;
+  }
+  :where(html[data-rng-phone]) .login-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 0 12px;
+  }
+  :where(html[data-rng-phone]) .login-box h2 {
+    font-size: 27px;
+    margin: 18px 0 6px;
+  }
+  :where(html[data-rng-phone]) .login-box p {
+    font-size: 15px;
+    margin: 8px 0 20px;
+  }
+  :where(html[data-rng-phone]) .login-box .field {
+    margin-bottom: 14px;
+    gap: 6px;
+  }
+  :where(html[data-rng-phone]) .login-box .field > span {
+    font-size: 14px;
+  }
+  :where(html[data-rng-phone]) .login-box input {
+    min-height: 50px;
+    font-size: 17px;
+    padding: 10px 12px;
+  }
+  :where(html[data-rng-phone]) .login-box .button {
+    min-height: 50px;
+    font-size: 17px;
+    padding: 10px 14px;
+  }
+  :where(html[data-rng-phone]) .login-box > small {
+    margin-top: 16px;
+    font-size: 11px;
+  }
+  :where(html[data-rng-phone]) .bottom-nav {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    gap: 6px;
+  }
+  :where(html[data-rng-phone]) .bottom-nav a {
+    min-width: 98px;
+    min-height: 58px;
+    padding: 6px 8px;
+    gap: 5px;
+    font-size: 11px;
+  }
+  :where(html[data-rng-phone]) .bottom-nav a svg {
+    width: 21px;
+    height: 21px;
+  }
+  :where(html[data-rng-phone]) .note {
+    padding: 13px 11px;
+    gap: 8px;
+  }
+  :where(html[data-rng-phone]) .note p {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  :where(html[data-rng-phone]) .note-add input {
+    min-height: 48px;
+    font-size: 17px;
+  }
+  :where(html[data-rng-phone]) .note-add .button {
+    min-height: 48px;
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+  :where(html[data-rng-phone]) .home-tiles {
+    gap: 10px;
+  }
+  :where(html[data-rng-phone]) .home-tile {
+    min-height: 138px;
+    padding: 20px 16px;
+    gap: 16px;
+  }
+  :where(html[data-rng-phone]) .home-tile span {
+    font-size: 15px;
+  }
+  :where(html[data-rng-phone]) .home-tile > svg:not(.tile-arrow) {
+    width: 25px;
+    height: 25px;
+  }
+  :where(html[data-rng-phone]) .home-tile > .tile-arrow {
+    top: 23px;
+  }
+
+  /* Each BOM row becomes an RTL item card; no hidden or duplicated inputs. */
+  :where(html[data-rng-phone]) .bom-table-wrap {
+    overflow: visible;
+  }
+  :where(html[data-rng-phone]) .bom-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    font-size: 22px;
+    background: transparent;
+  }
+  :where(html[data-rng-phone]) .bom-table thead {
+    display: none;
+  }
+  :where(html[data-rng-phone]) .bom-table tbody {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+  }
+  :where(html[data-rng-phone]) .bom-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+    background: #f8fbff;
+    border: 1px solid #d8e4f1;
+    border-radius: 13px;
+  }
+  :where(html[data-rng-phone]) .bom-table td {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    text-align: right;
+  }
+  :where(html[data-rng-phone]) .bom-table td::before {
+    content: attr(data-label);
+    color: #617c9c;
+    font-size: 21px;
+    line-height: 1.35;
+  }
+  :where(html[data-rng-phone]) .bom-table td:nth-child(1) {
+    grid-column: 1/-1;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    color: #31577f;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dce6f2;
+  }
+  :where(html[data-rng-phone]) .bom-table td:nth-child(2),
+  :where(html[data-rng-phone]) .bom-table td:nth-child(8) {
+    grid-column: 1/-1;
+  }
+  :where(html[data-rng-phone]) .bom-table td:nth-child(6) {
+    background: #e7eff9;
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+  :where(html[data-rng-phone]) .bom-table td input {
+    width: 100%;
+    min-width: 0;
+    font-size: 22px;
+    min-height: 48px;
+    padding: 8px 10px;
+    border: 1px solid #d7e2ef;
+    border-radius: 8px;
+    background: #fff;
+  }
+}
+@media (max-width: 1000px) and (max-height: 740px) {
+  :where(html[data-rng-phone]) .login-scene {
+    padding: 12px 18px;
+    gap: 10px;
+  }
+  :where(html[data-rng-phone]) .login-intro h1 {
+    display: none;
+  }
+  :where(html[data-rng-phone]) .login-box {
+    padding: 20px;
+  }
+  :where(html[data-rng-phone]) .login-logo {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 8px;
+  }
+  :where(html[data-rng-phone]) .login-box h2 {
+    margin: 12px 0 5px;
+    font-size: 26px;
+  }
+  :where(html[data-rng-phone]) .login-box p {
+    margin: 6px 0 16px;
+  }
+  :where(html[data-rng-phone]) .login-box > small {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 1000px) and (max-height: 500px) {
+  :where(html[data-rng-phone]) .login-intro {
+    display: none;
+  }
+  :where(html[data-rng-phone]) .login-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    padding: 16px 20px;
+  }
+  :where(html[data-rng-phone]) .login-box .login-logo {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+  :where(html[data-rng-phone]) .login-box h2 {
+    align-self: center;
+    font-size: 23px;
+    margin: 0;
+  }
+  :where(html[data-rng-phone]) .login-box > p:not(.warning),
+  :where(html[data-rng-phone]) .login-box > small {
+    display: none;
+  }
+  :where(html[data-rng-phone]) .login-box .field {
+    margin: 0;
+  }
+  :where(html[data-rng-phone]) .login-box > .button,
+  :where(html[data-rng-phone]) .login-box > .warning {
+    grid-column: 1/-1;
+  }
+  :where(html[data-rng-phone]) .login-box input,
+  :where(html[data-rng-phone]) .login-box > .button {
+    min-height: 46px;
+  }
+}

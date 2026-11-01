@@ -31,6 +31,13 @@ import {
   CalendarDays,
 } from "lucide-react";
 import "./style.css";
+// Use the physical touch screen, so mouse events cannot switch phone styling off.
+// Desktop windows keep their layout even when resized to a narrow width.
+document.documentElement.toggleAttribute(
+  "data-rng-phone",
+  navigator.maxTouchPoints > 0 && Math.min(screen.width, screen.height) <= 700,
+);
+
 const pages = [
   ["home", "Home", House],
   ["tasks", "To Do List", ListTodo],
@@ -551,8 +558,7 @@ function Login({ onLogin }) {
         <span className="eyebrow">A SPACE THAT’S YOURS.</span>
         <h1>
           Your work.
-          <br />
-          Your rhythm.
+          <br /> Your rhythm.
         </h1>
         <p>
           Everything you’re building,
@@ -1484,7 +1490,7 @@ function RecordEditor({
                   <div className="section-heading">
                     <h3>Material schedule {t + 1}</h3>
                   </div>
-                  <div className="table-scroll">
+                  <div className="table-scroll bom-table-wrap">
                     <table className="bom-table persian" dir="rtl">
                       <thead>
                         <tr>
@@ -1505,7 +1511,7 @@ function RecordEditor({
                       <tbody>
                         {table.map((item, i) => (
                           <tr key={i}>
-                            <td>{i + 1}</td>
+                            <td data-label="ردیف">{i + 1}</td>
                             {[
                               "description",
                               "size",
@@ -1515,7 +1521,20 @@ function RecordEditor({
                               "unit",
                               "notes",
                             ].map((k) => (
-                              <td key={k}>
+                              <td
+                                key={k}
+                                data-label={
+                                  {
+                                    description: "شرح",
+                                    size: "سایز",
+                                    actual: "مقدار واقعی",
+                                    over: "اضافه",
+                                    total: "جمع",
+                                    unit: "واحد",
+                                    notes: "توضیحات",
+                                  }[k]
+                                }
+                              >
                                 {k === "total" ? (
                                   bomTotal(item)
                                 ) : (

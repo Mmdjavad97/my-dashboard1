@@ -197,9 +197,41 @@ def load_warehouse_template():
     return {'headers': strings[0:5], 'date_label': date_number_labels[0], 'number_label': date_number_labels[1], 'title': strings[6], 'approver_label': strings[7].split(':')[0] + ':', 'requester_label': requester_lines[0], 'signature_label': 'امضا', 'default_requester': requester_lines[1].strip(), 'default_date': defaults[0].strip(), 'default_number': defaults[1].strip(), 'logo': logo}
 
 def create_empty_warehouse_form():
-    return {'date': '', 'number': '', 'items': [['', '', '', '', ''] for _ in range(10)], 'requester': '', 'approver': '', 'requester_signature': '', 'approver_signature': ''}
+    return {'date': '', 'number': '', 'items': [['', '', '', '', ''] for _ in range(10)], 'extra_tables': [], 'requester': '', 'approver': '', 'requester_signature': '', 'approver_signature': ''}
+
+def warehouse_pdf_tables(form):
+    """Page all item tables without mutating or truncating saved rows."""
+    extra = form.get('extra_tables', [])
+    if not isinstance(extra, list):
+        raise ValueError('Invalid extra warehouse tables.')
+    pages = []
+    for table in [form.get('items', []), *extra]:
+        if not isinstance(table, list):
+            raise ValueError('Invalid warehouse items.')
+        for start in range(0, max(len(table), 1), 10):
+            rows = []
+            for row in table[start:start + 10]:
+                if not isinstance(row, (list, tuple)) or len(row) > 5:
+                    raise ValueError('Invalid warehouse row.')
+                rows.append(list(row) + [''] * (5 - len(row)))
+            rows += [[''] * 5 for _ in range(10 - len(rows))]
+            pages.append(rows)
+    return pages
+
 
 def create_warehouse_pdf(form, template):
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A5, landscape
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=landscape(A5), pageCompression=1)
+    pdf.setTitle(template['title'])
+    for rows in warehouse_pdf_tables(form):
+        _draw_warehouse_page(pdf, {**form, 'items': rows}, template)
+    pdf.save()
+    return buffer.getvalue()
+
+
+def _draw_warehouse_page(pdf, form, template):
     import arabic_reshaper
     from bidi.algorithm import get_display
     from reportlab.pdfgen import canvas
@@ -208,10 +240,7 @@ def create_warehouse_pdf(form, template):
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
     from reportlab.lib.utils import ImageReader
-    buffer = io.BytesIO()
     page_width, page_height = landscape(A5)
-    pdf = canvas.Canvas(buffer, pagesize=(page_width, page_height), pageCompression=1)
-    pdf.setTitle(template['title'])
     font_name = rng_pdf_font_name()
 
     def shape_text(value):
@@ -369,9 +398,6 @@ def create_warehouse_pdf(form, template):
     draw_cell_text(form['approver'], approver_x, footer_y + footer_height * 0.43, approver_width, footer_height * 0.25, font_size=10, align='right')
     draw_cell_text(template['signature_label'] + ': ' + form['approver_signature'], approver_x, footer_y + footer_height * 0.05, approver_width, footer_height * 0.25, font_size=9, align='right')
     pdf.showPage()
-    pdf.save()
-    buffer.seek(0)
-    return buffer.getvalue()
 
 def load_mission_template():
     from openpyxl import load_workbook

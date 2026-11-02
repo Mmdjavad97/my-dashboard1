@@ -82,6 +82,14 @@ The upper branding bar is removed. The PC home includes Log out as the ninth til
 
 All pages share a navy backdrop with subtle architectural grid and diagonal lines. Forms, cards and financial tables retain light surfaces and dark text; dialogs and transaction row numbers remain readable. PDF/report layouts and original uploaded files are unchanged. Browser checks cover navigation, logout on both device types, and phone login fit; actual Windows update execution still needs verification on the server.
 
+## Warehouse additional tables
+
+Use `downloads/RNG-Warehouse-Update.zip` on the server: extract it, run **Apply-Warehouse-Update.cmd**, and choose the existing program folder containing `next_app`. Refresh the app on PC and phone afterward. No Setup, CSV import, dependencies or Tailscale changes are needed.
+
+Inside each warehouse card, **Add another table** appends 10 blank item rows and scrolls to the new table. The first table and its existing entries retain their original `items` field; later tables are stored in `extra_tables`. The normal **Save report** saves all tables and metadata together. Fields such as Notes remain optional, so adding another table is not blocked by optional blanks. Download PDF and Share PDF use the same report generator and include every table, one A5 landscape page per 10 rows, repeating the original header, request details and approvals. Older cards without `extra_tables` continue to work. Existing oversized legacy tables are paginated without truncating rows; report export does not mutate the saved form.
+
+Tests cover legacy forms, multiple tables, pagination, preserving existing rows, and PC/phone editing, saving, reopening and both PDF actions. The native Windows updater still needs verification on the actual server.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

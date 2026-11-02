@@ -2265,3 +2265,12 @@ footer .button {
 .bom-table {
   color: #203650;
 }
+
+.warehouse-table-help {
+  color: #b3c9e3;
+  font-size: 13px;
+}
+
+.warehouse-item-table {
+  scroll-margin-top: 20px;
+}

@@ -1086,6 +1086,7 @@ const emptyForm = (kind) =>
           date: "",
           number: "",
           items: Array.from({ length: 10 }, () => ["", "", "", "", ""]),
+          extra_tables: [],
           requester: "",
           approver: "",
           requester_signature: "",
@@ -1443,39 +1444,75 @@ function RecordEditor({
                 ))}
               </div>
             </section>
-            <h3>Requested items</h3>
-            {(draft.items || []).map((r, i) => (
-              <section className="panel" key={i}>
-                <span className="eyebrow">
-                  ITEM {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="fields">
-                  {[
-                    "Item code",
-                    "Description",
-                    "Requested quantity",
-                    "Intended use",
-                    "Notes",
-                  ].map((label, j) => (
-                    <Field
-                      key={j}
-                      label={label}
-                      value={r[j]}
-                      onChange={(v) =>
-                        change(
-                          "items",
-                          draft.items.map((row, index) =>
-                            index === i
-                              ? row.map((x, col) => (col === j ? v : x))
-                              : row,
-                          ),
-                        )
-                      }
-                    />
+            {[draft.items || [], ...(draft.extra_tables || [])].map(
+              (table, tableIndex) => (
+                <section
+                  className="warehouse-item-table"
+                  id={`warehouse-table-${tableIndex}`}
+                  key={tableIndex}
+                  aria-label={`Requested items table ${tableIndex + 1}`}
+                >
+                  <h3>Requested items · Table {tableIndex + 1}</h3>
+                  {table.map((row, rowIndex) => (
+                    <section className="panel" key={rowIndex}>
+                      <span className="eyebrow">
+                        ITEM{" "}
+                        {String(tableIndex * 10 + rowIndex + 1).padStart(
+                          2,
+                          "0",
+                        )}
+                      </span>
+                      <div className="fields">
+                        {[
+                          "Item code",
+                          "Description",
+                          "Requested quantity",
+                          "Intended use",
+                          "Notes",
+                        ].map((label, column) => (
+                          <Field
+                            key={column}
+                            label={label}
+                            value={row[column]}
+                            onChange={(value) => {
+                              const next = clone(draft);
+                              const rows =
+                                tableIndex === 0
+                                  ? next.items
+                                  : next.extra_tables[tableIndex - 1];
+                              rows[rowIndex][column] = value;
+                              set(next);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   ))}
-                </div>
-              </section>
-            ))}
+                </section>
+              ),
+            )}
+            <Button
+              type="button"
+              icon={Plus}
+              onClick={() => {
+                const nextTable = (draft.extra_tables || []).length + 1;
+                change("extra_tables", [
+                  ...(draft.extra_tables || []),
+                  Array.from({ length: 10 }, () => ["", "", "", "", ""]),
+                ]);
+                requestAnimationFrame(() =>
+                  document
+                    .getElementById(`warehouse-table-${nextTable}`)
+                    ?.scrollIntoView({ block: "start", behavior: "instant" }),
+                );
+              }}
+            >
+              Add another table
+            </Button>
+            <p className="warehouse-table-help">
+              Each table has 10 items. Save your report to keep added tables;
+              all tables are included in the PDF.
+            </p>
           </>
         ) : (
           <>

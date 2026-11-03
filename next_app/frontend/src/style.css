@@ -2274,3 +2274,76 @@ footer .button {
 .warehouse-item-table {
   scroll-margin-top: 20px;
 }
+
+/* Meeting status colors carry text labels as well as color. */
+.meeting-tone-green {
+  --meeting-bg: #dcfce7;
+  --meeting-fg: #166534;
+  --meeting-border: #86d9a3;
+}
+.meeting-tone-red {
+  --meeting-bg: #fee2e2;
+  --meeting-fg: #991b1b;
+  --meeting-border: #f4a5a5;
+}
+.meeting-tone-gray {
+  --meeting-bg: #eef0f3;
+  --meeting-fg: #4b5563;
+  --meeting-border: #cbd5e1;
+}
+.meeting-tone-yellow {
+  --meeting-bg: #fef3c7;
+  --meeting-fg: #854d0e;
+  --meeting-border: #e7c85d;
+}
+.meeting-status,
+.meeting-badge {
+  background: var(--meeting-bg);
+  color: var(--meeting-fg);
+  border: 1px solid var(--meeting-border);
+}
+.meeting-status {
+  font-weight: 600;
+}
+.meeting-status option {
+  background: var(--meeting-bg);
+  color: var(--meeting-fg);
+}
+.meeting-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+.meeting-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 6px 9px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.meeting-badge small {
+  font-size: 9px;
+  opacity: 0.8;
+}
+:where(html[data-rng-phone])
+  .record-editor
+  .panel
+  > .section-heading:has(.meeting-statuses) {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+:where(html[data-rng-phone]) .meeting-statuses {
+  justify-content: flex-start;
+}
+:where(html[data-rng-phone]) .meeting-badge {
+  font-size: 13px;
+  padding: 7px 10px;
+}
+:where(html[data-rng-phone]) .meeting-badge small {
+  font-size: 11px;
+}

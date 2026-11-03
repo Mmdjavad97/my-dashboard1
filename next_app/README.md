@@ -90,6 +90,14 @@ Inside each warehouse card, **Add another table** appends 10 blank item rows and
 
 Tests cover legacy forms, multiple tables, pagination, preserving existing rows, and PC/phone editing, saving, reopening and both PDF actions. The native Windows updater still needs verification on the actual server.
 
+## Meeting status colors and defaults
+
+Use `downloads/RNG-Meeting-Update.zip` on the server: extract it, run **Apply-Meeting-Update.cmd**, and select the existing program folder containing `next_app`. Refresh the same address on PC and phone. No Setup, CSV import, new dependencies, icon reinstall or Tailscale changes are needed. Prior warehouse-table and PDF behavior is retained.
+
+Agenda cards display both discussion and action badges, with matching selected controls: Raised/Done light green, Not Raised/Stopped red, Not Started gray, In Progress yellow. Text labels remain present. New meetings store all 11 rows as Not Raised and Not Started by default. Existing nonblank saved values are not reset; older capitalization variants get the same label and color while retaining their original value until explicitly changed. Unknown legacy statuses remain selectable. Blank legacy statuses receive defaults in the draft and are marked unsaved until **Save meeting**, so exports continue to match the stored values. No live records are rewritten by installation or simply opening an existing card.
+
+Browser checks verify PC/phone defaults, all six colors on controls and badges, saved-value preservation, and persistence after saving and reopening. Native Windows updater execution still needs verification on the server.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

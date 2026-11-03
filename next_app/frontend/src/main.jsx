@@ -152,6 +152,67 @@ function Select({ label, value, onChange, options }) {
     </label>
   );
 }
+const meetingStatuses = {
+  discussion: [
+    { value: "Raised", label: "Raised", tone: "green" },
+    { value: "not Raised", label: "Not Raised", tone: "red" },
+  ],
+  action: [
+    { value: "Done", label: "Done", tone: "green" },
+    { value: "not Started", label: "Not Started", tone: "gray" },
+    { value: "In Progress", label: "In Progress", tone: "yellow" },
+    { value: "Stopped", label: "Stopped", tone: "red" },
+  ],
+};
+function meetingStatus(value, type) {
+  const text = String(value ?? "").trim();
+  return (
+    meetingStatuses[type].find(
+      (item) => item.value.toLowerCase() === text.toLowerCase(),
+    ) ||
+    (text
+      ? { value: text, label: text, tone: "gray" }
+      : meetingStatuses[type][1])
+  );
+}
+function MeetingStatus({ label, value, onChange, type }) {
+  const selected = meetingStatus(value, type);
+  const options = meetingStatuses[type].some(
+    (item) => item.value === selected.value,
+  )
+    ? meetingStatuses[type]
+    : [...meetingStatuses[type], selected];
+  return (
+    <label className="field">
+      <span>{label}</span>
+      <select
+        className={`meeting-status meeting-tone-${selected.tone}`}
+        aria-label={label}
+        value={selected.value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {options.map((option) => (
+          <option
+            className={`meeting-tone-${option.tone}`}
+            key={option.value}
+            value={option.value}
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+function MeetingBadge({ value, type }) {
+  const status = meetingStatus(value, type);
+  return (
+    <span className={`meeting-badge meeting-tone-${status.tone}`}>
+      <small>{type === "discussion" ? "Discussion" : "Action"}</small>
+      {status.label}
+    </span>
+  );
+}
 function Empty({
   title = "A little space for your next idea.",
   text = "Create your first record to get started.",
@@ -1077,7 +1138,7 @@ const emptyForm = (kind) =>
         "",
         "",
         "",
-        "Raised",
+        "not Raised",
         "",
         "not Started",
       ])
@@ -1317,8 +1378,29 @@ function RecordEditor({
   busy,
   notify,
 }) {
-  const [draft, setDraft] = useState(() => clone(initial)),
-    [dirty, setDirty] = useState(false);
+  const [draft, setDraft] = useState(() => {
+      const value = clone(initial);
+      if (kind === "meetings") {
+        for (let i = 0; i < 11; i++) {
+          value[i] ??= ["", "", "", "", "", ""];
+          if (!String(value[i][3] ?? "").trim()) value[i][3] = "not Raised";
+          if (!String(value[i][5] ?? "").trim()) value[i][5] = "not Started";
+        }
+      }
+      return value;
+    }),
+    [dirty, setDirty] = useState(
+      () =>
+        kind === "meetings" &&
+        (initial.length < 11 ||
+          initial
+            .slice(0, 11)
+            .some(
+              (row) =>
+                !String(row?.[3] ?? "").trim() ||
+                !String(row?.[5] ?? "").trim(),
+            )),
+    );
   function set(next) {
     setDraft(next);
     setDirty(true);
@@ -1357,7 +1439,10 @@ function RecordEditor({
                 <section className="panel" key={i}>
                   <div className="section-heading">
                     <h3>Agenda item {String(i + 1).padStart(2, "0")}</h3>
-                    <span>{r[5] || "NOT STARTED"}</span>
+                    <div className="meeting-statuses">
+                      <MeetingBadge value={r[3]} type="discussion" />
+                      <MeetingBadge value={r[5]} type="action" />
+                    </div>
                   </div>
                   <div className="fields">
                     <Field
@@ -1375,23 +1460,17 @@ function RecordEditor({
                       value={r[2]}
                       onChange={(v) => arraySet(i, 2, v)}
                     />
-                    <Select
+                    <MeetingStatus
                       label="Discussion status"
+                      type="discussion"
                       value={r[3]}
                       onChange={(v) => arraySet(i, 3, v)}
-                      options={["", "Raised", "not Raised"]}
                     />
-                    <Select
+                    <MeetingStatus
                       label="Action status"
+                      type="action"
                       value={r[5]}
                       onChange={(v) => arraySet(i, 5, v)}
-                      options={[
-                        "",
-                        "Done",
-                        "not Started",
-                        "In Progress",
-                        "Stopped",
-                      ]}
                     />
                     <Field
                       label="Description / action"

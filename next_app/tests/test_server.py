@@ -104,6 +104,33 @@ class ServerTests(unittest.TestCase):
             configure.import_rows(folder, rows, 'other@example.invalid', 'other-password', 'other')
         configure.verify_copy(path, rows)
 
+    def test_contract_roundtrip_lazy_auth_and_budget_edit(self):
+        projects=copy.deepcopy(self.original['financial_projects'])
+        record={'id':'contract','title':'Contract','filename':'contract.pdf','mime':'application/pdf','size':3,'data':base64.b64encode(b'abc').decode()}
+        projects['p']['contract_files']=[record]
+        self.assertEqual(self.update({'financial_projects':projects}).status_code,200)
+        state=self.client.get('/api/state').json()['state']
+        contract=state['financial_projects']['p']['contract_files'][0]
+        self.assertNotIn('data',contract)
+        self.assertEqual(self.client.get('/api/file/'+contract['_blob_ref']).content,b'abc')
+        self.assertEqual(TestClient(main.app).get('/api/file/'+contract['_blob_ref']).status_code,401)
+        state['financial_projects']['p']['budget']='2000000'
+        self.assertEqual(self.update({'financial_projects':state['financial_projects']}).status_code,200)
+        with closing(connect(self.path)) as db:
+            stored=json.loads(db.execute("SELECT data FROM dashboard_data WHERE section='financial_projects'").fetchone()[0])
+        self.assertEqual(stored['p']['contract_files'],[record])
+        self.assertEqual(stored['p']['documents'],self.original['financial_projects']['p']['documents'])
+        state=self.client.get('/api/state').json()['state']
+        state['financial_projects']['p']['contract_files']=[]
+        self.assertEqual(self.update({'financial_projects':state['financial_projects']}).status_code,200)
+        self.assertEqual(self.client.get('/api/state').json()['state']['financial_projects']['p']['contract_files'],[])
+
+    def test_oversized_contract_is_rejected_without_replacing_records(self):
+        projects=copy.deepcopy(self.original['financial_projects'])
+        projects['p']['contract_files']=[{'id':'large','filename':'large.bin','data':base64.b64encode(b'x'*(5*1024*1024+1)).decode()}]
+        self.assertEqual(self.update({'financial_projects':projects}).status_code,422)
+        self.assertNotIn('contract_files',self.client.get('/api/state').json()['state']['financial_projects']['p'])
+
 
 class CloudMigrationTests(unittest.TestCase):
     def test_read_only_paginated_copy_and_owner_check(self):

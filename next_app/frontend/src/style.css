@@ -2347,3 +2347,86 @@ footer .button {
 :where(html[data-rng-phone]) .meeting-badge small {
   font-size: 11px;
 }
+
+.contract-area {
+  min-width: 0;
+  margin-bottom: 18px;
+}
+.contract-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #526d8d;
+  margin-bottom: 8px;
+}
+.contract-upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #b4c8df;
+  background: #f6f9fd;
+  border-radius: 10px;
+  color: #365879;
+  font-size: 13px;
+}
+.contract-upload input {
+  flex-basis: 100%;
+  padding: 8px;
+  min-width: 0;
+}
+.contract-help {
+  display: block;
+  margin-top: 7px;
+  color: #687e97;
+  font-size: 11px;
+}
+.contract-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+.contract-file {
+  min-width: 0;
+  border: 1px solid #d7e3f0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f7faff;
+}
+.contract-file strong {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: #294969;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.contract-file strong svg {
+  flex-shrink: 0;
+}
+.contract-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+.contract-actions .button {
+  padding: 7px 9px;
+  min-height: 36px;
+  font-size: 12px;
+}
+:where(html[data-rng-phone]) .contract-label {
+  font-size: 16px;
+}
+:where(html[data-rng-phone]) .contract-help {
+  font-size: 13px;
+}
+:where(html[data-rng-phone]) .contract-upload,
+:where(html[data-rng-phone]) .contract-file strong {
+  font-size: 16px;
+}
+:where(html[data-rng-phone]) .contract-actions .button {
+  min-height: 44px;
+  font-size: 14px;
+}

@@ -98,6 +98,16 @@ Agenda cards display both discussion and action badges, with matching selected c
 
 Browser checks verify PC/phone defaults, all six colors on controls and badges, saved-value preservation, and persistence after saving and reopening. Native Windows updater execution still needs verification on the server.
 
+## Contracts, clean Solar Hijri dates and agenda defaults
+
+Use `downloads/RNG-Financial-Update.zip` on the server: extract it, run **Apply-Financial-Update.cmd**, and select the existing program folder containing `next_app`. Refresh/reopen the app on PC and phone after the server restarts. No Setup, CSV import, dependencies, icon reinstall or Tailscale changes are needed.
+
+New agendas now use one shared default definition: **Not Raised / Not Started**, across meeting creation, fallback rows and missing legacy statuses. Existing nonblank statuses remain unchanged, and the earlier colors remain in place. The calendar helper assembles only Persian-calendar year/month/day with `formatToParts`, excluding browser-supplied AP era suffixes. It also removes AP from legacy draft dates while keeping dates editable; **Save financial** saves corrections. Installation does not bulk rewrite dates or meeting data.
+
+**Project contract** is next to the financial budget on PC and below it on phone. Upload files (up to 5 MB each, 20 MB per project), then **Save financial** to persist them. View, Download, Share and confirmed Remove are available. Removals also require Save financial. Original bytes are stored under `contract_files` in the existing project JSON, with no database schema migration. API responses return file metadata; authenticated file requests retrieve bytes on demand. Existing contract references are restored on later saves, preventing a budget edit from dropping files. File-size limits are enforced server-side. Contracts are not embedded in the generated financial transaction report.
+
+Checks: `node --test next_app/tests/test_frontend_helpers.mjs` covers date formatting, timezone boundaries, AP cleanup and meeting defaults. The Python suite covers contract upload/readback, private access, metadata projection, preservation after budget edits and oversize rejection. Desktop/phone browser checks cover the complete file lifecycle, editable clean dates, and saved meeting status preservation. Native Windows updater execution still needs verification on the server.
+
 ## Updates and troubleshooting
 
 Updates on GitHub do not automatically update this extracted installation. Back up, stop the new server, replace the program files in the same permanent folder, then rerun its Setup. Keep AppData untouched. Use the new Open shortcut to restart.

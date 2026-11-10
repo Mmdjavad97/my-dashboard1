@@ -101,7 +101,7 @@ def read_state():
 
 def file_records(state):
     for project in state.get('financial_projects', {}).values():
-        for field in ('meeting_files', 'plan_files', 'documents'):
+        for field in ('meeting_files', 'plan_files', 'documents', 'contract_files'):
             for record in project.get(field, []):
                 if isinstance(record, dict) and isinstance(record.get('data'), str):
                     yield record
@@ -124,7 +124,7 @@ def hydrate_sections(sections, original):
     index = {hashlib.sha256(r['data'].encode()).hexdigest(): r['data'] for r in file_records(original)}
     hydrated = copy.deepcopy(sections)
     for project in hydrated.get('financial_projects', {}).values():
-        records = [r for field in ('meeting_files', 'plan_files', 'documents') for r in project.get(field, [])]
+        records = [r for field in ('meeting_files', 'plan_files', 'documents', 'contract_files') for r in project.get(field, [])]
         records += [r for t in project.get('transactions', []) for r in t.get('attachments', [])]
         for record in records:
             reference = record.pop('_blob_ref', None)
@@ -190,6 +190,24 @@ class Changes(BaseModel):
     sections: dict
 
 
+def validate_contracts(records):
+    if not isinstance(records,list):
+        raise HTTPException(422,'Invalid contract files.')
+    total=0
+    for record in records:
+        try:
+            if not isinstance(record,dict) or not isinstance(record.get('id'),str) or not record.get('filename'):
+                raise ValueError()
+            data=base64.b64decode(record['data'],validate=True)
+        except (ValueError,KeyError,TypeError):
+            raise HTTPException(422,'A contract file is invalid.') from None
+        if len(data)>5*1024*1024:
+            raise HTTPException(422,'Contract files must be 5 MB or smaller.')
+        total+=len(data)
+    if total>20*1024*1024:
+        raise HTTPException(422,'The project contract limit is 20 MB.')
+
+
 def validate_section(key, value, previous=None):
     if key not in EMPTY and not key.startswith('meeting_data_'):
         raise HTTPException(422, 'Unknown record group.')
@@ -205,6 +223,8 @@ def validate_section(key, value, previous=None):
                 if not isinstance(project.get('title'), str) or not project['title'].strip():
                     raise ValueError()
                 old = (previous or {}).get(project_id, {})
+                if project.get('contract_files',[]) != old.get('contract_files',[]):
+                    validate_contracts(project.get('contract_files',[]))
                 if project.get('budget') != old.get('budget'):
                     financial.rial(project.get('budget', '0'))
                 if project.get('transactions', []) != old.get('transactions', []):

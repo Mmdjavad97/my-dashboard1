@@ -31,6 +31,13 @@ import {
   CalendarDays,
 } from "lucide-react";
 import "./style.css";
+import { solarDate, solarValue } from "./dates.js";
+import {
+  MEETING_DEFAULTS,
+  blankMeeting,
+  meetingDraft,
+  meetingNeedsDefaults,
+} from "./meeting-defaults.js";
 // Use the physical touch screen, so mouse events cannot switch phone styling off.
 // Desktop windows keep their layout even when resized to a narrow width.
 document.documentElement.toggleAttribute(
@@ -59,15 +66,7 @@ const today = () =>
     month: "2-digit",
     day: "2-digit",
   }).format(new Date());
-const solar = () =>
-  new Intl.DateTimeFormat("en-US-u-ca-persian", {
-    timeZone: "Asia/Tehran",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  })
-    .format(new Date())
-    .replace(/(\d+)\/(\d+)\/(\d+)/, "$3/$1/$2");
+const solar = () => solarDate();
 const money = (x) => BigInt(String(x || 0)).toLocaleString("en-US");
 const categories = ["متریال", "اجرت", "خدمات", "سایر", "دریافتی"];
 const ascii = (x) =>
@@ -155,11 +154,11 @@ function Select({ label, value, onChange, options }) {
 const meetingStatuses = {
   discussion: [
     { value: "Raised", label: "Raised", tone: "green" },
-    { value: "not Raised", label: "Not Raised", tone: "red" },
+    { value: MEETING_DEFAULTS.discussion, label: "Not Raised", tone: "red" },
   ],
   action: [
     { value: "Done", label: "Done", tone: "green" },
-    { value: "not Started", label: "Not Started", tone: "gray" },
+    { value: MEETING_DEFAULTS.action, label: "Not Started", tone: "gray" },
     { value: "In Progress", label: "In Progress", tone: "yellow" },
     { value: "Stopped", label: "Stopped", tone: "red" },
   ],
@@ -1134,14 +1133,7 @@ const bomItem = () => ({
 });
 const emptyForm = (kind) =>
   kind === "meetings"
-    ? Array.from({ length: 11 }, () => [
-        "",
-        "",
-        "",
-        "not Raised",
-        "",
-        "not Started",
-      ])
+    ? blankMeeting()
     : kind === "warehouse"
       ? {
           date: "",
@@ -1378,28 +1370,11 @@ function RecordEditor({
   busy,
   notify,
 }) {
-  const [draft, setDraft] = useState(() => {
-      const value = clone(initial);
-      if (kind === "meetings") {
-        for (let i = 0; i < 11; i++) {
-          value[i] ??= ["", "", "", "", "", ""];
-          if (!String(value[i][3] ?? "").trim()) value[i][3] = "not Raised";
-          if (!String(value[i][5] ?? "").trim()) value[i][5] = "not Started";
-        }
-      }
-      return value;
-    }),
+  const [draft, setDraft] = useState(() =>
+      kind === "meetings" ? meetingDraft(initial) : clone(initial),
+    ),
     [dirty, setDirty] = useState(
-      () =>
-        kind === "meetings" &&
-        (initial.length < 11 ||
-          initial
-            .slice(0, 11)
-            .some(
-              (row) =>
-                !String(row?.[3] ?? "").trim() ||
-                !String(row?.[5] ?? "").trim(),
-            )),
+      () => kind === "meetings" && meetingNeedsDefaults(initial),
     );
   function set(next) {
     setDraft(next);
@@ -1724,24 +1699,6 @@ function RecordEditor({
     </>
   );
 }
-function solarValue(value) {
-  const raw = ascii(value || "").replaceAll("-", "/");
-  const match = raw.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
-  if (match && Number(match[1]) >= 1700) {
-    const date = new Date(
-      Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
-    );
-    return new Intl.DateTimeFormat("en-US-u-ca-persian", {
-      timeZone: "UTC",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
-      .format(date)
-      .replace(/(\d+)\/(\d+)\/(\d+)/, "$3/$1/$2");
-  }
-  return raw;
-}
 function normalizeCategory(row) {
   if (row.type === "Income") return "دریافتی";
   if (categories.includes(row.category)) return row.category;
@@ -1982,6 +1939,7 @@ function Financial({ project, id, saveProject, busy, notify }) {
       ...clone(project),
       budget: project.budget || "0",
       notes: project.notes || "",
+      contract_files: project.contract_files || [],
       transactions: (project.transactions || []).map((r) => ({
         ...clone(r),
         date: solarValue(r.date),
@@ -1989,9 +1947,16 @@ function Financial({ project, id, saveProject, busy, notify }) {
         attachments: r.attachments || [],
       })),
     })),
-    [dirty, setDirty] = useState(false),
+    [dirty, setDirty] = useState(() =>
+      (project.transactions || []).some(
+        (row) => solarValue(row.date) !== String(row.date ?? ""),
+      ),
+    ),
     [attach, setAttach] = useState(null),
-    [del, setDel] = useState(null);
+    [del, setDel] = useState(null),
+    [contractBusy, setContractBusy] = useState(false),
+    [contractView, setContractView] = useState(null),
+    [contractDelete, setContractDelete] = useState(null);
   function set(value) {
     setDraft(value);
     setDirty(true);
@@ -2005,6 +1970,9 @@ function Financial({ project, id, saveProject, busy, notify }) {
     });
   }
   const rows = draft.transactions || [];
+  const contracts = draft.contract_files || [];
+  const viewingContract = contracts.find((file) => file.id === contractView);
+  const deletingContract = contracts.find((file) => file.id === contractDelete);
   let income = 0n,
     expenses = 0n;
   const cat = Object.fromEntries(categories.slice(0, 4).map((c) => [c, 0n]));
@@ -2073,6 +2041,7 @@ function Financial({ project, id, saveProject, busy, notify }) {
               transactions: rows.map((r) => ({
                 ...r,
                 amount: integer(r.amount),
+                date: solarValue(r.date),
               })),
             };
             await saveProject(clean);
@@ -2091,6 +2060,98 @@ function Financial({ project, id, saveProject, busy, notify }) {
               inputMode="numeric"
               onChange={(v) => set({ ...draft, budget: v })}
             />
+            <div className="contract-area">
+              <span className="contract-label">Project contract</span>
+              <label className="contract-upload">
+                <Upload size={19} />
+                <span>Upload contract</span>
+                <input
+                  type="file"
+                  aria-label="Upload contract"
+                  disabled={busy || contractBusy}
+                  onChange={async (e) => {
+                    const input = e.target,
+                      file = input.files[0];
+                    if (!file) return;
+                    setContractBusy(true);
+                    try {
+                      if (file.size > 5 * 1024 * 1024)
+                        throw new Error(
+                          "Contract files must be 5 MB or smaller.",
+                        );
+                      if (
+                        contracts.reduce(
+                          (total, item) => total + (item.size || 0),
+                          0,
+                        ) +
+                          file.size >
+                        20 * 1024 * 1024
+                      )
+                        throw new Error("The project contract limit is 20 MB.");
+                      const record = await readFile(file, file.name);
+                      setDraft((current) => ({
+                        ...current,
+                        contract_files: [
+                          ...(current.contract_files || []),
+                          record,
+                        ],
+                      }));
+                      setDirty(true);
+                    } catch (error) {
+                      notify(error.message, true);
+                    } finally {
+                      setContractBusy(false);
+                      input.value = "";
+                    }
+                  }}
+                />
+              </label>
+              <small className="contract-help">
+                Up to 5 MB per file. Use Save financial to keep uploaded
+                contracts.
+              </small>
+              <div className="contract-list">
+                {contracts.map((file) => (
+                  <article className="contract-file" key={file.id}>
+                    <strong>
+                      <FileText size={17} />
+                      {file.title || file.filename}
+                    </strong>
+                    <div className="contract-actions">
+                      <Button
+                        type="button"
+                        icon={FileText}
+                        onClick={() => setContractView(file.id)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        type="button"
+                        icon={Download}
+                        onClick={() => fileAction(file, false, notify)}
+                      >
+                        Download
+                      </Button>
+                      <Button
+                        type="button"
+                        icon={Share2}
+                        onClick={() => fileAction(file, true, notify)}
+                      >
+                        Share
+                      </Button>
+                      <Button
+                        type="button"
+                        icon={Trash2}
+                        disabled={contractBusy}
+                        onClick={() => setContractDelete(file.id)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
             <Field
               label="Financial notes"
               area
@@ -2240,7 +2301,7 @@ function Financial({ project, id, saveProject, busy, notify }) {
         </Button>
         <div className="save-bar">
           <span>{dirty ? "Unsaved changes" : "All changes saved"}</span>
-          <Button kind="primary" icon={Save} disabled={busy}>
+          <Button kind="primary" icon={Save} disabled={busy || contractBusy}>
             Save financial
           </Button>
         </div>
@@ -2254,6 +2315,60 @@ function Financial({ project, id, saveProject, busy, notify }) {
           <PdfActions kind="financial" id={id} notify={notify} />
         )}
       </section>
+      {viewingContract && (
+        <Modal
+          title={viewingContract.title || viewingContract.filename}
+          onClose={() => setContractView(null)}
+        >
+          <div className="actions">
+            <Button
+              type="button"
+              icon={Download}
+              onClick={() => fileAction(viewingContract, false, notify)}
+            >
+              Download
+            </Button>
+            <Button
+              type="button"
+              icon={Share2}
+              onClick={() => fileAction(viewingContract, true, notify)}
+            >
+              Share
+            </Button>
+          </div>
+          <Preview record={viewingContract} />
+        </Modal>
+      )}
+      {deletingContract && (
+        <Modal title="Remove contract?" onClose={() => setContractDelete(null)}>
+          <p className="warning">
+            Remove {deletingContract.title || deletingContract.filename} from
+            this project? Use Save financial afterward to keep this change.
+          </p>
+          <div className="actions">
+            <Button type="button" onClick={() => setContractDelete(null)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              kind="danger"
+              icon={Trash2}
+              disabled={busy || contractBusy}
+              onClick={() => {
+                set({
+                  ...draft,
+                  contract_files: contracts.filter(
+                    (file) => file.id !== contractDelete,
+                  ),
+                });
+                setContractDelete(null);
+              }}
+            >
+              Remove contract
+            </Button>
+          </div>
+        </Modal>
+      )}
       {attach !== null && (
         <Modal
           title={"Row " + (attach + 1) + " attachments"}
